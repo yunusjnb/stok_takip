@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Personel Takibi - Keşiş Kafe Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+      .accordion-header {
+        transition: background-color 0.2s;
+      }
+      .accordion-header:hover {
+        background-color: #f9fafb !important;
+      }
+      .accordion-icon {
+        transition: transform 0.3s ease;
+      }
+      .accordion-content {
+        transition: all 0.3s ease;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "background-dark": "#211114",
+              "matcha-light": "#E9F5E3",
+              "matcha-medium": "#A3C9A8",
+              "matcha-dark": "#386641",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+              surface: "#FFFFFF",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="flex min-h-screen">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+            <div class="flex flex-col gap-3">
+              <p
+                class="text-text-primary text-4xl font-black leading-tight tracking-[-0.033em]"
+              >
+                Çalışan Giriş/Çıkış Takibi
+              </p>
+              <p
+                class="text-text-secondary text-base font-normal leading-normal"
+              >
+                Çalışanların giriş/çıkış saatlerini anlık olarak takip edin.
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a
+                href="/employe/update"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 transition-colors"
+                title="Personel bilgilerini yönet"
+              >
+                <span class="material-symbols-outlined">edit</span>
+                <span class="truncate">Personel Düzenle</span>
+              </a>
+              <a
+                href="/employe/add"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary hover:bg-primary-darker text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 transition-colors"
+              >
+                <span class="material-symbols-outlined">person_add</span>
+                <span class="truncate">Yeni Personel Ekle</span>
+              </a>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          >
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-white"
+            >
+              <p
+                class="text-text-secondary text-base font-medium leading-normal"
+              >
+                Aktif Çalışan
+              </p>
+              <p
+                id="activeCount"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-white"
+            >
+              <p
+                class="text-text-secondary text-base font-medium leading-normal"
+              >
+                Toplam Çalışma Saati
+              </p>
+              <p
+                id="totalHours"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-white cursor-pointer hover:bg-red-50 transition-colors"
+              onclick="showLateDetails()"
+            >
+              <p
+                class="text-text-secondary text-base font-medium leading-normal"
+              >
+                Geç Gelenler
+              </p>
+              <p
+                id="lateCount"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+          </div>
+          <section class="mb-8">
+            <h2
+              class="text-text-primary text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4"
+            >
+              Hızlı İşlem
+            </h2>
+            <div class="p-6 rounded-lg bg-white border border-border-color">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                <div class="flex flex-col gap-2 col-span-1 md:col-span-1">
+                  <label
+                    class="text-text-secondary text-sm font-medium"
+                    for="employee-select"
+                    >Personel Seçin</label
+                  >
+                  <select
+                    class="w-full bg-background-light text-text-primary border border-border-color rounded-lg focus:ring-primary focus:border-primary"
+                    id="employee-select"
+                  >
+                    <option value="">Personel seçin...</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-4 col-span-1 md:col-span-2">
+                  <button
+                    id="checkInBtn"
+                    class="w-full flex items-center justify-center gap-2 h-12 px-6 bg-primary hover:bg-matcha-dark text-white font-bold rounded-lg transition-colors"
+                  >
+                    <span class="material-symbols-outlined">login</span>
+                    <span>Giriş Yap</span>
+                  </button>
+                  <button
+                    id="checkOutBtn"
+                    class="w-full flex items-center justify-center gap-2 h-12 px-6 bg-[#F87171] hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
+                  >
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Çıkış Yap</span>
+                  </button>
+
+                  <button
+                    id="leaveBtn"
+                    class="w-full flex items-center justify-center gap-2 h-12 px-6 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+                    title="Yıllık izin ver"
+                  >
+                    <span class="material-symbols-outlined">beach_access</span>
+                    <span>İzin</span>
+                  </button>
+                </div>
+              </div>
+              <p
+                id="currentDateTime"
+                class="text-text-secondary text-sm font-normal leading-normal mt-4 text-center md:text-left"
+              >
+                Şu anki saat: --
+              </p>
+            </div>
+          </section>
+          <section>
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+              <h2
+                class="text-text-primary text-[22px] font-bold leading-tight tracking-[-0.015em]"
+              >
+                Giriş/Çıkış Kayıtları
+              </h2>
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary/50"
+                    >search</span
+                  >
+                  <input
+                    class="pl-10 pr-4 py-2 w-64 bg-background-light text-text-primary border border-border-color rounded-lg focus:ring-primary focus:border-primary"
+                    placeholder="Personel ara..."
+                    type="text"
+                  />
+                </div>
+                <input
+                  id="dateFilter"
+                  class="bg-background-light text-text-primary border border-border-color rounded-lg focus:ring-primary focus:border-primary"
+                  type="date"
+                />
+                <button
+                  onclick="showShiftPlan()"
+                  class="flex items-center justify-center gap-2 h-10 px-4 bg-primary text-white border border-primary font-bold rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <span class="material-symbols-outlined">calendar_month</span>
+                  <span>Vardiya Planı</span>
+                </button>
+                <button
+                  onclick="exportTableToCSV('logsTable')"
+                  class="flex items-center justify-center gap-2 h-10 px-4 bg-white hover:bg-gray-100 text-text-secondary border border-border-color font-bold rounded-lg transition-colors"
+                >
+                  <span class="material-symbols-outlined">download</span>
+                  <span>Dışa Aktar</span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="overflow-x-auto rounded-lg border border-border-color bg-white"
+            >
+              <table id="logsTable" class="w-full text-left text-text-primary text-sm">
+                <thead class="bg-gray-50 text-text-secondary">
+                  <tr>
+                    <th class="px-6 py-3 font-medium" scope="col">Personel</th>
+                    <th class="px-6 py-3 font-medium" scope="col">
+                      Giriş Saati
+                    </th>
+                    <th class="px-6 py-3 font-medium" scope="col">
+                      Çıkış Saati
+                    </th>
+                    <th class="px-6 py-3 font-medium" scope="col">Süre</th>
+                    <th class="px-6 py-3 font-medium" scope="col">Durum</th>
+                    <th class="px-6 py-3 font-medium text-center" scope="col">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script>
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      let currentLateEmployees = [];
+
+      /**
+       * Tüm çalışanları yükler ve dropdown menüye ekler
+       * Personel seçimi için kullanılır
+       */
+      async function loadEmployees() {
+        try {
+          const response = await fetch("/api/employees");
+          const employees = await response.json();
+          const select = document.getElementById("employee-select");
+          select.innerHTML = '<option value="">Personel seçin...</option>';
+
+          // Her çalışanı dropdown'a ekle
+          // Format: "Ad Soyad - Pozisyon / Tip"
+          employees.forEach((emp) => {
+            const option = document.createElement("option");
+            option.value = emp.id;
+            const position = emp.position_name ? ` - ${emp.position_name}` : "";
+            option.textContent = `${emp.name} ${emp.surname}${position}`;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Load employees error:", error);
+        }
+      }
+
+      /**
+       * Zaman formatlama fonksiyonu
+       * MySQL datetime formatındaki zamanı Türkçe formatına çevirir (HH:MM:SS)
+       * @param {string} timeString - MySQL datetime formatında zaman string'i
+       * @returns {string} - Formatlanmış zaman string'i veya "--" / "Hata"
+       */
+      function formatTime(timeString) {
+        if (!timeString) return "--";
+        try {
+          const date = new Date(timeString);
+          if (isNaN(date.getTime())) return "Hata";
+          return date.toLocaleTimeString("tr-TR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+        } catch (e) {
+          return "Hata";
+        }
+      }
+
+      // YYYY-MM-DD veya ISO date string -> yerel tarih (TR) gösterimi
+      function formatDate(dateStr) {
+        if (!dateStr) return "--";
+        try {
+          if (
+            typeof dateStr === "string" &&
+            dateStr.match(/^\d{4}-\d{2}-\d{2}$/)
+          ) {
+            const parts = dateStr.split("-").map((p) => parseInt(p, 10));
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            return d.toLocaleDateString("tr-TR");
+          }
+          const d = new Date(dateStr);
+          if (isNaN(d.getTime())) return dateStr;
+          return d.toLocaleDateString("tr-TR");
+        } catch (e) {
+          return dateStr;
+        }
+      }
+
+      /**
+       * Accordion menü açma/kapama fonksiyonu
+       * Personel satırına tıklandığında detay satırlarını gösterir/gizler
+       * Chevron ikonunu da döndürür (sağ → aşağı)
+       * @param {string} accordionId - Accordion'un benzersiz ID'si
+       */
+      window.toggleAccordion = function (accordionId) {
+        const detailsId = accordionId.replace("accordion-", "details-");
+        const detailsRow = document.getElementById(detailsId);
+        const icon = document.getElementById(`icon-${accordionId}`);
+
+        if (detailsRow) {
+          if (detailsRow.classList.contains("hidden")) {
+            // Accordion'u aç: detay satırını göster, ikonu döndür
+            detailsRow.classList.remove("hidden");
+            if (icon) icon.style.transform = "rotate(90deg)";
+          } else {
+            // Accordion'u kapat: detay satırını gizle, ikonu eski haline getir
+            detailsRow.classList.add("hidden");
+            if (icon) icon.style.transform = "rotate(0deg)";
+          }
+        }
+      };
+
+      /**
+       * Bugünkü veya seçili tarihteki giriş/çıkış kayıtlarını yükler ve tabloya render eder
+       * Accordion menü yapısında gösterir: her personel için ana satır + tıklanınca açılan detay satırları
+       */
+      async function loadTodayLogs() {
+        try {
+          // Tarih filtresinden seçili tarihi al, yoksa bugünün tarihini kullan
+          // Yerel tarihi kullan (UTC değil) - timezone sorunlarını önlemek için
+          let dateFilter = document.getElementById("dateFilter").value;
+          if (!dateFilter) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            dateFilter = `${year}-${month}-${day}`;
+          }
+
+          console.log("Kayıtlar yükleniyor, tarih:", dateFilter);
+
+          // API'den seçili tarihteki tüm personel log kayıtlarını getir
+          const response = await fetch(
+            `/api/employees/logs/today?date=${dateFilter}`
+          );
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error Response:", errorText);
+            throw new Error("Kayıtlar yüklenirken bir hata oluştu");
+          }
+
+          const logs = await response.json();
+          console.log("API'den gelen kayıtlar:", logs);
+
+          const tbody = document.getElementById("logsTableBody");
+          if (!tbody) {
+            console.error("logsTableBody bulunamadı!");
+            return;
+          }
+
+          // Tabloyu temizle
+          tbody.innerHTML = "";
+
+          // Eğer kayıt yoksa bilgi mesajı göster
+          if (!logs || logs.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-text-secondary">
+                  Bu tarih için kayıt bulunamadı
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          // Her personel için accordion menü oluştur
+          logs.forEach((log, logIndex) => {
+            console.log("İşlenen log:", log);
+
+            // Her accordion için benzersiz ID'ler oluştur
+            const accordionId = `accordion-${log.id}-${logIndex}`;
+            const detailsId = `details-${log.id}-${logIndex}`;
+
+            // ========== ANA SATIR (ÖZET BİLGİLER) ==========
+            // Tıklanabilir ana satır - personel adı, ilk giriş, son çıkış, toplam süre, durum
+            const mainRow = document.createElement("tr");
+            mainRow.className =
+              "border-b border-border-color hover:bg-gray-50 cursor-pointer accordion-header";
+            mainRow.setAttribute(
+              "onclick",
+              `toggleAccordion('${accordionId}')`
+            );
+
+            // İlk giriş saati - personelin o günkü ilk girişi
+            const firstCheckIn = log.check_in ? formatTime(log.check_in) : "--";
+
+            // Son çıkış saati - eğer personel hala çalışıyorsa "--" göster
+            // (çünkü henüz çıkış yapmamış)
+            const lastCheckOut =
+              log.status === "Çalışıyor"
+                ? "--"
+                : log.check_out
+                ? formatTime(log.check_out)
+                : "--";
+
+            // Toplam çalışma süresini formatla (saat ve dakika cinsinden)
+            let totalTime = "--";
+            try {
+              const totalSeconds = log.total_seconds || 0;
+              if (totalSeconds > 0) {
+                // API'den gelen toplam süreyi saat ve dakikaya çevir
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                if (hours > 0) {
+                  totalTime =
+                    minutes > 0 ? `${hours} sa ${minutes} dk` : `${hours} sa`;
+                } else {
+                  totalTime = `${minutes} dk`;
+                }
+              } else if (log.status === "Çalışıyor" && log.check_in) {
+                // Personel hala çalışıyorsa, giriş saatinden şimdiye kadar geçen süreyi hesapla
+                const checkInDate = new Date(log.check_in);
+                if (!isNaN(checkInDate.getTime())) {
+                  const diffSeconds = Math.floor(
+                    (new Date() - checkInDate) / 1000
+                  );
+                  const hours = Math.floor(diffSeconds / 3600);
+                  const minutes = Math.floor((diffSeconds % 3600) / 60);
+                  if (hours > 0) {
+                    totalTime =
+                      minutes > 0
+                        ? `${hours} sa ${minutes} dk (devam ediyor)`
+                        : `${hours} sa (devam ediyor)`;
+                  } else {
+                    totalTime = `${minutes} dk (devam ediyor)`;
+                  }
+                }
+              }
+            } catch (e) {
+              console.error("Toplam süre hesaplama hatası:", e);
+            }
+
+              mainRow.innerHTML = `
+                <th class="px-6 py-4 font-medium text-text-primary whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined accordion-icon transition-transform" id="icon-${accordionId}">chevron_right</span>
+                    <div class="flex flex-col">
+                      <span>${log.name || ""} ${log.surname || ""}</span>
+                      ${log.shift_name ? `<span class="text-xs text-text-secondary font-normal">${log.shift_name} (${log.shift_start.substring(0,5)})</span>` : ''}
+                    </div>
+                  </div>
+                </th>
+                <td class="px-6 py-4 text-text-secondary">
+                  ${firstCheckIn}
+                </td>
+                <td class="px-6 py-4 text-text-secondary">${lastCheckOut}</td>
+                <td class="px-6 py-4 text-text-primary font-semibold">${totalTime}</td>
+                <td class="px-6 py-4">
+                  <div class="flex flex-col gap-1 items-start">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      log.leave
+                        ? "bg-blue-50 text-blue-700"
+                        : log.status === "Çalışıyor"
+                        ? "bg-matcha-light text-matcha-dark"
+                        : "bg-gray-100 text-gray-600"
+                    }">${log.leave ? "İzinli" : log.status || "Bilinmiyor"}</span>
+                    ${log.is_late ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+                      <span class="material-symbols-outlined text-[14px] mr-1">running_with_errors</span>Geç Kaldı
+                    </span>` : ''}
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <a href="/employe/update?id=${log.id}" 
+                     class="inline-flex items-center justify-center p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors stop-propagation"
+                     onclick="event.stopPropagation()"
+                     title="Düzenle">
+                    <span class="material-symbols-outlined text-xl">edit_square</span>
+                  </a>
+                </td>
+              `;
+            tbody.appendChild(mainRow);
+
+            // ========== DETAY SATIRLARI (ACCORDION İÇERİĞİ) ==========
+            // Ana satıra tıklandığında açılan detay bölümü
+            // Tüm giriş-çıkış çiftlerini gösterir
+            if ((log.all_logs && log.all_logs.length > 0) || log.leave) {
+              const detailsRow = document.createElement("tr");
+              detailsRow.id = detailsId;
+              detailsRow.className = "hidden accordion-content bg-gray-50";
+
+              const detailsCell = document.createElement("td");
+              detailsCell.colSpan = 6; // 6 kolon kaplar (Personel, Giriş, Çıkış, Süre, Durum, İşlem)
+              detailsCell.className = "px-6 py-4";
+
+              // Eğer izin bilgisi varsa üstte göster
+              if (log.leave) {
+                const startLabel = formatDate(log.leave.start_date);
+                const endLabel = formatDate(log.leave.end_date);
+                const leaveHtml = `
+                  <div class="mb-4 p-3 rounded bg-blue-50 border border-blue-100 text-sm text-blue-800">
+                    <strong>İzinli:</strong> ${
+                      log.leave.total_days
+                    } gün &nbsp;•&nbsp; ${startLabel} → ${endLabel} ${
+                  log.leave.note ? ` - ${log.leave.note}` : ""
+                }
+                  </div>
+                `;
+                detailsCell.innerHTML = leaveHtml;
+              }
+
+              // Giriş-çıkış çiftlerini oluştur
+              // API'den gelen log kayıtlarını işleyerek giriş-çıkış çiftlerine dönüştür
+              let currentCheckIn = null; // Şu anki işlenen giriş kaydı
+              let checkInLogId = null; // Giriş kaydının ID'si (düzenleme için gerekli)
+              const shifts = []; // Tüm vardiyaları tutan array
+
+              log.all_logs.forEach((logEntry, index) => {
+                if (logEntry.type === 1) {
+                  // Giriş kaydı (type = 1)
+                  currentCheckIn = logEntry.log_time;
+                  checkInLogId = logEntry.log_id;
+
+                  // Eğer sonraki log çıkış değilse, sadece giriş var (personel hala çalışıyor)
+                  const nextLog = log.all_logs[index + 1];
+                  if (!nextLog || nextLog.type !== 2) {
+                    // Eşleşmemiş giriş - çıkış yapılmamış
+                    shifts.push({
+                      checkIn: currentCheckIn,
+                      checkInLogId: checkInLogId,
+                      checkOut: null,
+                      checkOutLogId: null,
+                      isOngoing: true, // Devam eden vardiya
+                    });
+                    currentCheckIn = null;
+                    checkInLogId = null;
+                  }
+                } else if (logEntry.type === 2 && currentCheckIn) {
+                  // Çıkış kaydı (type = 2) ve eşleşen bir giriş var
+                  // Tamamlanmış bir vardiya oluştur
+                  shifts.push({
+                    checkIn: currentCheckIn,
+                    checkInLogId: checkInLogId,
+                    checkOut: logEntry.log_time,
+                    checkOutLogId: logEntry.log_id,
+                    isOngoing: false, // Tamamlanmış vardiya
+                  });
+                  // Reset - bir sonraki giriş için hazır
+                  currentCheckIn = null;
+                  checkInLogId = null;
+                }
+              });
+
+              // Detay tablosu HTML'ini oluştur
+              // Her vardiya için bir satır gösterir (giriş, çıkış, süre)
+              let detailsHTML = `
+                <div class="pl-8">
+                  <table class="w-full text-sm">
+                    <thead class="bg-gray-100">
+                      <tr>
+                        <th class="px-4 py-2 text-left text-text-secondary font-medium">Giriş</th>
+                        <th class="px-4 py-2 text-left text-text-secondary font-medium">Çıkış</th>
+                        <th class="px-4 py-2 text-left text-text-secondary font-medium">Süre</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+              `;
+
+              // Her vardiya için bir satır oluştur
+              shifts.forEach((shift, shiftIndex) => {
+                const checkInTime = formatTime(shift.checkIn);
+                const checkOutTime = shift.checkOut
+                  ? formatTime(shift.checkOut)
+                  : "--";
+
+                // Vardiya süresini hesapla
+                let duration = "--";
+                if (shift.checkOut) {
+                  // Tamamlanmış vardiya - giriş ve çıkış arasındaki süreyi hesapla
+                  const checkInDate = new Date(shift.checkIn);
+                  const checkOutDate = new Date(shift.checkOut);
+                  const diffSeconds = Math.floor(
+                    (checkOutDate - checkInDate) / 1000
+                  );
+                  const hours = Math.floor(diffSeconds / 3600);
+                  const minutes = Math.floor((diffSeconds % 3600) / 60);
+                  if (hours > 0) {
+                    duration =
+                      minutes > 0 ? `${hours} sa ${minutes} dk` : `${hours} sa`;
+                  } else {
+                    duration = `${minutes} dk`;
+                  }
+                } else {
+                  // Devam eden vardiya - henüz çıkış yapılmamış
+                  duration = "Devam ediyor";
+                }
+
+                detailsHTML += `
+                  <tr class="border-b border-gray-200">
+                    <td class="px-4 py-2 text-text-secondary">
+                      <div class="flex items-center gap-2">
+                        <span>${checkInTime}</span>
+                        <button
+                          onclick="event.stopPropagation(); editLogTime(${
+                            shift.checkInLogId
+                          }, ${log.id}, 1, '${shift.checkIn || ""}')"
+                          class="text-text-secondary hover:text-primary transition-colors"
+                          title="Giriş saatini düzenle"
+                        >
+                          <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 text-text-secondary">
+                      ${
+                        shift.checkOut
+                          ? `
+                        <div class="flex items-center gap-2">
+                          <span>${checkOutTime}</span>
+                          <button
+                            onclick="event.stopPropagation(); editLogTime(${
+                              shift.checkOutLogId
+                            }, ${log.id}, 2, '${shift.checkOut || ""}')"
+                            class="text-text-secondary hover:text-primary transition-colors"
+                            title="Çıkış saatini düzenle"
+                          >
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        </div>
+                      `
+                          : "--"
+                      }
+                    </td>
+                    <td class="px-4 py-2 text-text-primary font-semibold">${duration}</td>
+                  </tr>
+                `;
+              });
+
+              detailsHTML += `
+                    </tbody>
+                  </table>
+                </div>
+              `;
+
+              detailsCell.innerHTML += detailsHTML;
+              detailsRow.appendChild(detailsCell);
+              tbody.appendChild(detailsRow);
+            } else {
+              // Log kayıtları yok
+              const detailsRow = document.createElement("tr");
+              detailsRow.id = detailsId;
+              detailsRow.className = "hidden accordion-content bg-gray-50";
+              const detailsCell = document.createElement("td");
+              detailsCell.colSpan = 5;
+              detailsCell.className =
+                "px-6 py-4 text-center text-text-secondary";
+              detailsCell.textContent = "Kayıt bulunamadı";
+              detailsRow.appendChild(detailsCell);
+              tbody.appendChild(detailsRow);
+            }
+          });
+
+          console.log(`${logs.length} kayıt başarıyla yüklendi ve gösterildi`);
+        } catch (error) {
+          console.error("Load logs error:", error);
+          const tbody = document.getElementById("logsTableBody");
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-red-500">
+                  Kayıtlar yüklenirken bir hata oluştu: ${error.message}. Lütfen sayfayı yenileyin.
+                </td>
+              </tr>
+            `;
+          }
+        }
+      }
+
+      /**
+       * Seçili tarih için istatistikleri yükler ve gösterir
+       * - Aktif çalışan sayısı
+       * - Toplam çalışma saati
+       * - Geç gelenler sayısı
+       */
+      async function loadStats() {
+        try {
+          // Yerel tarihi kullan (UTC değil) - timezone sorunlarını önlemek için
+          let dateFilter = document.getElementById("dateFilter").value;
+          if (!dateFilter) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            dateFilter = `${year}-${month}-${day}`;
+          }
+
+          // Üç istatistiği paralel olarak yükle (performans için)
+          const [activeResponse, hoursResponse, lateResponse] =
+            await Promise.all([
+              fetch(`/api/employees/stats/active?date=${dateFilter}`).catch(
+                () => ({ ok: false })
+              ),
+              fetch(
+                `/api/employees/stats/total-hours?date=${dateFilter}`
+              ).catch(() => ({ ok: false })),
+              fetch(`/api/employees/stats/late?date=${dateFilter}`).catch(
+                () => ({ ok: false })
+              ),
+            ]);
+
+          if (activeResponse.ok) {
+            const active = await activeResponse.json();
+            document.getElementById("activeCount").textContent =
+              active.active_count || 0;
+          } else {
+            document.getElementById("activeCount").textContent = "--";
+          }
+
+          if (hoursResponse.ok) {
+            const hours = await hoursResponse.json();
+            document.getElementById("totalHours").textContent =
+              hours.total_hours || 0;
+          } else {
+            document.getElementById("totalHours").textContent = "--";
+          }
+
+          if (lateResponse.ok) {
+            const late = await lateResponse.json();
+            document.getElementById("lateCount").textContent =
+              late.late_count || 0;
+            currentLateEmployees = late.late_employees || [];
+          } else {
+            document.getElementById("lateCount").textContent = "--";
+            currentLateEmployees = [];
+          }
+        } catch (error) {
+          console.error("Load stats error:", error);
+          document.getElementById("activeCount").textContent = "--";
+          document.getElementById("totalHours").textContent = "--";
+          document.getElementById("lateCount").textContent = "--";
+        }
+      }
+
+      // Güncel tarih ve saati güncelle
+      function updateCurrentDateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("tr-TR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const dateStr = now.toLocaleDateString("tr-TR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        document.getElementById(
+          "currentDateTime"
+        ).textContent = `Şu anki saat: ${timeStr} - ${dateStr}`;
+      }
+
+      // Tarih filtresi için bugünün tarihini ayarla
+      function setTodayDate() {
+        // Yerel tarihi kullan (UTC değil)
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const today = `${year}-${month}-${day}`;
+
+        console.log("Bugünün tarihi ayarlanıyor:", today);
+        const dateFilter = document.getElementById("dateFilter");
+        if (dateFilter) {
+          dateFilter.value = today;
+        }
+      }
+
+      /**
+       * Personel giriş kaydı oluşturur
+       * Seçili tarih bugünden farklıysa kullanıcıya onay ister
+       * Başarılı olursa sayfayı yeniler ve istatistikleri günceller
+       */
+      async function handleCheckIn() {
+        const empId = document.getElementById("employee-select").value;
+        if (!empId) {
+          toast.warning("Lütfen bir personel seçin");
+          return;
+        }
+
+        // Butonu devre dışı bırak ve loading göster
+        const btn = document.getElementById("checkInBtn");
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML =
+          '<span class="material-symbols-outlined animate-spin">hourglass_empty</span><span>İşleniyor...</span>';
+
+        try {
+          // Seçili tarihi al - yoksa bugünün tarihini kullan
+          const dateFilter =
+            document.getElementById("dateFilter").value ||
+            (() => {
+              const now = new Date();
+              const year = now.getFullYear();
+              const month = String(now.getMonth() + 1).padStart(2, "0");
+              const day = String(now.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            })();
+
+          // Bugünün tarihini hesapla (karşılaştırma için)
+          const today = (() => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+          })();
+
+          // Eğer seçili tarih bugünden farklıysa, kullanıcıya onay iste
+          // (Geçmiş tarih için giriş kaydı oluşturulacak)
+          if (dateFilter !== today) {
+            if (
+              !confirm(
+                `Seçili tarih (${dateFilter}) bugünden farklı. Bu tarihe göre giriş kaydı oluşturulacak. Devam etmek istiyor musunuz?`
+              )
+            ) {
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+              return;
+            }
+          }
+
+          console.log(
+            "Giriş işlemi başlatılıyor, Personel ID:",
+            empId,
+            "Tarih:",
+            dateFilter
+          );
+          const response = await fetch(`/api/employees/${empId}/log`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: 1,
+              date: dateFilter !== today ? dateFilter : null,
+            }),
+          });
+
+          console.log("Response status:", response.status);
+
+          let data;
+          try {
+            data = await response.json();
+          } catch (e) {
+            console.error("JSON parse error:", e);
+            throw new Error("Sunucudan geçersiz yanıt alındı");
+          }
+
+          if (response.ok) {
+            console.log("Giriş başarılı, sayfa güncelleniyor...");
+            document.getElementById("employee-select").value = "";
+            toast.success("Giriş kaydedildi");
+            // Kısa bir gecikme ekleyerek veritabanının güncellenmesini bekleyelim
+            setTimeout(async () => {
+              await loadTodayLogs();
+              await loadStats();
+            }, 500);
+          } else {
+            console.error("API Error:", data);
+            toast.error(data.error || "Bir hata oluştu");
+          }
+        } catch (error) {
+          console.error("Check in error:", error);
+          toast.error("Bir hata oluştu: " + error.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+
+      /**
+       * Personel çıkış kaydı oluşturur
+       * Seçili tarih bugünden farklıysa o günün sonuna (23:59:59) kaydeder
+       * Başarılı olursa sayfayı yeniler ve istatistikleri günceller
+       */
+      async function handleCheckOut() {
+        const empId = document.getElementById("employee-select").value;
+        if (!empId) {
+          toast.warning("Lütfen bir personel seçin");
+          return;
+        }
+
+        // Butonu devre dışı bırak ve loading göster
+        const btn = document.getElementById("checkOutBtn");
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML =
+          '<span class="material-symbols-outlined animate-spin">hourglass_empty</span><span>İşleniyor...</span>';
+
+        try {
+          // Seçili tarihi al - yoksa bugünün tarihini kullan
+          const dateFilter =
+            document.getElementById("dateFilter").value ||
+            (() => {
+              const now = new Date();
+              const year = now.getFullYear();
+              const month = String(now.getMonth() + 1).padStart(2, "0");
+              const day = String(now.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            })();
+
+          // Bugünün tarihini hesapla (karşılaştırma için)
+          const today = (() => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+          })();
+
+          // Eğer seçili tarih bugünden farklıysa, kullanıcıya onay iste
+          // Geçmiş tarih için çıkış kaydı o günün sonuna (23:59:59) kaydedilecek
+          if (dateFilter !== today) {
+            if (
+              !confirm(
+                `Seçili tarih (${dateFilter}) bugünden farklı. Bu tarihe göre çıkış kaydı oluşturulacak (o günün sonuna: 23:59:59). Devam etmek istiyor musunuz?`
+              )
+            ) {
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+              return;
+            }
+          }
+
+          console.log(
+            "Çıkış işlemi başlatılıyor, Personel ID:",
+            empId,
+            "Tarih:",
+            dateFilter
+          );
+          const response = await fetch(`/api/employees/${empId}/log`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: 2,
+              date: dateFilter !== today ? dateFilter : null,
+            }),
+          });
+
+          console.log("Response status:", response.status);
+
+          let data;
+          try {
+            data = await response.json();
+          } catch (e) {
+            console.error("JSON parse error:", e);
+            throw new Error("Sunucudan geçersiz yanıt alındı");
+          }
+
+          if (response.ok) {
+            console.log("Çıkış başarılı, sayfa güncelleniyor...");
+            document.getElementById("employee-select").value = "";
+            toast.success("Çıkış kaydedildi");
+            // Kısa bir gecikme ekleyerek veritabanının güncellenmesini bekleyelim
+            setTimeout(async () => {
+              await loadTodayLogs();
+              await loadStats();
+            }, 500);
+          } else {
+            console.error("API Error:", data);
+            toast.error(data.error || "Bir hata oluştu");
+          }
+        } catch (error) {
+          console.error("Check out error:", error);
+          toast.error("Bir hata oluştu: " + error.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+
+      // Log saatini düzenle (hem giriş hem çıkış için)
+      /**
+       * Log saatini düzenleme modalını açar
+       * Hem giriş hem çıkış saatlerini düzenlemek için kullanılır
+       * @param {number} logId - Düzenlenecek log kaydının ID'si
+       * @param {number} empId - Personel ID'si (sayfa yenileme için)
+       * @param {number} logType - Log tipi (1 = Giriş, 2 = Çıkış)
+       * @param {string} currentTime - Mevcut zaman (MySQL datetime formatında)
+       */
+      window.editLogTime = function (logId, empId, logType, currentTime) {
+        const logTypeName = logType === 1 ? "Giriş" : "Çıkış";
+        // Mevcut saati datetime-local formatına çevir (HTML input için)
+        let currentDateTime = "";
+        if (currentTime) {
+          try {
+            const date = new Date(currentTime);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+          } catch (e) {
+            console.error("Date parse error:", e);
+          }
+        }
+
+        // Modal oluştur
+        const modal = document.createElement("div");
+        modal.id = "editLogTimeModal";
+        modal.className =
+          "fixed inset-0 bg-black/50 flex items-center justify-center z-50";
+        modal.innerHTML = `
+          <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold text-text-primary">${logTypeName} Saatini Düzenle</h3>
+              <button onclick="document.getElementById('editLogTimeModal').remove()" class="text-text-secondary hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-text-primary mb-2">${logTypeName} Saati</label>
+                <input
+                  type="datetime-local"
+                  id="editLogTime"
+                  value="${currentDateTime}"
+                  class="w-full px-4 py-2 border border-border-color rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                  required
+                />
+              </div>
+              <div class="flex gap-3 pt-4">
+                <button
+                  onclick="document.getElementById('editLogTimeModal').remove()"
+                  class="flex-1 px-4 py-2 border border-border-color rounded-lg text-text-secondary hover:bg-gray-50 transition-colors font-medium"
+                >
+                  İptal
+                </button>
+                <button
+                  onclick="window.saveLogTime(${logId}, ${empId})"
+                  class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-darker transition-colors font-medium"
+                >
+                  Kaydet
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Modal dışına tıklanınca kapat
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.remove();
+          }
+        });
+      };
+
+      // Log saatini kaydet (hem giriş hem çıkış için)
+      /**
+       * Düzenlenen log saatini API'ye gönderir ve kaydeder
+       * Başarılı olursa sayfayı yeniler ve istatistikleri günceller
+       * @param {number} logId - Güncellenecek log kaydının ID'si
+       * @param {number} empId - Personel ID'si (sayfa yenileme için)
+       */
+      window.saveLogTime = async function (logId, empId) {
+        const timeInput = document.getElementById("editLogTime");
+        if (!timeInput || !timeInput.value) {
+          toast.warning("Lütfen bir saat seçin");
+          return;
+        }
+
+        // datetime-local formatını MySQL datetime formatına çevir
+        // Örnek: "2024-12-13T14:30" → "2024-12-13 14:30:00"
+        const selectedDateTime = new Date(timeInput.value);
+        const year = selectedDateTime.getFullYear();
+        const month = String(selectedDateTime.getMonth() + 1).padStart(2, "0");
+        const day = String(selectedDateTime.getDate()).padStart(2, "0");
+        const hours = String(selectedDateTime.getHours()).padStart(2, "0");
+        const minutes = String(selectedDateTime.getMinutes()).padStart(2, "0");
+        const seconds = String(selectedDateTime.getSeconds()).padStart(2, "0");
+        const mysqlDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        try {
+          const response = await fetch(`/api/employees/logs/${logId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ log_time: mysqlDateTime }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            toast.success("Saat güncellendi");
+            // Modalı kapat
+            const modal = document.getElementById("editLogTimeModal");
+            if (modal) modal.remove();
+            // Sayfayı yenile
+            await loadTodayLogs();
+            await loadStats();
+          } else {
+            toast.error(data.error || "Güncelleme başarısız");
+          }
+        } catch (error) {
+          console.error("Update check out error:", error);
+          toast.error("Bir hata oluştu");
+        }
+      };
+
+      // Tarih filtresi değiştiğinde
+      document.getElementById("dateFilter").addEventListener("change", () => {
+        loadTodayLogs();
+        loadStats();
+      });
+
+      // Arama fonksiyonu
+      document
+        .querySelector('input[placeholder*="ara"]')
+        .addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          const rows = document.querySelectorAll("#logsTableBody tr");
+          rows.forEach((row) => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? "" : "none";
+          });
+        });
+
+      // Event listener'ları ekle
+      function setupEventListeners() {
+        const checkInBtn = document.getElementById("checkInBtn");
+        const checkOutBtn = document.getElementById("checkOutBtn");
+        const leaveBtn = document.getElementById("leaveBtn");
+
+        if (checkInBtn) {
+          checkInBtn.addEventListener("click", handleCheckIn);
+        } else {
+          console.error("checkInBtn bulunamadı");
+        }
+
+        if (checkOutBtn) {
+          checkOutBtn.addEventListener("click", handleCheckOut);
+        } else {
+          console.error("checkOutBtn bulunamadı");
+        }
+
+        if (leaveBtn) {
+          leaveBtn.addEventListener("click", async () => {
+            const select = document.getElementById("employee-select");
+            const empId = select?.value;
+            if (!empId) {
+              if (window.toast) toast.error("Lütfen personel seçin");
+              else alert("Lütfen personel seçin");
+              return;
+            }
+
+            let daysStr = prompt(
+              "Kaç gün yıllık izin verilsin? (tam sayı)",
+              "1"
+            );
+            if (daysStr === null) return; // iptal
+            const days = parseInt(daysStr, 10);
+            if (!days || days <= 0) {
+              if (window.toast) toast.error("Geçerli gün giriniz");
+              else alert("Geçerli gün giriniz");
+              return;
+            }
+
+            const confirmMsg = `${days} gün yıllık izin verilsin mi?`;
+            if (!confirm(confirmMsg)) return;
+
+            // Eğer tarih filtresi seçiliyse, o tarihi başlangıç olarak kullan
+            const dateFilter = document.getElementById("dateFilter")?.value;
+            const payload = { days };
+            if (dateFilter) payload.start_date = dateFilter;
+
+            try {
+              const res = await fetch(`/api/employees/${empId}/leave`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+              const json = await res.json();
+              if (!res.ok) {
+                if (window.toast) toast.error(json.error || "İzin verilemedi");
+                else alert(json.error || "İzin verilemedi");
+                return;
+              }
+              if (window.toast)
+                toast.success(`İzin verildi. Kalan: ${json.remaining} gün`);
+              else alert(`İzin verildi. Kalan: ${json.remaining} gün`);
+              // Yeniden yükle
+              loadTodayLogs();
+            } catch (err) {
+              console.error(err);
+              if (window.toast) toast.error("İzin verilemedi");
+              else alert("İzin verilemedi");
+            }
+          });
+        }
+      }
+
+      // Sayfa yüklendiğinde
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+          setTodayDate();
+          updateCurrentDateTime();
+          setupEventListeners();
+          loadEmployees();
+          loadTodayLogs();
+          loadStats();
+        });
+      } else {
+        setTodayDate();
+        updateCurrentDateTime();
+        setupEventListeners();
+        loadEmployees();
+        loadTodayLogs();
+        loadStats();
+      }
+
+      /**
+       * Geç gelenlerin detaylarını gösteren modal
+       */
+      function showLateDetails() {
+        if (!currentLateEmployees || currentLateEmployees.length === 0) {
+          toast.info("Geç gelen personel bulunmuyor");
+          return;
+        }
+
+        const modalHtml = `
+          <div id="lateDetailsModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+              <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-red-50">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-red-600">running_with_errors</span>
+                  <h3 class="text-lg font-bold text-red-900">Geç Gelen Detayları</h3>
+                </div>
+                <button onclick="document.getElementById('lateDetailsModal').remove()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div class="p-6 overflow-y-auto">
+                <table class="w-full text-sm">
+                  <thead class="text-text-secondary border-b border-gray-100">
+                    <tr>
+                      <th class="pb-3 font-semibold text-left">Personel</th>
+                      <th class="pb-3 font-semibold text-left">Vardiya</th>
+                      <th class="pb-3 font-semibold text-right">Giriş / Gecikme</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-50">
+                    ${currentLateEmployees.map(emp => `
+                      <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-4">
+                          <div class="font-bold text-text-primary capitalize">${emp.name} ${emp.surname}</div>
+                          <div class="text-xs text-text-secondary">${emp.position_name || 'Personel'}</div>
+                        </td>
+                        <td class="py-4">
+                          <div class="font-medium text-text-primary">${emp.shift_name}</div>
+                          <div class="text-xs text-text-secondary">${emp.shift_start.substring(0, 5)} - ${emp.shift_end.substring(0, 5)}</div>
+                        </td>
+                        <td class="py-4 text-right">
+                          <div class="font-bold text-text-primary">${formatTime(emp.check_in)}</div>
+                          <div class="text-xs font-bold text-red-500">${emp.minutes_late} dk geç</div>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                <button onclick="document.getElementById('lateDetailsModal').remove()" class="px-5 py-2 bg-white border border-gray-200 text-text-secondary rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                  Kapat
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+      }
+
+      /* =========================================
+       * HAFTALIK VARDİYA PLANI VE ATAMA İŞLEMLERİ
+       * ========================================= */
+
+      // Global state - Window objesine taşıyalım
+      window.pendingShiftSelection = null;
+
+      // Yardımcı: Yerel tarih stringi (YYYY-MM-DD)
+      function getLocalDateStr(date) {
+        return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+      }
+
+      /**
+       * Haftalık vardiya planını gösterir
+       */
+      // Vardiya planı navigasyonu için global durum
+      window.currentShiftDate = new Date();
+
+      /**
+       * Haftalık vardiya planını gösterir
+       * @param {number} weekOffset - Hafta ofseti (0: şimdiki, -1: önceki, 1: sonraki)
+       */
+      window.showShiftPlan = async function(weekOffset = 0) {
+        const existing = document.getElementById('shiftPlanModal');
+
+        // Ofsete göre mevcut tarihi güncelle
+        if (weekOffset !== 0) {
+            window.currentShiftDate.setDate(window.currentShiftDate.getDate() + (weekOffset * 7));
+        } else {
+            // If called without offset (first open), use today by resetting to current date
+            // But if modal is already open and we click "This Week", resetting is good.
+            // If it's first open (existing is null), we reset.
+            if (!existing || weekOffset === 0) {
+                 window.currentShiftDate = new Date();
+            }
+        }
+
+        const baseDate = new Date(window.currentShiftDate);
+        const day = baseDate.getDay();
+        const diff = baseDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+        const startOfWeek = new Date(baseDate);
+        startOfWeek.setDate(diff);
+        
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(startOfWeek);
+          d.setDate(startOfWeek.getDate() + i);
+          dates.push(d);
+        }
+
+        const dateRangeStr = `${getLocalDateStr(dates[0])} - ${getLocalDateStr(dates[6])}`;
+
+        try {
+          const [employees, shifts] = await Promise.all([
+             fetch('/api/employees').then(r => r.json()),
+             Promise.resolve([]) 
+          ]);
+
+          // Modal içeriğini oluştur veya güncelle
+          if (!existing) {
+              const modalHtml = `
+                <div id="shiftPlanModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 overflow-hidden font-display transition-opacity duration-300 opacity-0">
+                  <div class="bg-white rounded-xl shadow-2xl w-full max-w-7xl h-full max-h-[90vh] flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="shiftModalContent">
+                    
+                    <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                      <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                          <span class="material-symbols-outlined">calendar_month</span>
+                        </div>
+                        <div>
+                          <h3 class="text-xl font-bold text-text-primary">Haftalık Vardiya Planı</h3>
+                          <p class="text-sm text-text-secondary font-medium" id="shiftDateRange">${dateRangeStr}</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <button onclick="showShiftPlan(-1)" class="w-8 h-8 rounded-full hover:bg-white bg-gray-100 flex items-center justify-center transition-colors text-text-secondary">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button onclick="showShiftPlan(0)" class="px-3 h-8 rounded-lg hover:bg-white bg-gray-100 flex items-center justify-center transition-colors text-xs font-bold text-text-secondary whitespace-nowrap">
+                            Bu Hafta
+                        </button>
+                        <button onclick="showShiftPlan(1)" class="w-8 h-8 rounded-full hover:bg-white bg-gray-100 flex items-center justify-center transition-colors text-text-secondary">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                        <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                        <button onclick="closeShiftModal()" class="w-8 h-8 rounded-full hover:bg-red-50 hover:text-red-500 bg-gray-100 flex items-center justify-center transition-colors text-gray-500">
+                          <span class="material-symbols-outlined">close</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="flex-1 overflow-auto p-0" id="shiftTableContainer">
+                       <!-- Table will be injected here -->
+                    </div>
+                  </div>
+                </div>
+              `;
+              document.body.insertAdjacentHTML('beforeend', modalHtml);
+              
+              // Animasyon için kısa bir gecikme
+              setTimeout(() => {
+                  const modal = document.getElementById('shiftPlanModal');
+                  const content = document.getElementById('shiftModalContent');
+                  if (modal) modal.classList.remove('opacity-0');
+                  if (content) {
+                      content.classList.remove('scale-95', 'opacity-0');
+                  }
+              }, 10);
+
+              // Kapatma fonksiyonunu window'a ekle
+              window.closeShiftModal = function() {
+                  const modal = document.getElementById('shiftPlanModal');
+                  const content = document.getElementById('shiftModalContent');
+                  if (modal && content) {
+                      modal.classList.add('opacity-0');
+                      content.classList.add('scale-95', 'opacity-0');
+                      setTimeout(() => modal.remove(), 300);
+                  }
+              };
+          } else {
+              // Sadece tarih aralığını güncelle
+              document.getElementById('shiftDateRange').textContent = dateRangeStr;
+          }
+
+          // Tablo içeriğini oluştur
+          const tableHtml = `
+            <table class="w-full text-sm border-collapse transition-opacity duration-300 opacity-0" id="shiftPlanTable">
+              <thead class="sticky top-0 bg-white z-10 shadow-sm">
+                <tr>
+                  <th class="p-4 text-left border-b border-r border-gray-100 bg-gray-50 w-64 font-bold text-text-secondary">Personel</th>
+                  ${dates.map(date => {
+                    const simpleDate = getLocalDateStr(date);
+                    const isToday = simpleDate === getLocalDateStr(new Date());
+                    return `
+                    <th class="p-3 text-center border-b border-r border-gray-100 ${isToday ? 'bg-primary/5' : 'bg-gray-50'} min-w-[120px]">
+                      <div class="font-bold ${isToday ? 'text-primary' : 'text-text-primary'}">${date.toLocaleDateString('tr-TR', { weekday: 'long' })}</div>
+                      <div class="text-xs text-text-secondary mt-1">${date.getDate()} ${date.toLocaleDateString('tr-TR', { month: 'short' })}</div>
+                    </th>
+                    `;
+                  }).join('')}
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                ${employees.map(emp => `
+                  <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="p-4 border-r border-gray-100 bg-white sticky left-0 z-0">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm">
+                          ${emp.name.charAt(0)}${emp.surname.charAt(0)}
+                        </div>
+                        <div>
+                          <div class="font-bold text-text-primary">${emp.name} ${emp.surname}</div>
+                          <div class="text-xs text-text-secondary">${emp.position_name || 'Pozisyon Yok'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    ${dates.map(date => {
+                      const dateStr = getLocalDateStr(date);
+                      return `
+                      <td class="p-2 border-r border-gray-100 text-center relative group" id="cell-${emp.id}-${dateStr}">
+                        <div onclick="openShiftSelector(${emp.id}, '${dateStr}')" 
+                             class="w-full h-16 rounded-lg border-2 border-dashed border-gray-200 hover:border-primary hover:bg-primary/5 flex items-center justify-center cursor-pointer transition-all duration-200 group-hover:shadow-sm">
+                          <span class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">add</span>
+                        </div>
+                      </td>`;
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+
+          // Tabloyu konteynıra yerleştir ve fade-in efekti uygula
+          const container = document.getElementById('shiftTableContainer');
+          
+          if (container) {
+              await new Promise((resolve) => {
+                  const oldTable = document.getElementById('shiftPlanTable');
+                  
+                  if (oldTable) {
+                      // Eğer zaten tablo varsa, fade-out yap
+                      oldTable.classList.add('opacity-0');
+                      setTimeout(() => {
+                          container.innerHTML = tableHtml;
+                          // Yeni tabloyu fade-in yap
+                          requestAnimationFrame(() => {
+                              const newTable = document.getElementById('shiftPlanTable');
+                              if (newTable) newTable.classList.remove('opacity-0');
+                          });
+                          resolve();
+                      }, 150); // Fade-out süresi kadar bekle
+                  } else {
+                      // İlk yükleme
+                      container.innerHTML = tableHtml;
+                      requestAnimationFrame(() => {
+                          const newTable = document.getElementById('shiftPlanTable');
+                          if (newTable) newTable.classList.remove('opacity-0');
+                      });
+                      resolve();
+                  }
+              });
+          }
+
+          // Verileri yükle (DOM güncellendikten sonra)
+          await loadWeeklyAssignments(employees, dates);
+
+        } catch (error) {
+          console.error("Shift plan init error:", error);
+          toast.error("Hata: " + error.message);
+        }
+      }
+
+      /**
+       * Tabloyu CSV olarak dışa aktarır
+       * @param {string} tableId - HTML tablo ID'si
+       */
+      window.exportTableToCSV = function(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+
+        // BOM for UTF-8 correctly
+        csv.push('\uFEFF');
+
+        for (let i = 0; i < rows.length; i++) {
+          let row = [], cols = rows[i].querySelectorAll("td, th");
+          
+          for(let j = 0; j < cols.length; j++) {
+             // Clean text content: remove newlines, extra spaces
+             let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s+/g, ' ').trim();
+             // Escape double quotes
+             text = text.replace(/"/g, '""');
+             row.push(`"${text}"`);
+          }
+          csv.push(row.join(","));
+        }
+
+        const csvFile = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const downloadLink = document.createElement("a");
+        const dateStr = getLocalDateStr(new Date());
+
+        downloadLink.download = `personel_loglari_${dateStr}.csv`;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      };
+
+      async function loadWeeklyAssignments(employees, dates) {
+        const startDate = getLocalDateStr(dates[0]);
+        const endDate = getLocalDateStr(dates[6]);
+        
+        for (const emp of employees) {
+          try {
+            const assignments = await fetch(`/api/employees/${emp.id}/shifts?startDate=${startDate}&endDate=${endDate}`).then(r => r.json());
+            
+            assignments.forEach(assignment => {
+              const datePart = assignment.shift_date.split('T')[0]; 
+              const cell = document.getElementById(`cell-${emp.id}-${datePart}`);
+              if (cell) {
+                cell.innerHTML = `
+                  <div onclick="openShiftSelector(${emp.id}, '${datePart}')"
+                       data-shift-id="${assignment.shift_template_id}" 
+                       data-assignment-id="${assignment.id}"
+                       class="w-full h-full min-h-[64px] rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 hover:border-primary/40 p-2 cursor-pointer flex flex-col justify-center items-center transition-all animate-fade-in relative group/card">
+                    
+                    <div class="font-bold text-xs text-primary text-center leading-tight mb-1">${assignment.shift_name}</div>
+                    <div class="text-[10px] text-text-secondary bg-white/50 px-1.5 py-0.5 rounded-md font-mono">
+                      ${assignment.start_time.substring(0, 5)} - ${assignment.end_time.substring(0, 5)}
+                    </div>
+                    <div class="absolute top-1 right-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                      <span class="material-symbols-outlined text-[10px] text-primary">edit</span>
+                    </div>
+                  </div>
+                `;
+              }
+            });
+          } catch (e) {
+            console.error(`Error loading shifts for ${emp.name}:`, e);
+          }
+        }
+      }
+
+      window.openShiftSelector = async function(empId, dateStr) {
+        const existing = document.getElementById('shiftSelectorModal');
+        if (existing) existing.remove();
+        
+        window.pendingShiftSelection = null; 
+
+        try {
+          const shifts = await fetch('/api/employees/shifts/list').then(r => r.json());
+          
+          const cell = document.getElementById(`cell-${empId}-${dateStr}`);
+          const activeDiv = cell ? cell.querySelector('div[data-shift-id]') : null;
+          const currentShiftId = activeDiv ? parseInt(activeDiv.getAttribute('data-shift-id')) : null;
+          
+          // Debug için
+          console.log("Current shift defined in cell:", currentShiftId);
+          window.pendingShiftSelection = currentShiftId;
+
+          const modalHtml = `
+            <div id="shiftSelectorModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="if(event.target === this) this.remove()">
+              <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-scale-in">
+                
+                <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                  <div>
+                    <h3 class="text-lg font-bold text-text-primary">Vardiya Seçin</h3>
+                    <p class="text-xs text-text-secondary mt-0.5">${dateStr} tarihi için atama</p>
+                  </div>
+                  <button onclick="document.getElementById('shiftSelectorModal').remove()" class="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors text-gray-500">
+                    <span class="material-symbols-outlined font-light">close</span>
+                  </button>
+                </div>
+
+                <div class="p-5 flex flex-col gap-3 max-h-[60vh] overflow-y-auto">
+                  
+                  ${shifts.map(s => {
+                    const isSelected = (currentShiftId === s.id);
+                    return `
+                    <button 
+                      id="opt-${s.id}"
+                      onclick="toggleSelection(${s.id})"
+                      class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group flex items-center justify-between
+                             ${isSelected ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50'}"
+                    >
+                      <div class="flex items-center gap-3">
+                         <div class="w-10 h-10 rounded-lg bg-white border border-gray-100 flex items-center justify-center shadow-sm text-xs font-bold text-gray-500">
+                           ${s.name.substring(0,2).toUpperCase()}
+                         </div>
+                         <div>
+                           <div class="font-bold text-text-primary ${isSelected ? 'text-primary' : ''}">${s.name}</div>
+                           <div class="text-xs text-text-secondary mt-0.5 font-mono">${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}</div>
+                         </div>
+                      </div>
+                      
+                      <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all
+                                  ${isSelected ? 'border-primary bg-primary' : 'border-gray-300 group-hover:border-gray-400'}">
+                        ${isSelected ? '<span class="material-symbols-outlined text-sm text-white">check</span>' : ''}
+                      </div>
+                    </button>
+                    `;
+                  }).join('')}
+
+                  <!-- Vardiya Yok / Temizle Seçeneği -->
+                  <!-- ÖNEMLİ: Varsayılan olarak eğer shift yoksa bunu 'seçili' gibi göstermiyoruz ki kafa karışmasın. -->
+                  <button 
+                    id="opt-none"
+                    onclick="toggleSelection(null)"
+                    class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group flex items-center justify-between mt-2
+                           ${currentShiftId === null ? 'border-dashed border-gray-300 text-gray-400' : 'border-dashed border-gray-200 hover:border-red-300 hover:bg-red-50/50'}"
+                  >
+                    <div class="flex items-center gap-3">
+                       <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400">
+                         <span class="material-symbols-outlined">block</span>
+                       </div>
+                       <div>
+                         <div class="font-bold ${currentShiftId === null ? 'text-gray-500' : 'text-gray-500 group-hover:text-red-600'}">Vardiya Yok</div>
+                         <div class="text-xs text-gray-400 mt-0.5">Mevcut atamayı kaldır</div>
+                       </div>
+                    </div>
+                    
+                    <div class="w-6 h-6 rounded-full border-2 border-transparent flex items-center justify-center">
+                    </div>
+                  </button>
+
+                </div>
+
+                <div class="p-5 border-t border-gray-100 bg-gray-50 flex gap-4">
+                  <button onclick="document.getElementById('shiftSelectorModal').remove()" class="flex-1 py-3.5 rounded-xl border border-gray-200 font-bold text-gray-500 hover:bg-white hover:text-text-primary hover:shadow-sm transition-all">
+                    Vazgeç
+                  </button>
+                  <button onclick="confirmAssignment(${empId}, '${dateStr}')" class="flex-1 py-3.5 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Kaydet
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          `;
+
+          document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        } catch (error) {
+          console.error(error);
+          toast.error("Liste yüklenirken hata");
+        }
+      }
+
+      window.toggleSelection = function(shiftId) {
+        window.pendingShiftSelection = shiftId;
+
+        // 1. Hepsini resetle
+        const allBtns = document.querySelectorAll('[id^="opt-"]');
+        allBtns.forEach(btn => {
+           const isNone = (btn.id === 'opt-none');
+           const indicator = btn.lastElementChild;
+           const title = btn.querySelector('.font-bold');
+
+           if (isNone) {
+             // Reset none button to neutral
+             btn.className = "w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-red-300 hover:bg-red-50/50 transition-all duration-200 group flex items-center justify-between mt-2";
+             title.className = "font-bold text-gray-500 group-hover:text-red-600";
+             indicator.className = "w-6 h-6 rounded-full border-2 border-transparent flex items-center justify-center";
+             indicator.innerHTML = "";
+           } else {
+             btn.className = "w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 group flex items-center justify-between";
+             title.className = "font-bold text-text-primary";
+             indicator.className = "w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-gray-400 flex items-center justify-center transition-all";
+             indicator.innerHTML = "";
+           }
+        });
+
+        // 2. Seçili olanı boya
+        const targetId = shiftId === null ? 'opt-none' : `opt-${shiftId}`;
+        const targetBtn = document.getElementById(targetId);
+
+        if (targetBtn) {
+           const indicator = targetBtn.lastElementChild;
+           const title = targetBtn.querySelector('.font-bold');
+
+           if (shiftId === null) {
+              targetBtn.className = "w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-50 ring-1 ring-red-500/20 transition-all duration-200 group flex items-center justify-between mt-2";
+              title.className = "font-bold text-red-600";
+              indicator.className = "w-6 h-6 rounded-full border-2 border-red-500 bg-red-500 flex items-center justify-center transition-all";
+              indicator.innerHTML = '<span class="material-symbols-outlined text-sm text-white">close</span>';
+           } else {
+              targetBtn.className = "w-full text-left p-4 rounded-xl border-2 border-primary bg-primary/5 ring-1 ring-primary/20 transition-all duration-200 group flex items-center justify-between";
+              title.className = "font-bold text-text-primary text-primary";
+              indicator.className = "w-6 h-6 rounded-full border-2 border-primary bg-primary flex items-center justify-center transition-all";
+              indicator.innerHTML = '<span class="material-symbols-outlined text-sm text-white">check</span>';
+           }
+        }
+      }
+
+      window.confirmAssignment = async function(empId, dateStr) {
+         // Debug Alert - Kullanıcının sorunu görmesi için
+         // alert(`Confirming assignment: Employee=${empId}, Date=${dateStr}, Shift=${window.pendingShiftSelection}`);
+         
+         const modal = document.getElementById('shiftSelectorModal');
+         if (modal) modal.remove();
+
+         const cell = document.getElementById(`cell-${empId}-${dateStr}`);
+         if (cell) {
+            cell.innerHTML = `
+              <div class="w-full h-full min-h-[64px] rounded-lg border border-gray-200 flex items-center justify-center bg-gray-50 animate-pulse">
+                <span class="text-xs text-gray-400">Kaydediliyor...</span>
+              </div>
+            `;
+         }
+
+         try {
+            if (window.pendingShiftSelection === null) {
+               // Silme
+               const shifts = await fetch(`/api/employees/${empId}/shifts?startDate=${dateStr}&endDate=${dateStr}`).then(r => r.json());
+               const existing = shifts.find(s => s.shift_date.split('T')[0] === dateStr);
+               
+               if (existing) {
+                  await fetch(`/api/employees/${empId}/shifts/${existing.id}`, { method: 'DELETE' });
+                  toast.success("Vardiya kaldırıldı");
+               } else {
+                  toast.info("Zaten vardiya yok");
+               }
+               
+               if (cell) {
+                 cell.innerHTML = `
+                    <div onclick="openShiftSelector(${empId}, '${dateStr}')" 
+                         class="w-full h-16 rounded-lg border-2 border-dashed border-gray-200 hover:border-primary hover:bg-primary/5 flex items-center justify-center cursor-pointer transition-all duration-200 group-hover:shadow-sm">
+                      <span class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">add</span>
+                    </div>
+                 `;
+               }
+
+            } else {
+               // Ekleme / Güncelleme
+               // ALERT for debugging
+               // alert("Sending POST request to add shift...");
+               
+               const response = await fetch(`/api/employees/${empId}/shifts`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ shift_id: window.pendingShiftSelection, shift_date: dateStr })
+               });
+               
+               if (!response.ok) {
+                   const errJson = await response.json();
+                   throw new Error(errJson.error || "Sunucu hatası");
+               }
+               
+               toast.success("Vardiya atandı");
+               
+               // Listeyi hemen güncelle
+               const shiftsList = await fetch('/api/employees/shifts/list').then(r => r.json());
+               const selectedShift = shiftsList.find(s => s.id === window.pendingShiftSelection);
+               
+               if (cell && selectedShift) {
+                  cell.innerHTML = `
+                    <div onclick="openShiftSelector(${empId}, '${dateStr}')"
+                         data-shift-id="${selectedShift.id}"
+                         class="w-full h-full min-h-[64px] rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 hover:border-primary/40 p-2 cursor-pointer flex flex-col justify-center items-center transition-all animate-fade-in relative group/card">
+                      
+                      <div class="font-bold text-xs text-primary text-center leading-tight mb-1">${selectedShift.name}</div>
+                      <div class="text-[10px] text-text-secondary bg-white/50 px-1.5 py-0.5 rounded-md font-mono">
+                        ${selectedShift.start_time.substring(0, 5)} - ${selectedShift.end_time.substring(0, 5)}
+                      </div>
+                      
+                      <div class="absolute top-1 right-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-[10px] text-primary">edit</span>
+                      </div>
+                    </div>
+                  `;
+               }
+            }
+         } catch (error) {
+            console.error(error);
+            alert("HATA: " + error.message); // Explicit alert
+            if (cell) cell.innerHTML = 'Hata!';
+         }
+      }
+
+      setInterval(updateCurrentDateTime, 60000); // Her dakika güncelle
+    </script>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

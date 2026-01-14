@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gelen Sevkiyat Yönetimi - Keşiş Kafe</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              // Sistem genel paletiyle uyumlu renkler
+              primary: "#6A994E",
+              "primary-dark": "#386641",
+              "background-light": "#F5F5F4",
+              "background-dark": "#211114",
+              "surface-light": "#FFFFFF",
+              "surface-dark": "#1A1A1A",
+              "text-main-light": "#1C1917",
+              "text-main-dark": "#F9FAFB",
+              "text-sub-light": "#6B7280",
+              "text-sub-dark": "#9CA3AF",
+              "border-light": "#E5E7EB",
+              "border-dark": "#374151",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Work Sans", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .icon-filled {
+        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light text-text-main-light dark:bg-background-dark dark:text-text-main-dark h-screen flex overflow-hidden transition-colors duration-200"
+  >
+    <div id="sidebar-container"></div>
+    <main
+      class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light dark:bg-background-dark relative"
+    >
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+        <div class="max-w-6xl mx-auto flex flex-col gap-8">
+            <!-- Page Heading & Actions -->
+            <div
+              class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+            >
+              <div class="flex flex-col gap-1">
+                <h1
+                  class="text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em] text-text-main-light dark:text-white"
+                >
+                  Gelen Sevkiyat Yönetimi
+                </h1>
+                <p
+                  class="text-text-sub-light dark:text-text-sub-dark text-base font-normal"
+                >
+                  Tedarikçi siparişlerini kontrol et, onayla ve stoklara işle.
+                </p>
+              </div>
+              <button
+                class="flex items-center justify-center gap-2 rounded-xl h-12 px-6 bg-primary hover:bg-primary-dark text-white font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >add_box</span
+                >
+                <span>Yeni Sevkiyat Oluştur</span>
+              </button>
+            </div>
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                class="flex flex-col gap-2 rounded-xl p-6 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm"
+              >
+                <div class="flex justify-between items-start">
+                  <div
+                    class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400"
+                  >
+                    <span class="material-symbols-outlined"
+                      >pending_actions</span
+                    >
+                  </div>
+                </div>
+                <p
+                  class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium mt-2"
+                >
+                  Bekleyen Siparişler
+                </p>
+                <p id="pendingCount" class="text-3xl font-bold dark:text-white">0</p>
+              </div>
+              <div
+                class="flex flex-col gap-2 rounded-xl p-6 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm"
+              >
+                <div class="flex justify-between items-start">
+                  <div
+                    class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400"
+                  >
+                    <span class="material-symbols-outlined"
+                      >local_shipping</span
+                    >
+                  </div>
+                </div>
+                <p
+                  class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium mt-2"
+                >
+                  Bugün Teslim Alınan
+                </p>
+                <p id="todayDeliveredCount" class="text-3xl font-bold dark:text-white">0</p>
+              </div>
+              <div
+                class="flex flex-col gap-2 rounded-xl p-6 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm"
+              >
+                <div class="flex justify-between items-start">
+                  <div
+                    class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400"
+                  >
+                    <span class="material-symbols-outlined">warning</span>
+                  </div>
+                </div>
+                <p
+                  class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium mt-2"
+                >
+                  Sorunlu / İptal
+                </p>
+                <p id="problemCount" class="text-3xl font-bold dark:text-white">0</p>
+              </div>
+            </div>
+            <!-- Main Workspace: List & Detail -->
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
+              <!-- Left Column: Filter & List -->
+              <div class="flex-1 flex flex-col gap-4 w-full">
+                <!-- Filters -->
+                <div
+                  class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 border border-border-light dark:border-border-dark flex flex-col sm:flex-row gap-4 justify-between items-center shadow-sm"
+                >
+                  <div class="relative w-full sm:max-w-xs">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <span
+                        class="material-symbols-outlined text-text-sub-light dark:text-text-sub-dark"
+                        >search</span
+                      >
+                    </div>
+                    <input
+                      class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-background-light dark:bg-background-dark text-sm placeholder-text-sub-light dark:placeholder-text-sub-dark focus:ring-2 focus:ring-primary dark:text-white"
+                      placeholder="Tedarikçi veya Sipariş No ara..."
+                      type="text"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide"
+                  >
+                    <button
+                      class="px-4 py-2 rounded-lg bg-primary text-white dark:text-black font-medium text-sm whitespace-nowrap shadow-sm"
+                    >
+                      Tümü
+                    </button>
+                    <button
+                      class="px-4 py-2 rounded-lg bg-background-light dark:bg-background-dark hover:bg-gray-100 dark:hover:bg-gray-800 text-text-main-light dark:text-text-main-dark font-medium text-sm whitespace-nowrap border border-transparent hover:border-border-light transition-all"
+                    >
+                      Beklemede
+                    </button>
+                    <button
+                      class="px-4 py-2 rounded-lg bg-background-light dark:bg-background-dark hover:bg-gray-100 dark:hover:bg-gray-800 text-text-main-light dark:text-text-main-dark font-medium text-sm whitespace-nowrap border border-transparent hover:border-border-light transition-all"
+                    >
+                      Kısmen Alındı
+                    </button>
+                  </div>
+                </div>
+                <!-- Shipment List (dinamik) -->
+                <div
+                  id="shipmentList"
+                  class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark overflow-hidden shadow-sm flex flex-col divide-y divide-border-light dark:divide-border-dark"
+                ></div>
+              </div>
+              <!-- Right Column: Detail View (The "Active" Shipment) -->
+              <div
+                class="w-full lg:w-[480px] xl:w-[520px] shrink-0 flex flex-col gap-4"
+              >
+                <div
+                  id="shipmentDetail"
+                  class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-lg lg:sticky lg:top-24"
+                >
+                  <!-- Header of Detail Card -->
+                  <div
+                    class="p-6 border-b border-border-light dark:border-border-dark bg-green-50/30 dark:bg-green-900/5"
+                  >
+                    <div class="flex justify-between items-start mb-4">
+                      <div>
+                        <span
+                          class="text-xs font-bold text-primary uppercase tracking-widest"
+                          >Sipariş Detayı</span
+                        >
+                        <h2
+                          class="text-2xl font-black text-text-main-light dark:text-white mt-1"
+                        >
+                          Çaykur Toptan
+                        </h2>
+                      </div>
+                      <div class="flex gap-2">
+                        <button
+                          class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          title="Siparişi İptal Et"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >block</span
+                          >
+                        </button>
+                        <button
+                          class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                          title="Faturayı Görüntüle"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >receipt_long</span
+                          >
+                        </button>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p class="text-text-sub-light dark:text-text-sub-dark">
+                          Teslim Tarihi
+                        </p>
+                        <p
+                          class="font-medium text-text-main-light dark:text-white"
+                        >
+                          Bugün, 14:30
+                        </p>
+                      </div>
+                      <div>
+                        <p class="text-text-sub-light dark:text-text-sub-dark">
+                          Teslim Alan
+                        </p>
+                        <div class="flex items-center gap-2 mt-1">
+                          <div
+                            class="size-5 rounded-full bg-gray-200 bg-cover"
+                            data-alt="Small avatar of staff"
+                            style="
+                              background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDuRid6m-kuaGTkCZYHRZ8EZCDKxOkpnIpyljdpzU55yQezLMB4pGTomreHzptXVhSJKBAklAboQcupb2hY3lpanxobHSUnKMMmK5s-RQn_8vcbxMLO1TRMj-2zLNh_HDjRcymMaLpdwjrdsuG8T2bsNZIcz8zV71HP-DweVx6s2Ur7eaqbQgGVIxumIEuv1mr_t8LFOMjRSlSVm8MQChoqFihxUBe8IqQ34rYiFfyGfjTl1lxv2Sv-Oek1SzEWia7jYuihb0rfG1fa');
+                            "
+                          ></div>
+                          <p
+                            class="font-medium text-text-main-light dark:text-white"
+                          >
+                            Ayşe Y.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Items List -->
+                  <div class="p-6 flex flex-col gap-6">
+                    <div class="flex justify-between items-center">
+                      <h3 class="font-bold text-lg dark:text-white">
+                        Malzemeler
+                      </h3>
+                      <span
+                        class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-500"
+                        >3 Kalem</span
+                      >
+                    </div>
+                    <!-- Item 1 Input -->
+                    <div class="flex flex-col gap-2">
+                      <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="size-10 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400"
+                          >
+                            <span class="material-symbols-outlined">eco</span>
+                          </div>
+                          <div>
+                            <p
+                              class="font-bold text-text-main-light dark:text-white"
+                            >
+                              Matcha Tozu (Premium)
+                            </p>
+                            <p
+                              class="text-xs text-text-sub-light dark:text-text-sub-dark"
+                            >
+                              500gr Paket
+                            </p>
+                          </div>
+                        </div>
+                        <div class="text-right">
+                          <span
+                            class="text-xs text-text-sub-light dark:text-text-sub-dark block"
+                            >Sipariş</span
+                          >
+                          <span class="font-bold text-lg dark:text-white"
+                            >10
+                            <span class="text-xs font-normal text-gray-400"
+                              >Adet</span
+                            ></span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex items-center gap-3 mt-1 p-2 bg-background-light dark:bg-background-dark rounded-lg border border-border-light dark:border-border-dark"
+                      >
+                        <span
+                          class="text-sm font-medium pl-2 text-text-sub-light dark:text-text-sub-dark"
+                          >Gelen:</span
+                        >
+                        <input
+                          class="flex-1 bg-transparent border-none focus:ring-0 text-text-main-light dark:text-white font-bold text-right p-0"
+                          placeholder="0"
+                          type="number"
+                          value="10"
+                        />
+                        <span class="text-sm font-medium pr-2 text-gray-400"
+                          >/ 10</span
+                        >
+                        <div class="text-green-500 flex items-center">
+                          <span class="material-symbols-outlined icon-filled"
+                            >check_circle</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Item 2 Input -->
+                    <div class="flex flex-col gap-2">
+                      <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="size-10 rounded bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-700 dark:text-orange-400"
+                          >
+                            <span class="material-symbols-outlined"
+                              >emoji_food_beverage</span
+                            >
+                          </div>
+                          <div>
+                            <p
+                              class="font-bold text-text-main-light dark:text-white"
+                            >
+                              Siyah Çay (Dökme)
+                            </p>
+                            <p
+                              class="text-xs text-text-sub-light dark:text-text-sub-dark"
+                            >
+                              1kg Paket
+                            </p>
+                          </div>
+                        </div>
+                        <div class="text-right">
+                          <span
+                            class="text-xs text-text-sub-light dark:text-text-sub-dark block"
+                            >Sipariş</span
+                          >
+                          <span class="font-bold text-lg dark:text-white"
+                            >5
+                            <span class="text-xs font-normal text-gray-400"
+                              >Adet</span
+                            ></span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex items-center gap-3 mt-1 p-2 bg-background-light dark:bg-background-dark rounded-lg border border-red-200 dark:border-red-900/50"
+                      >
+                        <span
+                          class="text-sm font-medium pl-2 text-text-sub-light dark:text-text-sub-dark"
+                          >Gelen:</span
+                        >
+                        <input
+                          class="flex-1 bg-transparent border-none focus:ring-0 text-red-600 dark:text-red-400 font-bold text-right p-0"
+                          placeholder="0"
+                          type="number"
+                          value="3"
+                        />
+                        <span class="text-sm font-medium pr-2 text-gray-400"
+                          >/ 5</span
+                        >
+                        <div
+                          class="text-red-500 flex items-center"
+                          title="Eksik Teslimat"
+                        >
+                          <span class="material-symbols-outlined icon-filled"
+                            >warning</span
+                          >
+                        </div>
+                      </div>
+                      <p class="text-xs text-red-500 pl-1">
+                        ⚠ 2 adet eksik teslim edildi.
+                      </p>
+                    </div>
+                    <!-- Item 3 Input -->
+                    <div class="flex flex-col gap-2">
+                      <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="size-10 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-700 dark:text-blue-400"
+                          >
+                            <span class="material-symbols-outlined"
+                              >water_drop</span
+                            >
+                          </div>
+                          <div>
+                            <p
+                              class="font-bold text-text-main-light dark:text-white"
+                            >
+                              Arıtma Filtresi
+                            </p>
+                            <p
+                              class="text-xs text-text-sub-light dark:text-text-sub-dark"
+                            >
+                              Endüstriyel
+                            </p>
+                          </div>
+                        </div>
+                        <div class="text-right">
+                          <span
+                            class="text-xs text-text-sub-light dark:text-text-sub-dark block"
+                            >Sipariş</span
+                          >
+                          <span class="font-bold text-lg dark:text-white"
+                            >1
+                            <span class="text-xs font-normal text-gray-400"
+                              >Adet</span
+                            ></span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex items-center gap-3 mt-1 p-2 bg-background-light dark:bg-background-dark rounded-lg border border-border-light dark:border-border-dark"
+                      >
+                        <span
+                          class="text-sm font-medium pl-2 text-text-sub-light dark:text-text-sub-dark"
+                          >Gelen:</span
+                        >
+                        <input
+                          class="flex-1 bg-transparent border-none focus:ring-0 text-text-main-light dark:text-white font-bold text-right p-0"
+                          placeholder="0"
+                          type="number"
+                          value="1"
+                        />
+                        <span class="text-sm font-medium pr-2 text-gray-400"
+                          >/ 1</span
+                        >
+                        <div class="text-green-500 flex items-center">
+                          <span class="material-symbols-outlined icon-filled"
+                            >check_circle</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Actions Footer -->
+                  <div
+                    class="p-6 border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-b-xl"
+                  >
+                    <div class="flex gap-3">
+                      <button
+                        class="flex-1 py-3 px-4 rounded-xl bg-primary text-white dark:text-black font-bold text-sm shadow-md hover:shadow-lg hover:bg-green-500 transition-all flex items-center justify-center gap-2"
+                      >
+                        <span class="material-symbols-outlined">inventory</span>
+                        Onayla ve Stok Güncelle
+                      </button>
+                    </div>
+                    <p class="text-xs text-center text-gray-400 mt-3">
+                      Onaylandıktan sonra envanter otomatik olarak
+                      güncellenecektir.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </main>
+      <!-- Edit Item Modal -->
+      <div
+        id="editShipmentItemModal"
+        class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4"
+      >
+        <div
+          class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-border-light dark:border-border-dark"
+        >
+          <div
+            class="p-4 border-b border-border-light dark:border-border-dark flex items-center justify-between"
+          >
+            <div>
+              <p
+                class="text-xs font-semibold uppercase tracking-wide text-text-sub-light dark:text-text-sub-dark"
+              >
+                Kalem Güncelle
+              </p>
+              <h3
+                id="editShipmentItemTitle"
+                class="text-lg font-bold text-text-main-light dark:text-white mt-1"
+              >
+                Kalem
+              </h3>
+            </div>
+            <button
+              id="editShipmentItemClose"
+              class="p-1 rounded-full hover:bg-background-light dark:hover:bg-background-dark text-text-sub-light dark:text-text-sub-dark"
+            >
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div class="p-5 space-y-4">
+            <div>
+              <label
+                class="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-2"
+                for="editShipmentItemQuantity"
+              >
+                Gelen Miktar
+              </label>
+              <div class="flex items-center gap-2">
+                <input
+                  id="editShipmentItemQuantity"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="flex-1 h-11 px-3 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-main-light dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
+                />
+                <span
+                  id="editShipmentItemUnit"
+                  class="text-sm text-text-sub-light dark:text-text-sub-dark min-w-[48px] text-right"
+                >
+                  adet
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-4 border-t border-border-light dark:border-border-dark flex justify-between gap-3"
+          >
+            <button
+              id="editShipmentItemCancelItem"
+              class="px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900 text-sm font-medium"
+            >
+              Kalemi İptal Et
+            </button>
+            <div class="flex gap-2">
+              <button
+                id="editShipmentItemCancel"
+                class="px-4 py-2 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark text-text-main-light dark:text-text-main-dark hover:bg-border-light dark:hover:bg-border-dark text-sm font-medium"
+              >
+                Kapat
+              </button>
+              <button
+                id="editShipmentItemSave"
+                class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold shadow-sm"
+              >
+                Kaydet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+    <script>
+      // Yetki kontrolü - sadece admin kullanıcılar bu sayfaya erişebilir
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      let purchaseOrders = [];
+      let filteredOrders = [];
+      let selectedOrderId = null;
+      let currentFilter = "all"; // all | pending | partial
+
+      function formatDateTime(value) {
+        if (!value) return "-";
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return value;
+        return d.toLocaleString("tr-TR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return value;
+        return d.toLocaleDateString("tr-TR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      }
+
+      function statusPill(statusCode, label) {
+        switch (statusCode) {
+          case 0:
+            return {
+              text: label,
+              class:
+                "px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold uppercase tracking-wider",
+            };
+          case 1:
+            return {
+              text: label,
+              class:
+                "px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 text-xs font-bold uppercase tracking-wider",
+            };
+          case 2:
+            return {
+              text: label,
+              class:
+                "px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-xs font-bold uppercase tracking-wider",
+            };
+          case 3:
+            return {
+              text: label,
+              class:
+                "px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-xs font-bold uppercase tracking-wider",
+            };
+          case 4:
+            return {
+              text: label,
+              class:
+                "px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 text-xs font-bold uppercase tracking-wider",
+            };
+          default:
+            return {
+              text: label || "Bilinmiyor",
+              class:
+                "px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold uppercase tracking-wider",
+            };
+        }
+      }
+
+      function updateStats() {
+        const now = new Date();
+        const todayStr = now.toISOString().split("T")[0];
+
+        const pendingCount = purchaseOrders.filter((o) =>
+          [1, 2].includes(o.status_code)
+        ).length;
+        const todayDeliveredCount = purchaseOrders.filter((o) => {
+          if (o.status_code !== 3) return false;
+          const d = new Date(o.order_date);
+          if (Number.isNaN(d.getTime())) return false;
+          return d.toISOString().split("T")[0] === todayStr;
+        }).length;
+        const problemCount = purchaseOrders.filter(
+          (o) => o.status_code === 4
+        ).length;
+
+        document.getElementById("pendingCount").textContent = pendingCount;
+        document.getElementById("todayDeliveredCount").textContent =
+          todayDeliveredCount;
+        document.getElementById("problemCount").textContent = problemCount;
+      }
+
+      function applyFilterAndSearch() {
+        const searchInput = document.querySelector(
+          'input[placeholder*="Tedarikçi"]'
+        );
+        const q = (searchInput?.value || "").toLowerCase();
+
+        filteredOrders = purchaseOrders.filter((o) => {
+          // Arama
+          if (q) {
+            const txt =
+              (o.wholesaler_name || "").toLowerCase() +
+              " " +
+              String(o.id || "").toLowerCase();
+            if (!txt.includes(q)) return false;
+          }
+
+          // Durum filtresi
+          if (currentFilter === "pending") {
+            return [1, 2].includes(o.status_code);
+          }
+          if (currentFilter === "partial") {
+            // Şimdilik sevkiyatta olanları "kısmen" gibi göster
+            return o.status_code === 2;
+          }
+          return true;
+        });
+
+        renderShipmentList();
+
+        // Seçili sipariş yoksa ilkini seç
+        if (!selectedOrderId && filteredOrders.length > 0) {
+          selectShipment(filteredOrders[0].id);
+        } else if (
+          selectedOrderId &&
+          !filteredOrders.find((o) => o.id === selectedOrderId) &&
+          filteredOrders.length > 0
+        ) {
+          selectShipment(filteredOrders[0].id);
+        } else if (filteredOrders.length === 0) {
+          renderShipmentDetail(null, []);
+        }
+      }
+
+      function renderShipmentList() {
+        const container = document.getElementById("shipmentList");
+        if (!container) return;
+
+        if (!filteredOrders || filteredOrders.length === 0) {
+          container.innerHTML = `
+            <div class="p-6 text-center text-text-sub-light dark:text-text-sub-dark">
+              <span class="material-symbols-outlined text-4xl mb-2 block">local_shipping</span>
+              <p>Kayıtlı sevkiyat bulunamadı.</p>
+    </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = filteredOrders
+          .map((order) => {
+            const isActive = order.id === selectedOrderId;
+            const pill = statusPill(order.status_code, order.status_label);
+            const orderDate = formatDate(order.order_date);
+
+            return `
+              <div
+                class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-background-light dark:hover:bg-gray-800 cursor-pointer transition-colors border-l-4 ${
+                  isActive
+                    ? "border-l-primary bg-green-50/50 dark:bg-green-900/10"
+                    : "border-l-transparent"
+                }"
+                onclick="selectShipment(${order.id})"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="size-12 rounded-full bg-white dark:bg-gray-700 border border-border-light dark:border-border-dark flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-text-sub-light dark:text-text-sub-dark">
+                      storefront
+                    </span>
+                  </div>
+                  <div>
+                    <h3
+                      class="font-bold text-text-main-light dark:text-white text-lg"
+                    >
+                      ${order.wholesaler_name || "Tedarikçi #" + order.id}
+                    </h3>
+                    <p
+                      class="text-sm text-text-sub-light dark:text-text-sub-dark"
+                    >
+                      Sipariş #PO-${String(order.id).padStart(
+                        4,
+                        "0"
+                      )} • ${orderDate}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 self-end sm:self-auto">
+                  <div class="${pill.class}">
+                    ${pill.text}
+                  </div>
+                  <span class="material-symbols-outlined ${
+                    isActive
+                      ? "text-primary"
+                      : "text-gray-300 dark:text-gray-600"
+                  }">
+                    chevron_right
+                  </span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      async function selectShipment(id) {
+        selectedOrderId = id;
+        renderShipmentList();
+
+        try {
+          const res = await fetch(`/api/purchase-orders/${id}`);
+          if (!res.ok) throw new Error("Sipariş detayları alınamadı");
+          const data = await res.json();
+          renderShipmentDetail(data.order, data.items || []);
+        } catch (err) {
+          console.error("Select shipment error:", err);
+          if (window.toast?.error) {
+            toast.error("Sevkiyat detayları yüklenirken hata oluştu");
+          }
+        }
+      }
+
+      function renderShipmentDetail(order, items) {
+        const container = document.getElementById("shipmentDetail");
+        if (!container) return;
+
+        if (!order) {
+          container.innerHTML = `
+            <div class="p-6 text-center text-text-sub-light dark:text-text-sub-dark">
+              <span class="material-symbols-outlined text-4xl mb-2 block">local_shipping</span>
+              <p>Sevkiyat seçilmedi.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const pill = statusPill(order.status_code, order.status_label);
+        const orderDate = formatDateTime(order.order_date);
+        const expectedDate = formatDate(order.expected_date);
+        const totalAmount =
+          typeof order.total_amount === "number"
+            ? order.total_amount
+            : parseFloat(order.total_amount || 0);
+
+        const itemsHtml =
+          items && items.length
+            ? items
+                .map((item) => {
+                  const qty = parseFloat(item.quantity || 0);
+                  const unitPrice = parseFloat(item.unit_price || 0);
+                  const lineTotal = parseFloat(
+                    item.total_price || qty * unitPrice
+                  );
+                  const unit = item.item_unit || "adet";
+                  const name = item.item_name || "Kalem #" + item.id;
+
+                  return `
+                    <div class="flex flex-col gap-2" data-item-id="${item.id}" data-item-type="${item.item_type}">
+                      <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="size-10 rounded bg-background-light dark:bg-background-dark flex items-center justify-center text-text-sub-light dark:text-text-sub-dark"
+                          >
+                            <span class="material-symbols-outlined">
+                              ${item.item_type === 2 ? "inventory_2" : "eco"}
+                            </span>
+                          </div>
+                          <div>
+                            <p
+                              class="font-bold text-text-main-light dark:text-white"
+                            >
+                              ${name}
+                            </p>
+                            <p
+                              class="text-xs text-text-sub-light dark:text-text-sub-dark"
+                            >
+                              Sipariş: ${qty} ${unit} x ₺${unitPrice.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <div class="text-right">
+                            <span
+                              class="text-xs text-text-sub-light dark:text-text-sub-dark block"
+                              >Toplam</span
+                            >
+                            <span class="font-bold text-lg dark:text-white"
+                              >₺${lineTotal.toFixed(2)}</span
+                            >
+                          </div>
+                          <button
+                            class="edit-item-btn p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark text-text-sub-light dark:text-text-sub-dark"
+                            title="Gelen miktarı güncelle"
+                            data-order-id="${order.id}"
+                            data-item-id="${item.id}"
+                            data-qty="${qty}"
+                            data-unit="${unit}"
+                            data-name="${name.replace(/"/g, "&quot;")}"
+                          >
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                })
+                .join("")
+            : `<p class="text-sm text-text-sub-light dark:text-text-sub-dark">Bu sevkiyat için kalem bulunamadı.</p>`;
+
+        container.innerHTML = `
+          <div
+            class="p-6 border-b border-border-light dark:border-border-dark bg-green-50/30 dark:bg-green-900/5"
+          >
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <span
+                  class="text-xs font-bold text-primary uppercase tracking-widest"
+                  >Sipariş Detayı</span
+                >
+                <h2
+                  class="text-2xl font-black text-text-main-light dark:text-white mt-1"
+                >
+                  ${order.wholesaler_name || "Tedarikçi #" + order.id}
+                </h2>
+                <p class="text-xs text-text-sub-light dark:text-text-sub-dark mt-1">
+                  Sipariş No: #PO-${String(order.id).padStart(
+                    4,
+                    "0"
+                  )} • Tarih: ${orderDate}
+                </p>
+              </div>
+              <div class="flex gap-2 items-start">
+                <div class="${pill.class}">${pill.text}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-text-sub-light dark:text-text-sub-dark">
+                  Beklenen Teslim Tarihi
+                </p>
+                <p
+                  class="font-medium text-text-main-light dark:text-white"
+                >
+                  ${expectedDate}
+                </p>
+              </div>
+              <div>
+                <p class="text-text-sub-light dark:text-text-sub-dark">
+                  Toplam Tutar
+                </p>
+                <p
+                  class="font-medium text-text-main-light dark:text-white"
+                >
+                  ₺${totalAmount.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 flex flex-col gap-6">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-lg dark:text-white">
+                Kalemler
+              </h3>
+              <span
+                class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-500"
+                >${items.length} Kalem</span
+              >
+            </div>
+            ${itemsHtml}
+          </div>
+          <div
+            class="p-6 border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-b-xl"
+          >
+            <div class="flex gap-3">
+              <button
+                id="approveShipmentBtn"
+                class="flex-1 py-3 px-4 rounded-xl bg-primary text-white dark:text-black font-bold text-sm shadow-md hover:shadow-lg hover:bg-primary-dark transition-all flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined">inventory</span>
+                Onayla ve Stok Güncelle
+              </button>
+            </div>
+            <p class="text-xs text-center text-gray-400 mt-3">
+              Onaylandıktan sonra envanter otomatik olarak güncellenecektir.
+            </p>
+          </div>
+        `;
+
+        const approveBtn = container.querySelector("#approveShipmentBtn");
+        if (approveBtn) {
+          if (order.status_code === 3 || order.status_code === 4) {
+            approveBtn.disabled = true;
+            approveBtn.classList.add("opacity-60", "cursor-not-allowed");
+            approveBtn.innerHTML =
+              '<span class="material-symbols-outlined">inventory</span><span>Bu sevkiyat zaten kapatılmış</span>';
+          } else {
+            approveBtn.addEventListener("click", async () => {
+              if (
+                !confirm(
+                  "Bu sevkiyatı onaylayıp stokları güncellemek istediğinize emin misiniz?"
+                )
+              ) {
+                return;
+              }
+
+              const originalHtml = approveBtn.innerHTML;
+              approveBtn.disabled = true;
+              approveBtn.classList.add("opacity-70", "cursor-not-allowed");
+              approveBtn.innerHTML =
+                '<span class="material-symbols-outlined animate-spin">hourglass_empty</span><span>İşleniyor...</span>';
+
+              try {
+                const approveRes = await fetch(
+                  `/api/purchase-orders/${order.id}/approve`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                  }
+                );
+                const approveData = await approveRes
+                  .json()
+                  .catch(() => ({}));
+                if (!approveRes.ok) {
+                  throw new Error(
+                    approveData.error ||
+                      "Sipariş onaylanırken ve stoklar güncellenirken hata oluştu"
+                  );
+                }
+
+                if (window.toast?.success) {
+                  toast.success(
+                    approveData.message ||
+                      "Sipariş onaylandı ve stoklar güncellendi"
+                  );
+                }
+
+                // Liste ve istatistikleri tazele
+                await loadPurchaseOrders();
+
+                // Buton durumunu başarı sonrasında da güncelle
+                approveBtn.classList.remove("opacity-70");
+                approveBtn.classList.add("opacity-60", "cursor-not-allowed");
+                approveBtn.disabled = true;
+                approveBtn.innerHTML =
+                  '<span class="material-symbols-outlined">inventory</span><span>Bu sevkiyat kapatıldı</span>';
+              } catch (err) {
+                console.error("Approve shipment error:", err);
+                if (window.toast?.error) {
+                  toast.error(err.message || "İşlem sırasında hata oluştu");
+                }
+                approveBtn.disabled = false;
+                approveBtn.classList.remove("opacity-70", "cursor-not-allowed");
+                approveBtn.innerHTML = originalHtml;
+              }
+            });
+          }
+        }
+      }
+
+      let editingOrderId = null;
+      let editingItemId = null;
+
+      function openEditShipmentItem(orderId, itemId, name, unit, quantity) {
+        const modal = document.getElementById("editShipmentItemModal");
+        const titleEl = document.getElementById("editShipmentItemTitle");
+        const qtyInput = document.getElementById("editShipmentItemQuantity");
+        const unitEl = document.getElementById("editShipmentItemUnit");
+
+        if (!modal || !qtyInput || !unitEl) return;
+
+        editingOrderId = Number(orderId);
+        editingItemId = Number(itemId);
+
+        titleEl.textContent = name || `Kalem #${itemId}`;
+        qtyInput.value = !Number.isNaN(Number(quantity)) ? Number(quantity) : 0;
+        unitEl.textContent = unit || "";
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        qtyInput.focus();
+        qtyInput.select();
+      }
+
+      async function loadPurchaseOrders() {
+        try {
+          const res = await fetch("/api/purchase-orders");
+          if (!res.ok) throw new Error("Sevkiyatlar yüklenemedi");
+          const data = await res.json();
+          purchaseOrders = Array.isArray(data) ? data : [];
+          updateStats();
+          applyFilterAndSearch();
+        } catch (err) {
+          console.error("Load purchase orders error:", err);
+          const list = document.getElementById("shipmentList");
+          if (list) {
+            list.innerHTML = `
+              <div class="p-6 text-center text-red-500">
+                <span class="material-symbols-outlined text-4xl mb-2 block">error</span>
+                <p>Sevkiyat verileri yüklenirken hata oluştu.</p>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // Arama
+      document
+        .querySelector('input[placeholder*="Tedarikçi"]')
+        ?.addEventListener("input", () => {
+          applyFilterAndSearch();
+        });
+
+      // Filtre butonları (Tümü / Beklemede / Kısmen)
+      const filterButtons = document.querySelectorAll(
+        ".flex.gap-2 button.px-4.py-2"
+      );
+      filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const text = btn.textContent.trim();
+          filterButtons.forEach((b) =>
+            b.classList.remove("bg-primary", "text-white")
+          );
+          filterButtons.forEach((b) =>
+            b.classList.add(
+              "bg-background-light",
+              "dark:bg-background-dark",
+              "text-text-main-light",
+              "dark:text-text-main-dark"
+            )
+          );
+          if (text === "Tümü") currentFilter = "all";
+          else if (text === "Beklemede") currentFilter = "pending";
+          else if (text === "Kısmen Alındı") currentFilter = "partial";
+
+          btn.classList.remove(
+            "bg-background-light",
+            "dark:bg-background-dark",
+            "text-text-main-light",
+            "dark:text-text-main-dark"
+          );
+          btn.classList.add("bg-primary", "text-white");
+
+          applyFilterAndSearch();
+        });
+      });
+
+      // Edit modal event handlers
+      (function initEditItemModal() {
+        const modal = document.getElementById("editShipmentItemModal");
+        const closeBtn = document.getElementById("editShipmentItemClose");
+        const cancelBtn = document.getElementById("editShipmentItemCancel");
+        const cancelItemBtn = document.getElementById(
+          "editShipmentItemCancelItem"
+        );
+        const saveBtn = document.getElementById("editShipmentItemSave");
+        const qtyInput = document.getElementById("editShipmentItemQuantity");
+
+        if (!modal || !closeBtn || !cancelBtn || !saveBtn || !qtyInput) return;
+
+        function resetAndHideModal() {
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+          editingOrderId = null;
+          editingItemId = null;
+        }
+
+        closeBtn.addEventListener("click", resetAndHideModal);
+        cancelBtn.addEventListener("click", resetAndHideModal);
+
+        if (cancelItemBtn) {
+          cancelItemBtn.addEventListener("click", async () => {
+            if (!editingOrderId || !editingItemId) {
+              resetAndHideModal();
+              return;
+            }
+
+            if (
+              !confirm(
+                "Bu kalemi iptal etmek (miktarı 0 yapmak) istediğinize emin misiniz?"
+              )
+            ) {
+              return;
+            }
+
+            cancelItemBtn.disabled = true;
+            cancelItemBtn.classList.add("opacity-70", "cursor-not-allowed");
+
+            try {
+              const res = await fetch(
+                `/api/purchase-orders/${editingOrderId}/items`,
+                {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    items: [{ id: editingItemId, quantity: 0 }],
+                  }),
+                }
+              );
+              const data = await res.json().catch(() => ({}));
+              if (!res.ok) {
+                throw new Error(
+                  data.error || "Kalem iptal edilirken hata oluştu"
+                );
+              }
+
+              if (window.toast?.success) {
+                toast.success("Kalem iptal edildi");
+              }
+
+              await selectShipment(editingOrderId);
+            } catch (err) {
+              console.error("Cancel shipment item error:", err);
+              if (window.toast?.error) {
+                toast.error(err.message || "İşlem sırasında hata oluştu");
+              }
+            } finally {
+              cancelItemBtn.disabled = false;
+              cancelItemBtn.classList.remove(
+                "opacity-70",
+                "cursor-not-allowed"
+              );
+              resetAndHideModal();
+            }
+          });
+        }
+
+        saveBtn.addEventListener("click", async () => {
+          if (!editingOrderId || !editingItemId) {
+            resetAndHideModal();
+            return;
+          }
+
+          const qty = parseFloat(qtyInput.value || "0");
+          if (Number.isNaN(qty) || qty < 0) {
+            if (window.toast?.warning) {
+              toast.warning("Geçerli bir miktar giriniz");
+            }
+            return;
+          }
+
+          saveBtn.disabled = true;
+          saveBtn.classList.add("opacity-70", "cursor-not-allowed");
+
+          try {
+            const res = await fetch(
+              `/api/purchase-orders/${editingOrderId}/items`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  items: [{ id: editingItemId, quantity: qty }],
+                }),
+              }
+            );
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              throw new Error(
+                data.error || "Kalem miktarı güncellenirken hata oluştu"
+              );
+            }
+
+            if (window.toast?.success) {
+              toast.success("Kalem miktarı güncellendi");
+            }
+
+            // Detayı ve listeyi yenile
+            await selectShipment(editingOrderId);
+          } catch (err) {
+            console.error("Update shipment item error:", err);
+            if (window.toast?.error) {
+              toast.error(err.message || "İşlem sırasında hata oluştu");
+            }
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.classList.remove("opacity-70", "cursor-not-allowed");
+            resetAndHideModal();
+          }
+        });
+
+        // Delegation: handle clicks on edit-item-btn
+        document.addEventListener("click", (e) => {
+          const btn = e.target.closest(".edit-item-btn");
+          if (!btn) return;
+
+          const orderId = btn.getAttribute("data-order-id");
+          const itemId = btn.getAttribute("data-item-id");
+          const name = btn.getAttribute("data-name") || "";
+          const unit = btn.getAttribute("data-unit") || "";
+          const qty = parseFloat(btn.getAttribute("data-qty") || "0");
+
+          openEditShipmentItem(orderId, itemId, name, unit, qty);
+        });
+      })();
+
+      // Global'e seçme fonksiyonu
+      window.selectShipment = selectShipment;
+
+      // Başlangıçta verileri yükle
+      loadPurchaseOrders();
+    </script>
+  </body>
+</html>

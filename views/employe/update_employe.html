@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Personel Güncelleme</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "background-dark": "#182210",
+              "text-main": "#1C1917",
+              "text-subtle": "#6B7280",
+              surface: "#FFFFFF",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-wrap justify-between gap-4">
+              <div class="flex min-w-72 flex-col gap-2">
+                <p
+                  class="text-text-main dark:text-background-light text-3xl sm:text-4xl font-black leading-tight tracking-[-0.033em]"
+                >
+                  Personel Güncelleme
+                </p>
+                <p
+                  class="text-text-subtle dark:text-text-subtle/80 text-base font-normal leading-normal"
+                >
+                  Mevcut bir çalışanın bilgilerini düzenleyin.
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <a
+                  href="/employe/track"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-11 px-5 bg-surface dark:bg-surface/10 text-text-main dark:text-background-light text-sm font-bold leading-normal tracking-[0.015em] hover:bg-surface/80 dark:hover:bg-surface/20 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-xl"
+                    >arrow_back</span
+                  >
+                  <span class="truncate">Geri Dön</span>
+                </a>
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 items-start"
+            >
+              <!-- Left Column: Employee List -->
+              <div
+                class="md:col-span-1 lg:col-span-1 flex flex-col gap-4 bg-background-light dark:bg-background-dark md:bg-transparent md:dark:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none"
+              >
+                <label class="flex flex-col min-w-40 h-12 w-full">
+                  <div
+                    class="flex w-full flex-1 items-stretch rounded-lg h-full"
+                  >
+                    <div
+                      class="text-text-subtle dark:text-text-subtle/80 flex border-none bg-surface dark:bg-surface/10 items-center justify-center pl-4 rounded-l-lg border-r-0"
+                    >
+                      <span class="material-symbols-outlined">search</span>
+                    </div>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-text-main dark:text-background-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface dark:bg-surface/10 h-full placeholder:text-text-subtle dark:placeholder:text-text-subtle/80 px-4 pl-2 text-base font-normal leading-normal"
+                      placeholder="Çalışan ara..."
+                      value=""
+                    />
+                  </div>
+                </label>
+                <div
+                  id="employeeList"
+                  class="flex flex-col border border-surface dark:border-surface/10 rounded-lg overflow-hidden"
+                >
+                </div>
+              </div>
+              <!-- Right Column: Edit Form -->
+              <div
+                class="md:col-span-2 lg:col-span-3 bg-background-light dark:bg-surface/5 border border-surface dark:border-surface/10 p-6 rounded-lg w-full"
+              >
+                <form id="updateEmployeeForm" class="flex flex-col gap-6">
+                  <div class="flex flex-col gap-1">
+                    <h3
+                      id="formTitle"
+                      class="text-xl font-bold text-text-main dark:text-background-light"
+                    >
+                      Çalışan Bilgilerini Düzenle
+                    </h3>
+                    <p
+                      class="text-sm text-text-subtle dark:text-text-subtle/80"
+                    >
+                      Çalışanın kişisel ve görev bilgilerini güncelleyin.
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="firstName"
+                        >İsim</label
+                      >
+                      <input
+                        class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary"
+                        id="firstName"
+                        name="name"
+                        type="text"
+                        required
+                      />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="lastName"
+                        >Soyisim</label
+                      >
+                      <input
+                        class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary"
+                        id="lastName"
+                        name="surname"
+                        type="text"
+                        required
+                      />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="monthlySalary"
+                        >Aylık Maaş</label
+                      >
+                      <div class="relative">
+                        <input
+                          class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary pl-10"
+                          id="monthlySalary"
+                          name="salary"
+                          type="number"
+                          placeholder="Örn: 17500"
+                          required
+                        />
+                        <span
+                          class="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle dark:text-text-subtle/80"
+                          >₺</span
+                        >
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="position"
+                        >Pozisyon</label
+                      >
+                      <select
+                        id="position"
+                        name="position_id"
+                        class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary"
+                        required
+                      >
+                        <option value="">Pozisyon seçin</option>
+                      </select>
+                    </div>
+                    <!-- <div class="flex flex-col gap-2">
+                       <label class="text-sm font-medium text-text-main dark:text-background-light">
+                         Çalışma Tipi (Hesaplanan)
+                       </label>
+                       <div class="flex items-center gap-2 h-[42px] px-3 rounded-lg bg-surface/30 dark:bg-surface/5 border border-surface dark:border-surface/20 text-sm">
+                         <span class="material-symbols-outlined text-base">auto_awesome</span>
+                         <span id="workTypeDisplay" class="font-medium text-text-secondary">Yükleniyor...</span>
+                       </div>
+                     </div> -->
+                    <!-- <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="shiftSelect"
+                        >Vardiya</label
+                      >
+                      <select
+                        id="shiftSelect"
+                        name="shift_id"
+                        class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary"
+                      >
+                        <option disabled selected value="">Vardiya seçin</option>
+                      </select>
+                    </div> -->
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="text-sm font-medium text-text-main dark:text-background-light"
+                        for="phone"
+                        >Telefon Numarası</label
+                      >
+                      <input
+                        class="form-input w-full rounded-lg border-surface dark:border-surface/20 bg-surface/50 dark:bg-surface/10 text-text-main dark:text-background-light focus:ring-primary focus:border-primary"
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-end items-center gap-4 pt-4 border-t border-surface dark:border-surface/10"
+                  >
+                    <a
+                      href="/employe/track"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-5 bg-surface dark:bg-surface/10 text-text-main dark:text-background-light text-sm font-bold leading-normal tracking-[0.015em] hover:bg-surface/80 dark:hover:bg-surface/20 transition-colors"
+                    >
+                      <span class="truncate">İptal</span>
+                    </a>
+                    <button
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-11 px-5 bg-primary text-text-main text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors"
+                      type="submit"
+                    >
+                      <span class="material-symbols-outlined text-xl"
+                        >save</span
+                      >
+                      <span class="truncate">Değişiklikleri Kaydet</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      let currentEmployeeId = null;
+      const urlParams = new URLSearchParams(window.location.search);
+      let employeeIdFromUrl = urlParams.get('id');
+
+       /**
+        * Tüm personelleri yan menüye yükler
+        * @param {number} selectedId - Vurgulanacak personel ID'si
+        */
+      async function loadEmployeeList(selectedId) {
+        try {
+          const response = await fetch('/api/employees');
+          const employees = await response.json();
+          
+          const listContainer = document.getElementById('employeeList');
+          listContainer.innerHTML = '';
+          
+          if (employees.length === 0) {
+            listContainer.innerHTML = '<div class="p-4 text-center text-text-subtle">Personel bulunamadı</div>';
+            return employees;
+          }
+
+          employees.forEach((emp) => {
+            const isSelected = selectedId && parseInt(selectedId) === emp.id;
+            const item = document.createElement('a');
+            item.className = `flex items-center gap-4 cursor-pointer ${isSelected ? 'bg-primary/20 dark:bg-primary/30 border-l-4 border-primary' : 'bg-background-light dark:bg-background-dark hover:bg-surface/50 dark:hover:bg-surface/5'} px-4 min-h-[72px] py-2 justify-between transition-colors`;
+            
+            item.onclick = (e) => {
+              e.preventDefault();
+              history.pushState(null, '', `?id=${emp.id}`);
+              loadEmployeeData(emp.id);
+            };
+            
+            item.innerHTML = `
+              <div class="flex items-center gap-4 pointer-events-none">
+                <div class="bg-gray-200 aspect-square rounded-full h-12 w-12 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-gray-500">person</span>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <p class="text-text-main dark:text-background-light text-sm ${isSelected ? 'font-bold' : 'font-medium'} leading-tight line-clamp-1">
+                    ${emp.name} ${emp.surname}
+                  </p>
+                  <p class="text-text-subtle dark:text-text-subtle/80 text-[12px] font-normal leading-normal">
+                    ${(emp.position_name || 'Pozisyon yok')}
+                  </p>
+                </div>
+              </div>
+              <div class="shrink-0">
+                <span class="material-symbols-outlined text-text-subtle text-xl">chevron_right</span>
+              </div>
+            `;
+            listContainer.appendChild(item);
+          });
+          return employees;
+        } catch (error) {
+          console.error('Load employees list error:', error);
+          return [];
+        }
+      }
+
+       /**
+        * Seçilen personelin bilgilerini forma yükler
+        */
+      async function loadEmployeeData(id) {
+        if (!id) return;
+        
+        try {
+          // Formu pasif yap (görsel feedback)
+          const form = document.getElementById('updateEmployeeForm');
+          form.classList.add('opacity-50', 'pointer-events-none');
+
+          const response = await fetch(`/api/employees/${id}`);
+          if (!response.ok) throw new Error('Personel verisi alınamadı');
+          
+          const employee = await response.json();
+          
+          currentEmployeeId = id;
+          document.getElementById('formTitle').textContent = `${employee.name} ${employee.surname} Bilgilerini Düzenle`;
+          document.getElementById('firstName').value = employee.name || '';
+          document.getElementById('lastName').value = employee.surname || '';
+          document.getElementById('monthlySalary').value = employee.salary || '';
+          document.getElementById('phone').value = employee.phone || '';
+          // Pozisyon değerini güvenli bir şekilde ayarla
+          if (employee.position_id) {
+             const positionSelect = document.getElementById('position');
+             // Dropdown yüklendi mi kontrol et, yüklenmediyse tekrar dene
+             if (positionSelect.options.length <= 1) {
+                await loadPositions();
+             }
+             positionSelect.value = employee.position_id;
+          }
+
+          // Vardiya seçimi kaldırıldığı için bu kısım opsiyonel veya devre dışı
+          const shiftSelect = document.getElementById('shiftSelect');
+          if (shiftSelect && employee.shift_id) {
+             shiftSelect.value = employee.shift_id;
+          }
+          
+          form.classList.remove('opacity-50', 'pointer-events-none');
+
+          // Menüde seçili olanı güncelle
+          await loadEmployeeList(id);
+          
+          // Çalışma Tipini Göster (Read-Only)
+          const typeContainer = document.getElementById('workTypeDisplay');
+          if (typeContainer) {
+             typeContainer.textContent = employee.type || 'Belirsiz';
+             typeContainer.className = `font-medium ${employee.type === 'tam zamanlı' ? 'text-primary' : 'text-amber-500'}`;
+          }
+        } catch (error) {
+          console.error('Load employee data error:', error);
+          if (window.toast) toast.error('Veri yüklenirken hata oluştu');
+          else alert('Hata: Personel verisi yüklenemedi');
+        }
+      }
+
+      // Form submit
+      document.getElementById('updateEmployeeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentEmployeeId) {
+          alert('Lütfen bir çalışan seçin');
+          return;
+        }
+        
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnHtml = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-xl">sync</span> <span class="truncate">Kaydediliyor...</span>';
+
+        const formData = new FormData(e.target);
+        const data = {
+          name: formData.get('name'),
+          surname: formData.get('surname'),
+          phone: formData.get('phone'),
+          salary: parseFloat(formData.get('salary')),
+          position_id: formData.get('position_id'),
+          shift_id: formData.get('shift_id') || null
+        };
+        
+        try {
+          const response = await fetch(`/api/employees/${currentEmployeeId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok) {
+            if (window.toast) toast.success('Bilgiler güncellendi');
+            else alert('Çalışan bilgileri güncellendi!');
+            loadEmployeeList(currentEmployeeId);
+          } else {
+            alert(result.error || 'Bir hata oluştu');
+          }
+        } catch (error) {
+          console.error('Update employee error:', error);
+          alert('Bir hata oluştu');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalBtnHtml;
+        }
+      });
+
+      // Arama
+      document.querySelector('input[placeholder*="ara"]').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('#employeeList > a');
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+        });
+      });
+
+      // Pozisyonları yükle
+      async function loadPositions() {
+        try {
+          const response = await fetch('/api/employees/positions/list');
+          const positions = await response.json();
+          const select = document.getElementById('position');
+          if (select) {
+            select.innerHTML = '<option value="">Pozisyon seçin</option>';
+            positions.forEach((pos) => {
+              const option = document.createElement('option');
+              option.value = pos.id;
+              option.textContent = pos.posit_name;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error('Pozisyonlar yüklenemedi', error);
+        }
+      }
+
+      // Vardiyaları yükle
+      async function loadShifts() {
+        try {
+          const response = await fetch('/api/employees/shifts/list');
+          const shifts = await response.json();
+          const select = document.getElementById('shiftSelect');
+          if (select) {
+            select.innerHTML = '<option value="">Vardiya seçin</option>';
+            shifts.forEach((shift) => {
+              const option = document.createElement('option');
+              option.value = shift.id;
+              option.textContent = `${shift.name} (${shift.start_time.substring(0, 5)} - ${shift.end_time.substring(0, 5)})`;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error('Vardiyalar yüklenemedi', error);
+        }
+      }
+
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem('userType');
+        if (!userType) {
+          window.location.href = '/';
+          return;
+        }
+        if (userType === 'kasa') {
+          window.location.href = '/cashier';
+        }
+      })();
+
+      // Init
+      async function initPage() {
+        await Promise.all([loadPositions(), loadShifts()]);
+        const employees = await loadEmployeeList(employeeIdFromUrl);
+        
+        if (employeeIdFromUrl) {
+          loadEmployeeData(parseInt(employeeIdFromUrl));
+        } else if (employees && employees.length > 0) {
+          loadEmployeeData(employees[0].id);
+        }
+      }
+
+      initPage();
+    </script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

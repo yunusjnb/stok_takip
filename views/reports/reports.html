@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe - Raporlar</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+              "background-light": "#F5F5F4",
+              "background-dark": "#211114",
+              surface: "#FFFFFF",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+    </style>
+  </head>
+  <body class="font-display bg-background-light text-text-primary">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto flex flex-col gap-4">
+          <div class="flex flex-wrap justify-between gap-3 items-center">
+            <div class="flex flex-col gap-1">
+              <p
+                class="text-text-primary text-4xl font-black leading-tight tracking-[-0.033em]"
+              >
+                Raporlar
+              </p>
+            </div>
+          </div>
+
+          <!-- Tab bar -->
+          <div
+            class="flex flex-wrap gap-2 mt-2 bg-surface p-2 rounded-lg border border-border-color"
+          >
+            <!-- Satış tabı kaldırıldı (Satış Analizi ile aynı olduğu için) -->
+            <button
+              class="tab-btn px-3 py-1.5 text-xs font-medium rounded-full bg-primary text-white flex items-center gap-1 shadow-sm"
+              data-tab="stock"
+            >
+              <span class="material-symbols-outlined text-[16px]"
+                >inventory_2</span
+              >
+              Stok
+            </button>
+            <button
+              class="tab-btn px-3 py-1.5 text-xs font-medium rounded-full bg-surface text-text-secondary border border-border-color flex items-center gap-1"
+              data-tab="personnel"
+            >
+              <span class="material-symbols-outlined text-[16px]">group</span>
+              Personel
+            </button>
+          </div>
+
+          <!-- Iframe container -->
+          <div
+            class="mt-2 rounded-xl border border-border-color bg-surface overflow-hidden"
+            style="min-height: 520px; height: calc(100vh - 200px)"
+          >
+            <iframe
+              id="reportFrame"
+              src="/reports/stock"
+              class="w-full h-full border-0"
+            ></iframe>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+    <script>
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      (function initTabs() {
+        const TAB_URLS = {
+          stock: "/reports/stock",
+          personnel: "/reports/employe",
+        };
+
+        const buttons = document.querySelectorAll(".tab-btn");
+        const frame = document.getElementById("reportFrame");
+
+        function setActiveTab(tab) {
+          buttons.forEach((btn) => {
+            const t = btn.getAttribute("data-tab");
+            if (t === tab) {
+              btn.classList.remove(
+                "bg-surface",
+                "text-text-secondary",
+                "border-border-color"
+              );
+              btn.classList.add("bg-primary", "text-white", "shadow-sm");
+            } else {
+              btn.classList.remove("bg-primary", "text-white", "shadow-sm");
+              btn.classList.add(
+                "bg-surface",
+                "text-text-secondary",
+                "border",
+                "border-border-color"
+              );
+            }
+          });
+
+          const url = TAB_URLS[tab] || TAB_URLS.stock;
+          if (frame && frame.src !== window.location.origin + url) {
+            frame.src = url;
+          }
+        }
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const tab = btn.getAttribute("data-tab");
+            if (tab) {
+              setActiveTab(tab);
+            }
+          });
+        });
+
+        // Varsayılan sekme: Stok
+        setActiveTab("stock");
+      })();
+    </script>
+  </body>
+</html>

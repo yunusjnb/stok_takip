@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe POS</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#42d411",
+              "primary-dark": "#36b00d",
+              "background-light": "#f9fcf8",
+              "background-dark": "#152210",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1a2c15",
+              "text-main": "#111b0d",
+              "text-secondary": "#5f9a4c",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d5e7cf;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #42d411;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display overflow-hidden h-screen w-screen flex flex-row"
+  >
+    <aside
+      class="flex flex-col w-[100px] bg-surface-light dark:bg-surface-dark border-r border-[#eaf3e7] dark:border-[#2a4522] h-full shrink-0 z-30 transition-all"
+    >
+      <div class="flex flex-col items-center gap-4 py-4 h-full w-full">
+        <button
+          class="group flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-[#eaf3e7] dark:hover:bg-[#2a3825] transition-colors w-[80%]"
+        >
+          <div
+            class="size-10 rounded-lg bg-primary text-[#0a2003] flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform"
+          >
+            <span class="material-symbols-outlined text-2xl">grid_view</span>
+          </div>
+          <span
+            class="text-[10px] font-bold text-text-secondary uppercase tracking-wider"
+            >Salon</span
+          >
+        </button>
+        <div class="w-12 h-px bg-[#eaf3e7] dark:bg-[#2a4522]"></div>
+        <div
+          id="tableButtonsContainer"
+          class="flex-1 w-full overflow-y-auto flex flex-col items-center gap-3 px-3 no-scrollbar py-2"
+        >
+          <!-- Table buttons will be loaded here dynamically -->
+        </div>
+        <div class="w-12 h-px bg-[#eaf3e7] dark:bg-[#2a4522]"></div>
+        <div class="flex flex-col gap-3 w-full px-4 mb-2">
+          <button
+            id="newTableBtn"
+            class="w-full aspect-square rounded-xl border-2 border-dashed border-primary/40 text-primary hover:bg-primary/10 hover:border-primary transition-all flex flex-col items-center justify-center gap-1 group bg-transparent"
+            title="Yeni Masa"
+          >
+            <span
+              class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform"
+              >add_circle</span
+            >
+            <span class="text-[10px] font-bold">Yeni</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+    <div
+      class="flex-1 flex flex-col h-full min-w-0 bg-background-light dark:bg-background-dark relative"
+    >
+      <header
+        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#eaf3e7] dark:border-b-[#2a4522] px-6 py-3 bg-surface-light dark:bg-surface-dark shrink-0 z-10"
+      >
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-3 text-text-main dark:text-white">
+            <div
+              class="size-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary"
+            >
+              <span class="material-symbols-outlined text-3xl">local_cafe</span>
+            </div>
+            <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">
+              Keşiş Kafe POS
+            </h2>
+          </div>
+          <label
+            class="hidden md:flex flex-col min-w-40 h-10 w-64 lg:w-80 transition-all"
+          >
+            <div
+              class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#eaf3e7] dark:bg-[#2a3825] focus-within:ring-2 ring-primary/50"
+            >
+              <div
+                class="text-text-secondary flex border-none items-center justify-center pl-4 rounded-l-lg"
+              >
+                <span class="material-symbols-outlined">search</span>
+              </div>
+              <input
+                id="searchInput"
+                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-main dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-text-secondary px-3 rounded-l-none text-base font-normal leading-normal"
+                placeholder="Ürün ara (Latte, Çay...)"
+                value=""
+              />
+            </div>
+          </label>
+        </div>
+        <div class="flex items-center gap-4">
+          <div
+            id="dateTimeDisplay"
+            class="hidden sm:flex items-center gap-2 text-sm font-medium text-text-secondary bg-[#eaf3e7] dark:bg-[#2a3825] px-3 py-1.5 rounded-lg"
+          >
+            <span class="material-symbols-outlined text-[18px]"
+              >calendar_today</span
+            >
+            <span id="dateTimeText">Yükleniyor...</span>
+          </div>
+          <div class="flex gap-2">
+            <button
+              id="logoutBtn"
+              class="flex items-center justify-center rounded-lg size-10 bg-[#eaf3e7] dark:bg-[#2a3825] text-text-main dark:text-white hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              title="Çıkış Yap"
+            >
+              <span class="material-symbols-outlined">logout</span>
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-3 pl-4 border-l border-[#eaf3e7] dark:border-[#2a4522]"
+          >
+            <div class="text-right hidden xl:block">
+              <p
+                id="userNameDisplay"
+                class="text-sm font-bold text-text-main dark:text-white"
+              >
+                Kasiyer
+              </p>
+              <p class="text-xs text-text-secondary">Kasiyer</p>
+            </div>
+            <div
+              id="userAvatar"
+              class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary bg-primary/20 flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-primary">person</span>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div
+        class="px-6 pt-2 bg-surface-light dark:bg-surface-dark shrink-0 shadow-sm z-0"
+      >
+        <div
+          id="categoryTabs"
+          class="flex gap-8 overflow-x-auto pb-0 hide-scrollbar"
+        >
+          <!-- Categories will be loaded here dynamically -->
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-6 bg-[#f9fcf8] dark:bg-[#152210]">
+        <h3
+          class="text-text-main dark:text-white text-lg font-bold mb-4 flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-primary"
+            >local_fire_department</span
+          >
+          Popüler Ürünler
+        </h3>
+        <div
+          id="productGrid"
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-20"
+        >
+          <!-- Products will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-full md:w-[400px] lg:w-[450px] bg-surface-light dark:bg-surface-dark flex flex-col h-full shadow-2xl z-20 border-l border-[#eaf3e7] dark:border-[#2a4522] shrink-0"
+    >
+      <div
+        class="flex items-center justify-between p-6 border-b border-[#eaf3e7] dark:border-[#2a4522]"
+      >
+        <div>
+          <h2
+            id="tableName"
+            class="text-text-main dark:text-white text-xl font-bold flex items-center gap-2"
+          >
+            Masa 1
+            <span
+              class="text-xs bg-primary text-[#0a2003] px-2 py-0.5 rounded-full"
+              >Aktif</span
+            >
+          </h2>
+          <p id="orderNumber" class="text-text-secondary text-sm">
+            Sipariş #4829
+          </p>
+        </div>
+        <button
+          class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors flex items-center gap-1 text-sm font-bold"
+        >
+          <span class="material-symbols-outlined text-[20px]">delete</span>
+          Temizle
+        </button>
+      </div>
+      <div
+        id="cartItems"
+        class="flex-1 overflow-y-auto p-4 flex flex-col gap-3"
+      >
+        <p class="text-center text-text-secondary py-8">Sepet boş</p>
+      </div>
+      <div
+        class="bg-white dark:bg-[#1a2c15] p-6 pt-2 border-t border-[#eaf3e7] dark:border-[#2a4522] shadow-[0_-5px_20px_rgba(0,0,0,0.05)]"
+      >
+        <div
+          id="cartTotals"
+          class="flex flex-col gap-2 mb-4 text-sm text-text-secondary"
+        >
+          <div
+            class="flex justify-between text-text-main dark:text-white text-lg font-bold pt-2"
+          >
+            <span>Toplam</span>
+            <span id="total" class="text-2xl text-primary">0.00₺</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <button
+            id="paymentCash"
+            class="flex items-center justify-center gap-2 py-3 rounded-xl border border-[#eaf3e7] dark:border-[#2a4522] text-text-main dark:text-white font-bold hover:bg-primary/10 hover:border-primary transition-all group"
+          >
+            <span
+              class="material-symbols-outlined text-text-secondary group-hover:text-primary"
+              >payments</span
+            >
+            Nakit
+          </button>
+          <button
+            id="paymentCard"
+            class="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-primary bg-primary/10 text-text-main dark:text-white font-bold transition-all relative overflow-hidden"
+          >
+            <div
+              class="absolute right-0 top-0 size-4 bg-primary rounded-bl-lg flex items-center justify-center"
+            >
+              <span
+                class="material-symbols-outlined text-white text-[10px] font-bold"
+                >check</span
+              >
+            </div>
+            <span class="material-symbols-outlined text-primary"
+              >credit_card</span
+            >
+            Kredi Kartı
+          </button>
+        </div>
+        <div class="flex gap-3">
+          <button
+            id="clearCartBtn"
+            class="flex-1 bg-surface-light dark:bg-[#20331b] text-text-main dark:text-white border border-[#eaf3e7] dark:border-[#2a4522] font-bold py-4 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors flex flex-col items-center justify-center gap-1"
+          >
+            <span class="material-symbols-outlined">close</span>
+            <span class="text-xs">İptal</span>
+          </button>
+          <button
+            id="completeSaleBtn"
+            class="flex-[3] bg-primary hover:bg-primary-dark text-[#0a2003] font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all transform active:scale-95 flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+          >
+            <span class="text-lg">Satışı Tamamla</span>
+            <span id="completeSaleAmount" class="text-sm opacity-80 font-medium"
+              >0.00₺ Çekim Yap</span
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Yetki kontrolü: sadece kasa kullanıcıları
+      (function guardCashier() {
+        const type = localStorage.getItem("userType");
+        if (type !== "kasa") {
+          window.location.href = "/login/cashier";
+        }
+      })();
+
+      /**
+       * Uygulama state (durum) yönetimi
+       * Tüm dinamik verileri tutar: ürünler, aktif kategori, arama terimi, masa bilgileri
+       */
+      const state = {
+        products: [],              // Tüm ürünler listesi
+        activeCategory: "all",    // Aktif kategori ID'si (veya "all")
+        search: "",                // Arama terimi
+        currentTable: 1,          // Seçili masa numarası (0 = Paket Servis)
+        tables: {},               // Her masa için sepet ve sipariş numarası
+        paymentMethod: "card",    // Ödeme yöntemi: "card" veya "cash"
+      };
+
+      const productGrid = document.getElementById("productGrid");
+      const categoryTabs = document.getElementById("categoryTabs");
+      const searchInput = document.getElementById("searchInput");
+      const cartItems = document.getElementById("cartItems");
+      const clearCartBtn = document.getElementById("clearCartBtn");
+      const completeSaleBtn = document.getElementById("completeSaleBtn");
+      const paymentCashBtn = document.getElementById("paymentCash");
+      const paymentCardBtn = document.getElementById("paymentCard");
+
+      /**
+       * Fiyatı Türk Lirası formatında gösterir
+       * Örnek: 25.5 → "₺25.50"
+       * @param {number|string} value - Formatlanacak fiyat
+       * @returns {string} - Formatlanmış fiyat string'i
+       */
+      function formatPrice(value) {
+        const num = parseFloat(value || 0);
+        return `₺${num.toFixed(2)}`;
+      }
+
+      /**
+       * Görsel path'ini normalize eder
+       * Eski path formatını yeni formata çevirir
+       * @param {string} path - Görsel path'i
+       * @returns {string} - Normalize edilmiş path veya boş string
+       */
+      function normalizeImage(path) {
+        if (!path) return "";
+        return path.replace("/uploads/products/", "/uploads/product/");
+      }
+
+      /**
+       * Mevcut masanın sepet verilerini döndürür
+       * Eğer masa için veri yoksa yeni bir sepet ve sipariş numarası oluşturur
+       * @returns {object} - Masa verisi: { cart: [], orderNumber: number }
+       */
+      function getCurrentCart() {
+        if (!state.tables[state.currentTable]) {
+          state.tables[state.currentTable] = {
+            cart: [],
+            orderNumber: Math.floor(Math.random() * 9000) + 1000, // 1000-9999 arası rastgele sipariş numarası
+          };
+        }
+        return state.tables[state.currentTable];
+      }
+
+      /**
+       * Mevcut masanın sepetini döndürür
+       * @returns {array} - Sepet array'i
+       */
+      function getCart() {
+        return getCurrentCart().cart;
+      }
+
+      function getCategoryIcon(name) {
+        const icons = {
+          "Sıcak Kahve": "coffee",
+          "Soğuk İçecekler": "icecream",
+          Tatlılar: "cake",
+          Sandviçler: "lunch_dining",
+          Fırın: "bakery_dining",
+          "Paketli Ürünler": "inventory_2",
+        };
+        return icons[name] || "category";
+      }
+
+      /**
+       * Ürün kategorilerini API'den yükler ve kategori tab'larını render eder
+       * "Tümü" tab'ı da eklenir - tüm kategorileri gösterir
+       */
+      async function loadCategories() {
+        try {
+          const response = await fetch("/api/products/types/list");
+          const categories = await response.json();
+          if (!categoryTabs) return;
+          categoryTabs.innerHTML = "";
+
+          // "Tümü" tab'ı oluştur - tüm ürünleri gösterir
+          const allTab = document.createElement("a");
+          allTab.href = "#";
+          allTab.className =
+            "flex flex-col items-center justify-center border-b-[3px] border-b-primary text-text-main dark:text-white pb-3 pt-2 min-w-max px-2";
+          allTab.innerHTML = `
+            <span class="material-symbols-outlined mb-1 text-primary">apps</span>
+            <p class="text-sm font-bold leading-normal tracking-[0.015em]">Tümü</p>
+          `;
+          allTab.addEventListener("click", (e) => {
+            e.preventDefault();
+            state.activeCategory = "all";
+            renderCategories();
+            renderProducts();
+          });
+          categoryTabs.appendChild(allTab);
+
+          // Her kategori için bir tab oluştur
+          categories.forEach((category) => {
+            const tab = document.createElement("a");
+            tab.href = "#";
+            tab.className =
+              "flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-text-secondary hover:text-primary hover:border-b-primary/30 transition-all pb-3 pt-2 min-w-max px-2 group";
+            tab.innerHTML = `
+              <span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">${getCategoryIcon(
+                category.type_name
+              )}</span>
+              <p class="text-sm font-bold leading-normal tracking-[0.015em]">${
+                category.type_name
+              }</p>
+            `;
+            tab.addEventListener("click", (e) => {
+              e.preventDefault();
+              state.activeCategory = category.id;
+              renderCategories();
+              renderProducts();
+            });
+            categoryTabs.appendChild(tab);
+          });
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        }
+      }
+
+      /**
+       * Kategori tab'larının aktif durumunu günceller
+       * Aktif kategori farklı renk ve stil ile gösterilir
+       */
+      function renderCategories() {
+        if (!categoryTabs) return;
+        const tabs = categoryTabs.querySelectorAll("a");
+        tabs.forEach((tab) => {
+          // Bu tab aktif mi kontrol et
+          const isActive =
+            (state.activeCategory === "all" &&
+              tab.textContent.includes("Tümü")) ||
+            (state.activeCategory !== "all" &&
+              tab.textContent.includes(
+                state.products.find(
+                  (p) => p.product_type == state.activeCategory
+                )?.type_name || ""
+              ));
+          if (isActive) {
+            // Aktif tab stili
+            tab.className =
+              "flex flex-col items-center justify-center border-b-[3px] border-b-primary text-text-main dark:text-white pb-3 pt-2 min-w-max px-2";
+            tab
+              .querySelector(".material-symbols-outlined")
+              .classList.add("text-primary");
+          } else {
+            // Pasif tab stili
+            tab.className =
+              "flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-text-secondary hover:text-primary hover:border-b-primary/30 transition-all pb-3 pt-2 min-w-max px-2 group";
+            tab
+              .querySelector(".material-symbols-outlined")
+              .classList.remove("text-primary");
+          }
+        });
+      }
+
+      /**
+       * Ürünleri filtreler ve grid'de gösterir
+       * Aktif kategori ve arama terimine göre filtreleme yapar
+       */
+      function renderProducts() {
+        if (!productGrid) return;
+        
+        // Ürünleri filtrele: kategori ve arama terimine göre
+        const filtered = state.products.filter((p) => {
+          const matchCategory =
+            state.activeCategory === "all" ||
+            p.product_type == state.activeCategory;
+          const term = state.search.toLowerCase();
+          const matchSearch =
+            !term ||
+            p.name.toLowerCase().includes(term) ||
+            (p.type_name || "").toLowerCase().includes(term);
+          return matchCategory && matchSearch;
+        });
+
+        productGrid.innerHTML = "";
+
+        // Eğer ürün yoksa bilgi mesajı göster
+        if (filtered.length === 0) {
+          productGrid.innerHTML =
+            '<p class="col-span-full text-center text-text-secondary">Ürün bulunamadı</p>';
+          return;
+        }
+
+        // Her ürün için bir kart oluştur
+        filtered.forEach((product) => {
+
+          // Stok kontrolü (Tüm ürünler için - backend artık üretilenler için de stok hesaplıyor)
+          const stock = parseFloat(product.stock) || 0;
+          const minStock = parseFloat(product.min_stock) || 0;
+          const isOutOfStock = stock <= 0;
+          const isLowStock = stock > 0 && stock <= minStock && minStock > 0;
+          
+          const card = document.createElement("button");
+          
+          // Stok durumuna göre stil belirle
+          if (isOutOfStock) {
+            card.className =
+              "group flex flex-col bg-gray-100 dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-300 dark:border-gray-700 opacity-60 cursor-not-allowed text-left";
+            card.disabled = true;
+          } else {
+            card.className =
+              "group flex flex-col bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-transparent hover:border-primary/50 hover:shadow-md transition-all text-left";
+          }
+          
+          const image = normalizeImage(product.image);
+          
+          // Stok badge'i
+          let stockBadge = "";
+          // Stok takip ediliyorsa (stock < 9999 ise gösterelim, 9999 sonsuz stok demektir)
+          if (stock < 9990) {
+            if (isOutOfStock) {
+              stockBadge = `<span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">Stok Yok</span>`;
+            } else if (isLowStock) {
+              stockBadge = `<span class="absolute top-2 right-2 bg-yellow-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">Düşük: ${stock}</span>`;
+            } else {
+              stockBadge = `<span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">Stok: ${stock}</span>`;
+            }
+          }
+          
+          card.innerHTML = `
+          <div class="w-full aspect-square bg-cover bg-center rounded-lg mb-3 overflow-hidden relative">
+            <div class="absolute inset-0 ${isOutOfStock ? 'bg-gray-400/30' : 'bg-black/5 group-hover:bg-transparent'} transition-colors"></div>
+            ${stockBadge}
+            ${
+              image
+                ? `<div class="w-full h-full bg-cover bg-center ${isOutOfStock ? '' : 'group-hover:scale-105'} transition-transform duration-300 ${isOutOfStock ? 'grayscale' : ''}" style="background-image:url('${image}')"></div>`
+                : `<div class="w-full h-full flex items-center justify-center bg-[#eaf3e7] text-text-secondary"><span class="material-symbols-outlined">image</span></div>`
+            }
+          </div>
+          <div>
+            <p class="${isOutOfStock ? 'text-gray-500 dark:text-gray-400' : 'text-text-main dark:text-white'} text-base font-bold leading-tight mb-1">
+              ${product.name}
+            </p>
+            <p class="text-text-secondary text-xs mb-1">${
+              product.type_name || "Diğer"
+            }</p>
+            <p class="${isOutOfStock ? 'text-gray-400' : 'text-primary'} font-bold text-lg">${formatPrice(
+              product.price
+            )}</p>
+          </div>
+        `;
+          
+          // Kart tıklandığında sepete ekle (stok kontrolü ile)
+          if (!isOutOfStock) {
+            card.onclick = () => addToCart(product);
+          } else {
+            card.onclick = () => {
+              if (typeof toast !== 'undefined') {
+                toast.warning("Bu ürün stokta bulunmamaktadır");
+              } else {
+                alert("Bu ürün stokta bulunmamaktadır");
+              }
+            };
+          }
+          
+          productGrid.appendChild(card);
+        });
+      }
+
+      /**
+       * Ürünü sepete ekler
+       * Eğer ürün zaten sepette varsa miktarını artırır
+       * Yoksa yeni bir sepet öğesi oluşturur
+       * Stok kontrolü yapar (al-sat tipi için)
+       * @param {object} product - Sepete eklenecek ürün objesi
+       */
+      function addToCart(product) {
+        const cart = getCart();
+        const existingItem = cart.find(
+          (item) => item.product_id === product.id
+        );
+        const currentQuantity = existingItem ? existingItem.quantity : 0;
+        
+        // Stok kontrolü (Tüm ürünler için - backend artık hesaplıyor)
+        const stock = parseFloat(product.stock) || 0;
+
+        // Stok tamamen bitmişse (0 veya daha az)
+        if (stock <= 0) {
+            if (typeof toast !== 'undefined') {
+              toast.warning("Bu ürün stokta bulunmamaktadır");
+            } else {
+              alert("Bu ürün stokta bulunmamaktadır");
+            }
+            return;
+        }
+        
+        // Sepete ekleyince stok aşılacaksa
+        // Eğer stok 9990'dan büyükse (sonsuz stok / reçetesiz üretilen) kontrol etme veya yine de et (zaten yüksek)
+        if (currentQuantity + 1 > stock) {
+            if (typeof toast !== 'undefined') {
+              toast.warning(`Stok yetersiz! Mevcut stok: ${stock}`);
+            } else {
+              alert(`Stok yetersiz! Mevcut stok: ${stock}`);
+            }
+            return;
+        }
+        
+        if (existingItem) {
+          // Ürün zaten sepette - miktarını artır
+          existingItem.quantity += 1;
+        } else {
+          // Yeni ürün - sepete ekle
+          cart.push({
+            product_id: product.id,
+            name: product.name,
+            price: parseFloat(product.price),
+            image: normalizeImage(product.image),
+            quantity: 1,
+          });
+        }
+        renderCart();
+        updateTotals();
+        renderTableButtons();
+      }
+
+      /**
+       * Sepetteki ürün miktarını azaltır
+       * Miktar 1 ise ürünü sepetten kaldırır
+       * @param {number} productId - Miktarı azaltılacak ürün ID'si
+       */
+      function decreaseQuantity(productId) {
+        const cart = getCart();
+        const item = cart.find((item) => item.product_id === productId);
+        if (item && item.quantity > 1) {
+          item.quantity -= 1;
+        } else if (item) {
+          // Miktar 1 ise ürünü kaldır
+          removeFromCart(productId);
+        }
+        renderCart();
+        updateTotals();
+        renderTableButtons();
+      }
+
+      /**
+       * Sepetteki ürün miktarını artırır
+       * Stok kontrolü yapar (al-sat tipi için)
+       * @param {number} productId - Miktarı artırılacak ürün ID'si
+       */
+      function increaseQuantity(productId) {
+        const cart = getCart();
+        const item = cart.find((item) => item.product_id === productId);
+        if (!item) return;
+        
+        // Ürün bilgisini bul
+        const product = state.products.find((p) => p.id === productId);
+        
+        
+        // Stok kontrolü (Tüm tipler için)
+        // if (product && product.process_type === "al-sat") {
+        if (product) {
+          const stock = parseFloat(product.stock) || 0;
+          
+          // Stok yetersiz kontrolü
+          if (item.quantity + 1 > stock) {
+            if (typeof toast !== 'undefined') {
+              toast.warning(`Stok yetersiz! Mevcut stok: ${stock}`);
+            } else {
+              alert(`Stok yetersiz! Mevcut stok: ${stock}`);
+            }
+            return;
+          }
+        }
+        
+        item.quantity += 1;
+        renderCart();
+        updateTotals();
+        renderTableButtons();
+      }
+
+      /**
+       * Ürünü sepetten tamamen kaldırır
+       * @param {number} productId - Kaldırılacak ürün ID'si
+       */
+      function removeFromCart(productId) {
+        const cart = getCart();
+        const tableData = getCurrentCart();
+        // Ürünü filtrele - sadece bu ürünü çıkar
+        tableData.cart = cart.filter((item) => item.product_id !== productId);
+        renderCart();
+        updateTotals();
+        renderTableButtons();
+      }
+
+      /**
+       * Sepeti tamamen temizler
+       * Kullanıcıya onay mesajı gösterir
+       * Temizlendikten sonra yeni bir sipariş numarası oluşturur
+       */
+      function clearCart() {
+        const cart = getCart();
+        if (cart.length === 0) return;
+        if (confirm("Sepeti temizlemek istediğinize emin misiniz?")) {
+          const tableData = getCurrentCart();
+          tableData.cart = [];
+          tableData.orderNumber = Math.floor(Math.random() * 9000) + 1000; // Yeni sipariş numarası
+          renderCart();
+          updateTotals();
+          renderTableButtons();
+        }
+      }
+
+      /**
+       * Sepeti render eder - sepet içindeki tüm ürünleri gösterir
+       * Her ürün için miktar değiştirme ve silme butonları ekler
+       */
+      function renderCart() {
+        if (!cartItems) return;
+        const cart = getCart();
+
+        // Sepet boşsa bilgi mesajı göster
+        if (cart.length === 0) {
+          cartItems.innerHTML =
+            '<p class="text-center text-text-secondary py-8">Sepet boş</p>';
+          return;
+        }
+
+        cartItems.innerHTML = "";
+        // Her sepet öğesi için bir kart oluştur
+        cart.forEach((item) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className =
+            "flex items-center gap-3 bg-background-light dark:bg-[#20331b] p-3 rounded-xl border border-transparent hover:border-primary/30 transition-colors group";
+          const itemTotal = item.price * item.quantity;
+          itemDiv.innerHTML = `
+            <div class="bg-center bg-no-repeat bg-cover rounded-lg size-16 shrink-0 ${
+              item.image ? "" : "bg-[#eaf3e7] flex items-center justify-center"
+            }" style="${
+            item.image ? `background-image: url('${item.image}')` : ""
+          }">
+              ${
+                !item.image
+                  ? '<span class="material-symbols-outlined text-text-secondary">image</span>'
+                  : ""
+              }
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start mb-1">
+                <p class="text-text-main dark:text-white text-base font-bold truncate">
+                  ${item.name}
+                </p>
+                <p class="text-text-main dark:text-white font-bold">${formatPrice(
+                  itemTotal
+                )}</p>
+              </div>
+              <p class="text-text-secondary text-xs mb-2">
+                ${formatPrice(item.price)} × ${item.quantity}
+              </p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 bg-white dark:bg-black/20 rounded-lg p-1">
+                  <button
+                    onclick="decreaseQuantity(${item.product_id})"
+                    class="size-6 flex items-center justify-center rounded-md bg-[#eaf3e7] dark:bg-[#354f2d] hover:bg-primary hover:text-white text-text-main dark:text-white transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <span class="text-sm font-bold w-4 text-center">${
+                    item.quantity
+                  }</span>
+                  <button
+                    onclick="increaseQuantity(${item.product_id})"
+                    class="size-6 flex items-center justify-center rounded-md bg-[#eaf3e7] dark:bg-[#354f2d] hover:bg-primary hover:text-white text-text-main dark:text-white transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-sm">add</span>
+                  </button>
+                </div>
+                <button
+                  onclick="removeFromCart(${item.product_id})"
+                  class="text-red-500 hover:text-red-600 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+              </div>
+            </div>
+          `;
+          cartItems.appendChild(itemDiv);
+        });
+      }
+
+      /**
+       * Toplam tutarı hesaplar ve gösterir
+       * Sepet değiştiğinde çağrılır
+       * Satış tamamlama butonunu da aktif/pasif yapar
+       */
+      function updateTotals() {
+        const cart = getCart();
+        // Tüm ürünlerin toplam fiyatını hesapla
+        const total = cart.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+
+        document.getElementById("total").textContent = formatPrice(total);
+        document.getElementById("completeSaleAmount").textContent =
+          formatPrice(total) + " Çekim Yap";
+
+        // Sepet boşsa satış butonunu devre dışı bırak
+        completeSaleBtn.disabled = cart.length === 0;
+      }
+
+      /**
+       * Masa bilgilerini günceller
+       * Masa adını ve input değerini günceller
+       * Sipariş numarasını da günceller
+       */
+      function updateTableDisplay() {
+        const tableNameEl = document.getElementById("tableName");
+        const tableInput = document.getElementById("tableNumberInput");
+        if (tableNameEl) {
+          if (state.currentTable === 0) {
+            tableNameEl.textContent = "Paket Servis";
+          } else {
+            tableNameEl.textContent = `Masa ${state.currentTable}`;
+          }
+        }
+        if (tableInput) {
+          tableInput.value = state.currentTable;
+        }
+        updateOrderNumber();
+      }
+
+      /**
+       * Sipariş numarasını gösterir
+       * Her masa için benzersiz bir sipariş numarası vardır
+       */
+      function updateOrderNumber() {
+        const orderNumberEl = document.getElementById("orderNumber");
+        const tableData = getCurrentCart();
+        if (orderNumberEl) {
+          orderNumberEl.textContent = `Sipariş #${tableData.orderNumber}`;
+        }
+      }
+
+      /**
+       * Masa değiştirir
+       * 0-25 arası masa numarası kabul edilir (0 = Paket Servis)
+       * Masa değiştiğinde sepet ve toplamlar güncellenir
+       * @param {number} tableNumber - Seçilecek masa numarası
+       */
+      function changeTable(tableNumber) {
+        if (tableNumber < 0 || tableNumber > 25) {
+          if (typeof toast !== 'undefined') {
+            toast.warning("Geçerli bir masa numarası girin (0-25, 0=Paket Servis)");
+          } else {
+            alert("Geçerli bir masa numarası girin (0-25, 0=Paket Servis)");
+          }
+          return;
+        }
+        state.currentTable = parseInt(tableNumber);
+        updateTableDisplay();
+        renderCart();
+        updateTotals();
+        renderTableButtons();
+      }
+
+      function renderTableButtons() {
+        const container = document.getElementById("tableButtonsContainer");
+        if (!container) return;
+
+        // Aktif masaları al (sepeti dolu olanlar)
+        const activeTables = Object.keys(state.tables)
+          .map(Number)
+          .filter((tableNum) => {
+            const tableData = state.tables[tableNum];
+            return tableData && tableData.cart && tableData.cart.length > 0;
+          })
+          .sort((a, b) => a - b);
+
+        // Tüm masaları göster (0-25 arası, aktif olanları önce)
+        const allTables = [];
+
+        // Paket servis (0) varsa ekle
+        if (activeTables.includes(0) || state.currentTable === 0) {
+          allTables.push(0);
+        }
+
+        // Aktif masaları ekle
+        activeTables.forEach((tableNum) => {
+          if (
+            tableNum >= 1 &&
+            tableNum <= 25 &&
+            !allTables.includes(tableNum)
+          ) {
+            allTables.push(tableNum);
+          }
+        });
+
+        // Eğer aktif masa listede yoksa ekle
+        if (
+          state.currentTable >= 0 &&
+          state.currentTable <= 25 &&
+          !allTables.includes(state.currentTable)
+        ) {
+          allTables.push(state.currentTable);
+        }
+
+        // Tüm masaları göster (1-25 arası)
+        for (let i = 1; i <= 25; i++) {
+          if (!allTables.includes(i)) {
+            allTables.push(i);
+          }
+        }
+
+        container.innerHTML = "";
+
+        // Paket servis butonu (0)
+        const tableData0 = state.tables[0] || {
+          cart: [],
+          orderNumber: Math.floor(Math.random() * 9000) + 1000,
+        };
+        const hasItems0 = tableData0.cart && tableData0.cart.length > 0;
+        const isActive0 = 0 === state.currentTable;
+
+        const button0 = document.createElement("button");
+        button0.className = isActive0
+          ? "w-full aspect-square rounded-xl bg-primary text-[#0a2003] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative group transition-all hover:translate-x-1 hover:shadow-lg"
+          : "w-full aspect-square rounded-xl bg-[#eaf3e7] dark:bg-[#2a3825] border border-transparent hover:border-primary/50 text-text-secondary dark:text-gray-400 hover:bg-white dark:hover:bg-surface-dark transition-all flex flex-col items-center justify-center relative group";
+
+        button0.innerHTML = `
+          <span class="text-[10px] font-bold ${
+            isActive0 ? "opacity-80" : ""
+          } uppercase">Paket</span>
+          <span class="material-symbols-outlined ${
+            isActive0 ? "text-2xl" : "text-xl"
+          }">shopping_bag</span>
+          ${
+            hasItems0
+              ? `<span class="absolute top-2 right-2 size-2 ${
+                  isActive0 ? "bg-white animate-pulse" : "bg-primary"
+                } rounded-full shadow-sm" title="Sepet dolu"></span>`
+              : ""
+          }
+        `;
+
+        button0.addEventListener("click", () => {
+          changeTable(0);
+        });
+
+        container.appendChild(button0);
+
+        // Masa butonları (1-25)
+        for (let tableNum = 1; tableNum <= 25; tableNum++) {
+          const tableData = state.tables[tableNum] || {
+            cart: [],
+            orderNumber: Math.floor(Math.random() * 9000) + 1000,
+          };
+          const hasItems = tableData.cart && tableData.cart.length > 0;
+          const isActive = tableNum === state.currentTable;
+
+          const button = document.createElement("button");
+          button.className = isActive
+            ? "w-full aspect-square rounded-xl bg-primary text-[#0a2003] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative group transition-all hover:translate-x-1 hover:shadow-lg"
+            : "w-full aspect-square rounded-xl bg-[#eaf3e7] dark:bg-[#2a3825] border border-transparent hover:border-primary/50 text-text-secondary dark:text-gray-400 hover:bg-white dark:hover:bg-surface-dark transition-all flex flex-col items-center justify-center relative group";
+
+          button.innerHTML = `
+            <span class="text-[10px] font-bold ${
+              isActive ? "opacity-80" : ""
+            } uppercase">Masa</span>
+            <span class="${
+              isActive ? "text-2xl" : "text-xl"
+            } font-bold">${tableNum}</span>
+            ${
+              hasItems
+                ? `<span class="absolute top-2 right-2 size-2 ${
+                    isActive ? "bg-white animate-pulse" : "bg-primary"
+                  } rounded-full shadow-sm" title="Sepet dolu"></span>`
+                : ""
+            }
+          `;
+
+          button.addEventListener("click", () => {
+            changeTable(tableNum);
+          });
+
+          container.appendChild(button);
+        }
+      }
+
+      /**
+       * Satışı tamamlar - sepet içindeki tüm ürünleri API'ye gönderir
+       * Her ürün için ayrı bir satış kaydı oluşturur
+       * Başarılı olursa sepeti temizler ve yeni sipariş numarası oluşturur
+       */
+      async function completeSale() {
+        const cart = getCart();
+        if (cart.length === 0) {
+          if (typeof toast !== 'undefined') {
+            toast.warning("Sepet boş!");
+          } else {
+            alert("Sepet boş!");
+          }
+          return;
+        }
+
+        const tableData = getCurrentCart();
+        const tableLabel =
+          state.currentTable === 0
+            ? "Paket Servis"
+            : `Masa ${state.currentTable}`;
+        
+        // Kullanıcıya onay mesajı göster
+        if (
+          !confirm(
+            `${tableLabel} için satışı tamamlamak istediğinize emin misiniz?\nToplam: ${
+              document.getElementById("total").textContent
+            }`
+          )
+        ) {
+          return;
+        }
+
+        try {
+          // Her ürün için ayrı bir satış kaydı oluştur
+          // Paralel olarak gönder (Promise.all ile)
+          // Not: income backend'de gerçek maliyetten hesaplanacak
+          const salesPromises = cart.map((item) => {
+            const totalPrice = item.price * item.quantity;
+
+            return fetch("/api/sales", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                total_price: totalPrice,
+                // income backend'de gerçek maliyetten hesaplanacak (vergi vb. daha sonra eklenebilir)
+                payment_type: state.paymentMethod === "card" ? "Kart" : "Nakit",
+                sales_type: state.currentTable === 0 ? 2 : 1, // 0=Paket Servis (2), Diğer=Gel Al/Masa (1)
+              }),
+            });
+          });
+
+          // Tüm satış kayıtlarını bekle
+          await Promise.all(salesPromises);
+
+          const tableLabel =
+            state.currentTable === 0
+              ? "Paket Servis"
+              : `Masa ${state.currentTable}`;
+          
+          // Başarı mesajı göster
+          if (typeof toast !== 'undefined') {
+            toast.success(
+              `Satış tamamlandı! ${tableLabel} - Sipariş #${tableData.orderNumber} - Toplam: ${document.getElementById("total").textContent}`
+            );
+          } else {
+            alert(
+              `Satış tamamlandı!\n${tableLabel}\nSipariş #${
+                tableData.orderNumber
+              }\nToplam: ${document.getElementById("total").textContent}`
+            );
+          }
+
+          // Sepeti temizle ve yeni sipariş numarası oluştur
+          tableData.cart = [];
+          tableData.orderNumber = Math.floor(Math.random() * 9000) + 1000;
+          renderCart();
+          updateTotals();
+          renderTableButtons();
+          
+          // Ürün listesini yeniden yükle (stok güncellemeleri için)
+          await loadProducts();
+        } catch (error) {
+          console.error("Satış hatası:", error);
+          if (typeof toast !== 'undefined') {
+            toast.error("Satış tamamlanırken bir hata oluştu!");
+          } else {
+            alert("Satış tamamlanırken bir hata oluştu!");
+          }
+        }
+      }
+
+      function selectPaymentMethod(method) {
+        state.paymentMethod = method;
+
+        if (method === "cash") {
+          paymentCashBtn.className =
+            "flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-primary bg-primary/10 text-text-main dark:text-white font-bold transition-all relative overflow-hidden";
+          paymentCardBtn.className =
+            "flex items-center justify-center gap-2 py-3 rounded-xl border border-[#eaf3e7] dark:border-[#2a4522] text-text-main dark:text-white font-bold hover:bg-primary/10 hover:border-primary transition-all group";
+
+          const cardCheck = paymentCardBtn.querySelector(".absolute");
+          if (cardCheck) cardCheck.remove();
+
+          if (!paymentCashBtn.querySelector(".absolute")) {
+            const checkDiv = document.createElement("div");
+            checkDiv.className =
+              "absolute right-0 top-0 size-4 bg-primary rounded-bl-lg flex items-center justify-center";
+            checkDiv.innerHTML =
+              '<span class="material-symbols-outlined text-white text-[10px] font-bold">check</span>';
+            paymentCashBtn.appendChild(checkDiv);
+          }
+        } else {
+          paymentCardBtn.className =
+            "flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-primary bg-primary/10 text-text-main dark:text-white font-bold transition-all relative overflow-hidden";
+          paymentCashBtn.className =
+            "flex items-center justify-center gap-2 py-3 rounded-xl border border-[#eaf3e7] dark:border-[#2a4522] text-text-main dark:text-white font-bold hover:bg-primary/10 hover:border-primary transition-all group";
+
+          const cashCheck = paymentCashBtn.querySelector(".absolute");
+          if (cashCheck) cashCheck.remove();
+        }
+      }
+
+      function updateDateTime() {
+        const now = new Date();
+        const options = {
+          day: "numeric",
+          month: "long",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        const dateTimeText = document.getElementById("dateTimeText");
+        if (dateTimeText) {
+          dateTimeText.textContent = now.toLocaleDateString("tr-TR", options);
+        }
+      }
+
+      async function loadUserInfo() {
+        const username = localStorage.getItem("username");
+        if (username) {
+          try {
+            const response = await fetch(`/api/auth/user?username=${username}`);
+            const user = await response.json();
+            const userNameDisplay = document.getElementById("userNameDisplay");
+            if (userNameDisplay && user.username) {
+              userNameDisplay.textContent = user.username;
+            }
+          } catch (error) {
+            console.error("Error loading user info:", error);
+          }
+        }
+      }
+
+      async function loadProducts() {
+        try {
+          const res = await fetch("/api/products");
+          const data = await res.json();
+          state.products = Array.isArray(data) ? data : [];
+          await loadCategories();
+          renderProducts();
+        } catch (err) {
+          console.error("Ürünler yüklenemedi", err);
+        }
+      }
+
+      window.decreaseQuantity = decreaseQuantity;
+      window.increaseQuantity = increaseQuantity;
+      window.removeFromCart = removeFromCart;
+
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          state.search = e.target.value;
+          renderProducts();
+        });
+      }
+
+      if (clearCartBtn) {
+        clearCartBtn.addEventListener("click", clearCart);
+      }
+
+      const clearCartHeaderBtn = document.getElementById("clearCartHeaderBtn");
+      if (clearCartHeaderBtn) {
+        clearCartHeaderBtn.addEventListener("click", clearCart);
+      }
+
+      if (completeSaleBtn) {
+        completeSaleBtn.addEventListener("click", completeSale);
+      }
+
+      if (paymentCashBtn) {
+        paymentCashBtn.addEventListener("click", () =>
+          selectPaymentMethod("cash")
+        );
+      }
+
+      if (paymentCardBtn) {
+        paymentCardBtn.addEventListener("click", () =>
+          selectPaymentMethod("card")
+        );
+      }
+
+      const tableNumberInput = document.getElementById("tableNumberInput");
+      if (tableNumberInput) {
+        tableNumberInput.addEventListener("change", (e) => {
+          const newTable = parseInt(e.target.value);
+          if (newTable !== state.currentTable) {
+            changeTable(newTable);
+          }
+        });
+        tableNumberInput.addEventListener("blur", (e) => {
+          const newTable = parseInt(e.target.value);
+          if (newTable !== state.currentTable) {
+            changeTable(newTable);
+          }
+        });
+      }
+
+      // Çıkış butonu
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+            // localStorage'ı temizle
+            localStorage.removeItem("userType");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userName");
+            
+            // Welcome sayfasına yönlendir
+            window.location.href = "/welcome";
+          }
+        });
+      }
+
+      const newTableBtn = document.getElementById("newTableBtn");
+      if (newTableBtn) {
+        newTableBtn.addEventListener("click", () => {
+          // Yeni masa numarası bul (boş olan ilk masa)
+          let newTableNum = 1;
+          while (
+            state.tables[newTableNum] &&
+            state.tables[newTableNum].cart &&
+            state.tables[newTableNum].cart.length > 0
+          ) {
+            newTableNum++;
+            if (newTableNum > 25) {
+              newTableNum = 1;
+              break;
+            }
+          }
+          changeTable(newTableNum);
+        });
+      }
+
+      loadProducts();
+      loadUserInfo();
+      updateTableDisplay();
+      updateDateTime();
+      setInterval(updateDateTime, 60000);
+      renderCart();
+      updateTotals();
+      renderTableButtons();
+      selectPaymentMethod("card");
+    </script>
+    <script src="/components/toast.js"></script>
+  </body>
+</html>

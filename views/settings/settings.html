@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Keşiş Kafe - Sistem Ayarları</title>
+<!-- Google Fonts: Work Sans & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#49ec13",
+                        "primary-dark": "#3bc40f",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#152210",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2f18",
+                        "text-main": "#111b0d",
+                        "text-secondary": "#5f9a4c",
+                        "border-color": "#d5e7cf",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main font-display antialiased overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Container -->
+<div id="sidebar-container"></div>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Header Area -->
+<header class="w-full px-6 py-6 md:px-10 md:py-8 bg-background-light dark:bg-background-dark z-10">
+<div class="max-w-5xl mx-auto">
+<div class="flex flex-col gap-2">
+<h2 class="text-text-main dark:text-white text-3xl md:text-4xl font-black tracking-tight">Sistem Ayarları</h2>
+<!--
+<p class="text-text-secondary text-base md:text-lg max-w-2xl">
+                            Vergi oranları, personel katsayıları ve genel mağaza yapılandırmalarını buradan yönetebilirsiniz.
+                        </p>
+-->
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-6 pb-24 md:px-10">
+<div class="max-w-5xl mx-auto flex flex-col gap-8">
+<!-- Section: Finansal Sabitler -->
+<!-- Section: Finansal Sabitler (Gizlendi) -->
+<!--
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">payments</span>
+<h3 class="text-text-main dark:text-white text-xl font-bold">Finansal Sabitler</h3>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-color dark:border-[#2a3f22]">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<label class="flex flex-col gap-2">
+<span class="text-text-main dark:text-gray-300 text-sm font-semibold">KDV Oranı - Yiyecek (%)</span>
+<div class="relative">
+<input id="kdv_food" class="w-full rounded-xl border-border-color bg-background-light dark:bg-[#152210] dark:border-[#2a3f22] dark:text-white p-4 pr-12 text-base focus:border-primary focus:ring-primary" type="number" value="10"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-text-secondary">%</div>
+</div>
+<p class="text-xs text-text-secondary">Hazır gıda ürünleri için geçerli vergi oranı.</p>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-text-main dark:text-gray-300 text-sm font-semibold">KDV Oranı - İçecek (%)</span>
+<div class="relative">
+<input id="kdv_drink" class="w-full rounded-xl border-border-color bg-background-light dark:bg-[#152210] dark:border-[#2a3f22] dark:text-white p-4 pr-12 text-base focus:border-primary focus:ring-primary" type="number" value="20"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-text-secondary">%</div>
+</div>
+<p class="text-xs text-text-secondary">Alkollü ve alkolsüz içecekler için geçerli vergi oranı.</p>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-text-main dark:text-gray-300 text-sm font-semibold">Varsayılan Para Birimi</span>
+<div class="relative">
+<select id="currency_default" class="w-full rounded-xl border-border-color bg-background-light dark:bg-[#152210] dark:border-[#2a3f22] dark:text-white p-4 text-base focus:border-primary focus:ring-primary appearance-none">
+<option value="TRY">Türk Lirası (₺)</option>
+<option value="USD">Amerikan Doları ($)</option>
+<option value="EUR">Euro (€)</option>
+</select>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-text-main dark:text-gray-400">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</label>
+</div>
+</div>
+</section>
+-->
+<!-- Section: Personel Parametreleri -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">badge</span>
+<h3 class="text-text-main dark:text-white text-xl font-bold">Personel Parametreleri</h3>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-color dark:border-[#2a3f22]">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<label class="flex flex-col gap-2">
+<span class="text-text-main dark:text-gray-300 text-sm font-semibold">SGK Prim Yüzdesi (%)</span>
+<div class="relative">
+<input id="sgk_employee" class="w-full rounded-xl border-border-color bg-background-light dark:bg-[#152210] dark:border-[#2a3f22] dark:text-white p-4 pr-12 text-base focus:border-primary focus:ring-primary" step="0.1" type="number" value="14.5"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-text-secondary">%</div>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-text-main dark:text-gray-300 text-sm font-semibold">Mesai Çarpanı (x)</span>
+<input id="overtime_multiplier" class="w-full rounded-xl border-border-color bg-background-light dark:bg-[#152210] dark:border-[#2a3f22] dark:text-white p-4 text-base focus:border-primary focus:ring-primary" step="0.1" type="number" value="1.5"/>
+</label>
+<!-- Removed Daily Meal Allowance as per user request -->
+</div>
+</div>
+</section>
+<!-- Section: Genel Ayarlar -->
+<!-- Section: Genel Ayarlar (Gizlendi) -->
+<!--
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">tune</span>
+<h3 class="text-text-main dark:text-white text-xl font-bold">Genel Mağaza Ayarları</h3>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-color dark:border-[#2a3f22]">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-border-color dark:border-[#2a3f22]">
+<div class="flex flex-col">
+<span class="text-text-main dark:text-white font-semibold">Stok Kritik Seviye Uyarısı</span>
+<span class="text-text-secondary text-sm">Ürünler belirlenen limitin altına düştüğünde bildirim gönder.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input id="stock_warning" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div class="flex flex-col">
+<span class="text-text-main dark:text-white font-semibold">Otomatik Kasa Kapanışı</span>
+<span class="text-text-secondary text-sm">Gün sonunda açık kalan masaları otomatik olarak kapat.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input id="auto_close" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</section>
+-->
+</div>
+</div>
+<!-- Sticky Footer Action Bar -->
+<div class="w-full border-t border-border-color dark:border-[#2a3f22] bg-surface-light dark:bg-surface-dark p-4 md:px-10 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="max-w-5xl mx-auto flex items-center justify-end gap-3">
+<button class="px-6 py-3 rounded-xl border border-border-color dark:border-[#2a3f22] text-text-main dark:text-white font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                        İptal
+                    </button>
+<button id="saveBtn" class="px-8 py-3 rounded-xl bg-primary hover:bg-primary-dark text-[#152210] font-bold shadow-lg shadow-primary/30 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">save</span>
+                        Değişiklikleri Kaydet
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<script src="/components/sidebar.js"></script>
+<!-- Toasts -->
+<script src="/components/toast.js"></script>
+
+<script>
+    // Ayarları API'den yükle
+    async function loadSettings() {
+        try {
+            const response = await fetch('/api/settings');
+            const settings = await response.json();
+            
+            // Map settings to inputs
+            // We assume input IDs match the setting CODEs (in lowercase or mapped)
+            // Or we explicitly map them. 
+            // Let's use specific IDs in HTML to match our keys.
+            
+            // setInputValue("kdv_food", settings.KDV_FOOD?.value);
+            // setInputValue("kdv_drink", settings.KDV_DRINK?.value);
+            setInputValue("sgk_employee", settings.SGK_EMPLOYEE_RATE?.value);
+            // SGK is stored as 0.14 but displayed as 14 usually? 
+            // Let's check seed data: value: 14.5 (RATE). If it is percent, it is fine.
+            // If it is 0.145, we multiply by 100. Seed says 14.5. logic OK.
+            
+            setInputValue("overtime_multiplier", settings.OVERTIME_MULTIPLIER?.value);
+            // setInputValue("daily_meal", settings.DAILY_MEAL_ALLOWANCE?.value); // Removed
+            
+            // Currency
+            setInputValue("currency_default", settings.CURRENCY_DEFAULT?.value_string || "TRY");
+
+            // Toggles
+            // Toggles
+            // setCheckboxValue("stock_warning", settings.STOCK_WARNING?.value);
+            // setCheckboxValue("auto_close", settings.AUTO_CASH_CLOSE?.value);
+
+        } catch (error) {
+            console.error("Ayarlar yüklenemedi:", error);
+            toast.error("Ayarlar yüklenirken bir hata oluştu.");
+        }
+    }
+
+    function setInputValue(id, value) {
+        const el = document.getElementById(id);
+        if (el && value !== undefined) el.value = value;
+    }
+
+    function setCheckboxValue(id, value) {
+        const el = document.getElementById(id);
+        if (el && value !== undefined) el.checked = (value == 1);
+    }
+    
+    // Ayarları Kaydet
+    async function saveSettings() {
+        const saveBtn = document.getElementById('saveBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">hourglass_empty</span> Kaydediliyor...';
+
+        try {
+            // Collect values
+            const updates = {
+                // KDV_FOOD: document.getElementById('kdv_food')?.value,
+                // KDV_DRINK: document.getElementById('kdv_drink')?.value,
+                // CURRENCY_DEFAULT: document.getElementById('currency_default')?.value || "TRY",
+                
+                SGK_EMPLOYEE_RATE: document.getElementById('sgk_employee').value,
+                OVERTIME_MULTIPLIER: document.getElementById('overtime_multiplier').value,
+                // DAILY_MEAL_ALLOWANCE: document.getElementById('daily_meal')?.value, 
+                
+                // STOCK_WARNING: document.getElementById('stock_warning')?.checked ? 1 : 0,
+                // AUTO_CASH_CLOSE: document.getElementById('auto_close')?.checked ? 1 : 0
+            };
+
+            const response = await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            
+            if (response.ok) {
+                toast.success("Ayarlar başarıyla kaydedildi.");
+            } else {
+                toast.error("Kaydetme başarısız.");
+            }
+
+        } catch (error) {
+            console.error("Save settings error:", error);
+            toast.error("Bir hata oluştu.");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        }
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadSettings);
+    document.getElementById('saveBtn').addEventListener('click', saveSettings);
+
+</script>
+</body>
+</html>

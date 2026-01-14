@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Yeni Ürün ve Malzeme Ekleme</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "background-dark": "#122210",
+              surface: "#FFFFFF",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col gap-8">
+            <div class="flex flex-col gap-2">
+              <h1
+                class="text-4xl font-black tracking-tighter text-text-primary"
+              >
+                Yeni Ürün Ekle
+              </h1>
+              <p class="text-base font-normal text-text-secondary">
+                Yeni bir ürün oluşturun ve reçetesini tanımlayın.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-5">
+              <div class="flex flex-col gap-6 lg:col-span-3">
+                <div
+                  class="rounded-xl border border-[#d1e7cf] dark:border-primary/20 bg-white dark:bg-background-dark shadow-sm"
+                >
+                  <div class="p-6">
+                    <h3
+                      class="text-2xl font-bold tracking-tight text-[#0f1b0d] dark:text-white"
+                    >
+                      Ürün Bilgileri
+                    </h3>
+                  </div>
+                  <div
+                    class="border-t border-[#d1e7cf] dark:border-primary/20 p-6"
+                  >
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                      <div class="sm:col-span-2">
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Ürün Adı
+                          </p>
+                          <input
+                            id="productName"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="örn. Matcha Latte"
+                            required
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Satış Fiyatı
+                          </p>
+                          <input
+                            id="productPrice"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="örn. 75"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            required
+                          />
+                          <div id="taxInfoDisplay" class="mt-2 text-xs text-text-secondary hidden">
+                            <!-- KDV bilgileri buraya gelecek -->
+                          </div>
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Kategori
+                          </p>
+                          <select
+                            id="productCategory"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white"
+                            required
+                          >
+                            <option value="">Kategori seçin...</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Ürün Tipi
+                          </p>
+                          <select
+                            id="processType"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white"
+                            required
+                          >
+                            <option value="üretilen">Üretilen</option>
+                            <option value="al-sat">Al-Sat</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div class="sm:col-span-2">
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Ürün Görseli
+                          </p>
+                          <div
+                            id="imageUploadArea"
+                            class="flex flex-col items-center gap-4 rounded-lg border-2 border-dashed border-[#d1e7cf] px-6 py-8 dark:border-primary/30 cursor-pointer hover:bg-[#f8fcf8] dark:hover:bg-background-dark/50 transition-colors"
+                          >
+                            <input
+                              type="file"
+                              id="productImage"
+                              accept="image/*"
+                              class="hidden"
+                            />
+                            <div
+                              id="imagePreview"
+                              class="hidden w-full max-w-xs"
+                            >
+                              <img
+                                id="previewImg"
+                                src=""
+                                alt="Önizleme"
+                                class="w-full h-48 object-cover rounded-lg"
+                              />
+                            </div>
+                            <div
+                              id="imagePlaceholder"
+                              class="flex flex-col items-center gap-2"
+                            >
+                              <span
+                                class="material-symbols-outlined text-4xl text-[#529a4c] dark:text-primary/70"
+                              >
+                                image
+                              </span>
+                              <p
+                                class="text-center text-sm font-normal text-[#0f1b0d] dark:text-gray-400"
+                              >
+                                Resim seçmek için tıklayın
+                              </p>
+                              <p
+                                class="text-center text-xs font-normal text-[#529a4c] dark:text-primary/70"
+                              >
+                                JPG, PNG veya GIF (Max 5MB)
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              id="selectImageBtn"
+                              class="flex h-10 min-w-[84px] max-w-xs cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#e8f3e7] px-4 text-sm font-bold tracking-wide text-[#0f1b0d] hover:bg-[#d1e7cf] dark:bg-primary/20 dark:text-white dark:hover:bg-primary/30"
+                            >
+                              <span class="truncate">Dosya Seç</span>
+                            </button>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-6 lg:col-span-2">
+                <!-- Stok Bilgileri (al-sat için) -->
+                <div
+                  id="stockInfoSection"
+                  class="hidden rounded-xl border border-[#d1e7cf] dark:border-primary/20 bg-white dark:bg-background-dark shadow-sm"
+                >
+                  <div class="p-6">
+                    <h3
+                      class="text-2xl font-bold tracking-tight text-[#0f1b0d] dark:text-white"
+                    >
+                      Stok Bilgileri
+                    </h3>
+                  </div>
+                  <div
+                    class="border-t border-[#d1e7cf] dark:border-primary/20 p-6"
+                  >
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Mevcut Stok
+                          </p>
+                          <input
+                            id="productStock"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="0"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Min. Stok
+                          </p>
+                          <input
+                            id="productMinStock"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="0"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Tedarikçi
+                          </p>
+                          <select
+                            id="productWholesaler"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white"
+                          >
+                            <option value="">
+                              Tedarikçi seçin (Opsiyonel)
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <div>
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Birim Fiyat
+                          </p>
+                          <input
+                            id="productUnitPrice"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="0.00"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                          />
+                        </label>
+                      </div>
+                      <div class="sm:col-span-2">
+                        <label class="flex flex-col">
+                          <p
+                            class="pb-2 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                          >
+                            Minimum Alım Miktarı
+                          </p>
+                          <input
+                            id="productMinPurch"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                            placeholder="Örn: 5"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                          />
+                        </label>
+                        <p class="mt-2 text-xs text-text-secondary">
+                          Tedarikçiden tek seferde yapılabilecek en az alış
+                          miktarı.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ürün Reçetesi (üretilen için) -->
+                <div
+                  id="recipeSection"
+                  class="rounded-xl border border-[#d1e7cf] dark:border-primary/20 bg-white dark:bg-background-dark shadow-sm"
+                >
+                  <div class="p-6">
+                    <h3
+                      class="text-2xl font-bold tracking-tight text-[#0f1b0d] dark:text-white"
+                    >
+                      Ürün Reçetesi
+                    </h3>
+                  </div>
+                  <div
+                    class="border-t border-[#d1e7cf] dark:border-primary/20 p-6"
+                  >
+                    <div class="flex flex-col gap-4">
+                      <p
+                        class="text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                      >
+                        Malzeme Ekle
+                      </p>
+                      <div
+                        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2"
+                      >
+                        <div
+                          class="col-span-1 flex flex-col sm:col-span-2 lg:col-span-1 xl:col-span-2"
+                        >
+                          <select
+                            id="ingredientSelect"
+                            class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white"
+                          >
+                            <option value="">Malzeme seçin...</option>
+                          </select>
+                        </div>
+                        <div class="col-span-1">
+                          <label class="flex flex-col">
+                            <input
+                              id="ingredientQuantity"
+                              class="form-input h-14 w-full flex-1 resize-none overflow-hidden rounded-lg border border-[#d1e7cf] bg-[#f8fcf8] p-4 text-base font-normal text-[#0f1b0d] placeholder:text-[#529a4c] focus:border-[#d1e7cf] focus:outline-0 focus:ring-0 dark:bg-background-dark/50 dark:border-primary/30 dark:text-white dark:placeholder:text-primary/50"
+                              placeholder="Miktar"
+                              type="number"
+                              step="0.001"
+                              min="0"
+                            />
+                            <p
+                              id="quantityUnitHint"
+                              class="mt-1 text-xs text-[#529a4c] dark:text-primary/70"
+                            ></p>
+                          </label>
+                        </div>
+                      </div>
+                      <button
+                        id="addIngredientBtn"
+                        type="button"
+                        class="flex h-12 min-w-[84px] w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg bg-[#e8f3e7] px-5 text-base font-bold text-[#0f1b0d] hover:bg-[#d1e7cf] dark:bg-primary/20 dark:text-white dark:hover:bg-primary/30"
+                      >
+                        <span class="material-symbols-outlined">add</span>
+                        <span>Malzeme Ekle</span>
+                      </button>
+                    </div>
+                    <div
+                      class="mt-6 border-t border-[#d1e7cf] dark:border-primary/20 pt-6"
+                    >
+                      <p
+                        class="mb-4 text-base font-medium text-[#0f1b0d] dark:text-gray-300"
+                      >
+                        Eklenen Malzemeler
+                      </p>
+                      <div id="ingredientsList" class="flex flex-col gap-3">
+                        <p
+                          class="text-center text-sm text-[#529a4c] dark:text-primary/70 py-4"
+                        >
+                          Henüz malzeme eklenmedi
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-6 flex flex-col gap-4 rounded-xl border border-primary/20 bg-[#f8fcf8] p-6 dark:border-primary/30 dark:bg-background-dark/50"
+                  >
+                    <div class="flex items-center justify-between">
+                      <p
+                        class="text-lg font-bold text-[#0f1b0d] dark:text-white"
+                      >
+                        Toplam Maliyet
+                      </p>
+                      <p
+                        id="totalCost"
+                        class="text-2xl font-black tracking-tight text-primary dark:text-primary"
+                      >
+                        ₺0.00
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-end gap-4 pt-4">
+              <a
+                href="/product/track"
+                class="flex h-12 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gray-100 px-5 text-base font-bold text-text-primary hover:bg-gray-200"
+              >
+                İptal
+              </a>
+              <button
+                id="saveProductBtn"
+                type="button"
+                class="flex h-12 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-5 text-base font-bold text-white hover:bg-primary/90"
+              >
+                Ürünü Kaydet
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      let selectedIngredients = [];
+      let allIngredients = [];
+      let allProductTypes = [];
+      let allWholesalers = [];
+      let globalSettings = {};
+
+      // Ayarları yükle
+      async function loadSettings() {
+        try {
+          const response = await fetch("/api/settings");
+          const settings = await response.json();
+          settings.forEach(s => {
+            globalSettings[s.code] = parseFloat(s.value);
+          });
+        } catch (error) {
+          console.error("Settings load error:", error);
+        }
+      }
+
+      function updateTaxDisplay(price) {
+        const infoDiv = document.getElementById("taxInfoDisplay");
+        if (!infoDiv) return;
+
+        if (price > 0 && (globalSettings.KDV_FOOD !== undefined || globalSettings.KDV_DRINK !== undefined)) {
+          const kdvFood = globalSettings.KDV_FOOD || 10;
+          const kdvDrink = globalSettings.KDV_DRINK || 20;
+          
+          const taxFood = (price * kdvFood / (100 + kdvFood)).toFixed(2);
+          const netFood = (price - taxFood).toFixed(2);
+          
+          const taxDrink = (price * kdvDrink / (100 + kdvDrink)).toFixed(2);
+          const netDrink = (price - taxDrink).toFixed(2);
+          
+          infoDiv.innerHTML = `
+            <div class="flex flex-col gap-1">
+              <span class="font-medium text-[#529a4c]">KDV Dahil (Yiyecek %${kdvFood}): Net ${netFood} + KDV ${taxFood} TL</span>
+              <span class="font-medium text-[#529a4c]">KDV Dahil (İçecek %${kdvDrink}): Net ${netDrink} + KDV ${taxDrink} TL</span>
+            </div>
+          `;
+          infoDiv.classList.remove("hidden");
+        } else {
+          infoDiv.classList.add("hidden");
+        }
+      }
+
+      // Fiyat değişince güncelle
+      document.getElementById("productPrice").addEventListener("input", (e) => {
+        updateTaxDisplay(parseFloat(e.target.value) || 0);
+      });
+      // Yetki kontrolü
+      (function guardAdmin() {
+        // Ayarları yükle
+        loadSettings();
+        
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      /**
+       * Ürün tipi değiştiğinde reçete ve stok bölümlerini göster/gizle
+       */
+      function handleProcessTypeChange() {
+        const processType = document.getElementById("processType").value;
+        const recipeSection = document.getElementById("recipeSection");
+        const stockInfoSection = document.getElementById("stockInfoSection");
+
+        if (processType === "al-sat") {
+          // al-sat seçildiğinde stok bilgilerini göster, reçeteyi gizle
+          recipeSection.classList.add("hidden");
+          stockInfoSection.classList.remove("hidden");
+        } else {
+          // üretilen seçildiğinde reçeteyi göster, stok bilgilerini gizle
+          recipeSection.classList.remove("hidden");
+          stockInfoSection.classList.add("hidden");
+        }
+      }
+
+      /**
+       * Ürün kategorilerini yükle
+       */
+      async function loadProductTypes() {
+        try {
+          const response = await fetch("/api/products/types/list");
+          allProductTypes = await response.json();
+
+          const select = document.getElementById("productCategory");
+          select.innerHTML = '<option value="">Kategori seçin...</option>';
+
+          allProductTypes.forEach((type) => {
+            const option = document.createElement("option");
+            option.value = type.id;
+            option.textContent = type.type_name;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Load product types error:", error);
+        }
+      }
+
+      /**
+       * Tedarikçileri yükle
+       */
+      async function loadWholesalers() {
+        try {
+          const response = await fetch("/api/stock/wholesalers");
+          allWholesalers = await response.json();
+
+          const select = document.getElementById("productWholesaler");
+          select.innerHTML =
+            '<option value="">Tedarikçi seçin (Opsiyonel)</option>';
+
+          allWholesalers.forEach((wholesaler) => {
+            const option = document.createElement("option");
+            option.value = wholesaler.id;
+            option.textContent = wholesaler.name;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Load wholesalers error:", error);
+        }
+      }
+
+      // Malzemeleri yükle
+      async function loadIngredients() {
+        try {
+          const response = await fetch("/api/stock/ingredients");
+          allIngredients = await response.json();
+
+          const select = document.getElementById("ingredientSelect");
+          select.innerHTML = '<option value="">Malzeme seçin...</option>';
+
+          allIngredients.forEach((ing) => {
+            const option = document.createElement("option");
+            option.value = ing.id;
+            const priceText = ing.unit_price
+              ? ` - ₺${parseFloat(ing.unit_price).toFixed(2)}/${ing.unit}`
+              : "";
+            option.textContent = `${ing.name} (${ing.unit})${priceText}`;
+            option.dataset.unit = ing.unit;
+            select.appendChild(option);
+          });
+
+          // Malzeme seçildiğinde birim ipucunu güncelle
+          select.addEventListener("change", updateQuantityHint);
+        } catch (error) {
+          console.error("Load ingredients error:", error);
+        }
+      }
+
+      /**
+       * Miktar input'una birim ipucu ekle
+       */
+      function updateQuantityHint() {
+        const select = document.getElementById("ingredientSelect");
+        const quantityInput = document.getElementById("ingredientQuantity");
+        const hintElement = document.getElementById("quantityUnitHint");
+
+        const selectedId = select.value;
+        if (!selectedId) {
+          hintElement.textContent = "";
+          quantityInput.placeholder = "Miktar";
+          return;
+        }
+
+        const ingredient = allIngredients.find((ing) => ing.id == selectedId);
+        if (!ingredient) return;
+
+        const unit = ingredient.unit;
+
+        // Eğer birim kg ise, gram cinsinden giriş yapılabilir
+        if (unit === "kg") {
+          quantityInput.placeholder = "Gram cinsinden girin (örn: 9)";
+          hintElement.textContent =
+            "Not: Değer otomatik olarak kg'ye çevrilecektir (9 gram = 0.009 kg)";
+        } else if (unit === "L") {
+          quantityInput.placeholder = "Mililitre cinsinden girin (örn: 250)";
+          hintElement.textContent =
+            "Not: Değer otomatik olarak litre'ye çevrilecektir (250 ml = 0.25 L)";
+        } else {
+          quantityInput.placeholder = `Miktar (${unit})`;
+          hintElement.textContent = "";
+        }
+      }
+
+      /**
+       * Birim dönüşümü yap (gram → kg, ml → L)
+       * Kullanıcı gram/ml cinsinden değer girer, sistem kg/L olarak saklar
+       *
+       * Örnekler:
+       * - 9 → 9 gram = 0.009 kg
+       * - 90 → 90 gram = 0.09 kg
+       * - 0.09 → 90 gram = 0.09 kg (kullanıcı 0.09 yazarsa 90 gram demek istiyor)
+       */
+      function convertQuantity(value, unit) {
+        if (unit === "kg") {
+          // Eğer değer 1'den küçükse, bunu 1000 ile çarp (gram olarak kabul et)
+          // 0.09 → 90 gram → 0.09 kg
+          if (value < 1 && value > 0) {
+            return value; // 0.09 kg = 90 gram (zaten doğru)
+          }
+          // Eğer değer 1'den büyükse, gram olarak kabul et ve kg'ye çevir
+          // 9 → 9 gram = 0.009 kg
+          // 90 → 90 gram = 0.09 kg
+          return value / 1000;
+        } else if (unit === "L") {
+          // Eğer değer 1'den küçükse, bunu 1000 ile çarp (ml olarak kabul et)
+          if (value < 1 && value > 0) {
+            return value; // 0.25 L = 250 ml (zaten doğru)
+          }
+          // Eğer değer 1'den büyükse, ml olarak kabul et ve L'ye çevir
+          return value / 1000;
+        }
+        // Diğer birimler için dönüşüm yok
+        return value;
+      }
+
+      // Malzeme ekle
+      document
+        .getElementById("addIngredientBtn")
+        .addEventListener("click", () => {
+          const select = document.getElementById("ingredientSelect");
+          const quantityInput = document.getElementById("ingredientQuantity");
+
+          const ingredientId = select.value;
+          const rawQuantity = parseFloat(quantityInput.value);
+
+          if (!ingredientId || !rawQuantity || rawQuantity <= 0) {
+            toast.warning("Lütfen malzeme seçin ve miktar girin");
+            return;
+          }
+
+          const ingredient = allIngredients.find(
+            (ing) => ing.id == ingredientId
+          );
+          if (!ingredient) return;
+
+          // Zaten eklenmiş mi kontrol et
+          if (
+            selectedIngredients.find(
+              (item) => item.ingredient_id == ingredientId
+            )
+          ) {
+            toast.warning("Bu malzeme zaten eklenmiş");
+            return;
+          }
+
+          // Birim dönüşümü yap
+          const convertedQuantity = convertQuantity(
+            rawQuantity,
+            ingredient.unit
+          );
+
+          selectedIngredients.push({
+            ingredient_id: parseInt(ingredientId),
+            quantity: convertedQuantity,
+            name: ingredient.name,
+            unit: ingredient.unit,
+            unit_price: parseFloat(ingredient.unit_price || 0),
+            // Görüntüleme için orijinal değeri de sakla
+            displayQuantity: rawQuantity,
+            displayUnit:
+              ingredient.unit === "kg"
+                ? "g"
+                : ingredient.unit === "L"
+                ? "ml"
+                : ingredient.unit,
+          });
+
+          renderIngredientsList();
+          updateTotalCost();
+
+          // Formu temizle
+          select.value = "";
+          quantityInput.value = "";
+          updateQuantityHint(); // İpucunu temizle
+        });
+
+      // Malzeme listesini render et
+      function renderIngredientsList() {
+        const container = document.getElementById("ingredientsList");
+
+        if (selectedIngredients.length === 0) {
+          container.innerHTML =
+            '<p class="text-center text-sm text-[#529a4c] dark:text-primary/70 py-4">Henüz malzeme eklenmedi</p>';
+          return;
+        }
+
+        container.innerHTML = "";
+        selectedIngredients.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className =
+            "flex items-center justify-between rounded-lg bg-background-light p-4 dark:bg-background-dark/50";
+
+          // Görüntüleme için: eğer displayQuantity varsa onu kullan, yoksa quantity kullan
+          let displayText = "";
+          if (item.displayQuantity && item.displayUnit) {
+            // Kullanıcının girdiği değeri ve birimi göster
+            displayText = `${item.displayQuantity} ${
+              item.displayUnit
+            } (${item.quantity.toFixed(3)} ${item.unit})`;
+          } else {
+            displayText = `${item.quantity} ${item.unit}`;
+          }
+
+          div.innerHTML = `
+            <p class="font-medium text-[#0f1b0d] dark:text-white">
+              ${item.name}
+            </p>
+            <div class="flex items-center gap-4">
+              <p class="text-[#529a4c] dark:text-primary/80 text-sm">
+                ${displayText}
+              </p>
+              <button
+                type="button"
+                class="text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                onclick="removeIngredient(${index})"
+              >
+                <span class="material-symbols-outlined text-xl">delete</span>
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      // Malzeme kaldır
+      function removeIngredient(index) {
+        selectedIngredients.splice(index, 1);
+        renderIngredientsList();
+        updateTotalCost();
+      }
+
+      // Toplam maliyeti güncelle
+      function updateTotalCost() {
+        let total = 0;
+        selectedIngredients.forEach((item) => {
+          const unitPrice = item.unit_price || 0;
+          total += item.quantity * unitPrice;
+        });
+
+        document.getElementById("totalCost").textContent = `₺${total.toFixed(
+          2
+        )}`;
+      }
+
+      // Ürünü kaydet
+      document
+        .getElementById("saveProductBtn")
+        .addEventListener("click", async () => {
+          const name = document.getElementById("productName").value.trim();
+          const price = parseFloat(
+            document.getElementById("productPrice").value
+          );
+          const productType = document.getElementById("productCategory").value;
+          const processType = document.getElementById("processType").value;
+
+          if (!name || !price || price <= 0) {
+            toast.warning("Lütfen ürün adı ve geçerli bir fiyat girin");
+            return;
+          }
+
+          if (!productType) {
+            toast.warning("Lütfen bir kategori seçin");
+            return;
+          }
+
+          // Üretilen ürünler için malzeme kontrolü
+          if (processType === "üretilen" && selectedIngredients.length === 0) {
+            toast.warning(
+              "Üretilen ürünler için lütfen en az bir malzeme ekleyin"
+            );
+            return;
+          }
+
+          // al-sat ürünler için stok kontrolü
+          if (processType === "al-sat") {
+            const stock =
+              parseFloat(document.getElementById("productStock").value) || 0;
+            const minStock =
+              parseFloat(document.getElementById("productMinStock").value) || 0;
+            const unitPrice =
+              parseFloat(document.getElementById("productUnitPrice").value) ||
+              0;
+
+            if (unitPrice <= 0) {
+              toast.warning(
+                "al-sat ürünler için birim fiyatı 0'dan büyük olmalıdır"
+              );
+              return;
+            }
+          }
+
+          try {
+            // FormData kullanarak resim ve diğer verileri gönder
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("price", price);
+            formData.append("process_type", processType);
+            formData.append("product_type", parseInt(productType));
+
+            // Resim ekle (varsa)
+            const imageFile = productImageInput.files[0];
+            if (imageFile) {
+              formData.append("image", imageFile);
+            }
+
+            // Üretilen ürünler için reçete ekle
+            if (processType === "üretilen") {
+              const recipe = selectedIngredients.map((item) => ({
+                ingredient_id: item.ingredient_id,
+                quantity: item.quantity,
+              }));
+              formData.append("recipe", JSON.stringify(recipe));
+            }
+
+            // al-sat ürünler için stok bilgileri ekle
+            if (processType === "al-sat") {
+              formData.append(
+                "stock",
+                parseFloat(document.getElementById("productStock").value) || 0
+              );
+              formData.append(
+                "min_stock",
+                parseFloat(document.getElementById("productMinStock").value) ||
+                  0
+              );
+              formData.append(
+                "wholesaler_id",
+                document.getElementById("productWholesaler").value || ""
+              );
+              formData.append(
+                "unit_price",
+                parseFloat(document.getElementById("productUnitPrice").value) ||
+                  0
+              );
+              formData.append(
+                "min_purch",
+                parseFloat(document.getElementById("productMinPurch").value) ||
+                  0
+              );
+            }
+
+            const response = await fetch("/api/products", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              toast.success("Ürün başarıyla eklendi!");
+              setTimeout(() => {
+                window.location.href = "/product/track";
+              }, 500);
+            } else {
+              toast.error(data.error || "Ürün eklenirken bir hata oluştu");
+            }
+          } catch (error) {
+            console.error("Save product error:", error);
+            toast.error("Bir hata oluştu");
+          }
+        });
+
+      /**
+       * Resim yükleme işlemleri
+       */
+      const productImageInput = document.getElementById("productImage");
+      const imageUploadArea = document.getElementById("imageUploadArea");
+      const imagePreview = document.getElementById("imagePreview");
+      const previewImg = document.getElementById("previewImg");
+      const imagePlaceholder = document.getElementById("imagePlaceholder");
+      const selectImageBtn = document.getElementById("selectImageBtn");
+
+      // Resim seç butonuna tıklama
+      selectImageBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Event bubbling'i durdur
+        productImageInput.click();
+      });
+
+      // Upload area'ya tıklama (buton ve buton içi elemanlar hariç)
+      imageUploadArea.addEventListener("click", (e) => {
+        // Eğer click selectImageBtn ya da onun içindeki herhangi bir elemandan geldiyse, yok say
+        if (e.target && e.target.closest && e.target.closest("#selectImageBtn"))
+          return;
+        // Eğer doğrudan input'a tıklanmadıysa, input'ı tetikle
+        if (e.target !== productImageInput) {
+          productImageInput.click();
+        }
+      });
+
+      // Resim seçildiğinde önizleme göster
+      productImageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          // Dosya boyutu kontrolü (5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            toast.error("Resim boyutu 5MB'dan küçük olmalıdır");
+            return;
+          }
+
+          // Dosya tipi kontrolü
+          if (!file.type.match("image.*")) {
+            toast.error("Lütfen bir resim dosyası seçin");
+            return;
+          }
+
+          // Önizleme göster
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            imagePreview.classList.remove("hidden");
+            imagePlaceholder.classList.add("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Process type değişikliğini dinle
+      document
+        .getElementById("processType")
+        .addEventListener("change", handleProcessTypeChange);
+
+      // Sayfa yüklendiğinde
+      loadIngredients();
+      loadProductTypes();
+      loadWholesalers();
+      handleProcessTypeChange(); // İlk yüklemede doğru bölümü göster
+    </script>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

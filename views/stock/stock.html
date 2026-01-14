@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stok Yönetimi - Keşiş Kafe</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "background-dark": "#211114",
+              surface: "#FFFFFF",
+              "on-surface-primary": "#1C1917",
+              "on-surface-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col gap-6">
+              <div class="flex flex-wrap justify-between items-center gap-4">
+                <div class="flex flex-col gap-2">
+                  <p
+                    class="text-on-surface-primary text-4xl font-black leading-tight tracking-[-0.033em]"
+                  >
+                    Stok Yönetimi
+                  </p>
+                  <p
+                    class="text-on-surface-secondary text-base font-normal leading-normal"
+                  >
+                    Ürün ekleyin, düzenleyin ve mevcut stokları görüntüleyin.
+                  </p>
+                </div>
+              <div class="flex items-center gap-3">
+                <a
+                  href="/supplier/supply"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-surface border border-border-color text-on-surface-primary text-sm font-bold leading-normal tracking-[0.015em] gap-2 hover:bg-black/5 transition-colors"
+                >
+                  <span class="material-symbols-outlined">local_shipping</span>
+                  <span class="truncate">Sevkiyatlar</span>
+                </a>
+                <a
+                  href="/stock/ingredient/add"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary hover:bg-primary-darker text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 transition-colors"
+                >
+                  <span class="material-symbols-outlined">add</span>
+                  <span class="truncate">Yeni Malzeme Ekle</span>
+                </a>
+              </div>
+              </div>
+              <div
+                id="lowStockWarning"
+                class="flex items-stretch justify-between gap-6 rounded-lg bg-primary/10 p-5 shadow-[0_0_4px_rgba(0,0,0,0.05)] border border-primary/30"
+              >
+                <div class="flex flex-[2_2_0px] flex-col gap-4">
+                  <div class="flex flex-col gap-1">
+                    <p
+                      class="text-on-surface-primary text-lg font-bold leading-tight flex items-center gap-2"
+                    >
+                      <span class="material-symbols-outlined text-yellow-500"
+                        >warning</span
+                      >Düşük Stok Uyarısı
+                    </p>
+                    <p
+                      id="lowStockMessage"
+                      class="text-on-surface-secondary text-sm font-normal leading-normal"
+                    >
+                      Aşağıdaki ürünlerin stokları kritik seviyenin altında.
+                      Lütfen tedarik sağlayın.
+                    </p>
+                  </div>
+                  <button
+                    id="orderAllLowStockBtn"
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-medium leading-normal w-fit gap-2"
+                  >
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span class="truncate">Hepsini Sipariş Et</span>
+                  </button>
+                </div>
+                <div
+                  class="hidden sm:flex flex-1 items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined text-8xl opacity-30"
+                    >inventory_2</span
+                  >
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-grow">
+                  <label class="flex flex-col min-w-40 h-12 w-full">
+                    <div
+                      class="flex w-full flex-1 items-stretch rounded-lg h-full bg-surface border border-border-color"
+                    >
+                      <div
+                        class="text-on-surface-secondary flex items-center justify-center pl-4"
+                      >
+                        <span class="material-symbols-outlined">search</span>
+                      </div>
+                      <input
+                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-on-surface-primary focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-on-surface-secondary px-4 pl-2 text-base font-normal leading-normal"
+                        placeholder="Ürün adına veya SKU'ya göre ara"
+                        value=""
+                      />
+                    </div>
+                  </label>
+                </div>
+                <div class="flex gap-3 items-center">
+                  <div class="relative">
+                    <button
+                      id="categoryFilterBtn"
+                      class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-surface border border-border-color hover:bg-black/5 px-4 min-w-[140px]"
+                      onclick="toggleCategoryDropdown()"
+                    >
+                      <p
+                        class="text-on-surface-primary text-sm font-medium leading-normal"
+                      >
+                        <span id="categoryFilterText">Kategori</span>
+                      </p>
+                      <span
+                        class="material-symbols-outlined text-on-surface-secondary"
+                        >expand_more</span
+                      >
+                    </button>
+                    <div
+                      id="categoryDropdown"
+                      class="hidden absolute z-10 mt-1 w-full bg-surface border border-border-color rounded-lg shadow-lg"
+                    >
+                      <ul class="py-1 text-sm text-on-surface-primary">
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectCategoryFilter('all'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Tümü</a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectCategoryFilter('malzeme'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Malzeme</a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectCategoryFilter('ürün'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Ürün</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <button
+                      id="stockStatusFilterBtn"
+                      class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-surface border border-border-color hover:bg-black/5 px-4 min-w-[140px]"
+                      onclick="toggleStockStatusDropdown()"
+                    >
+                      <p
+                        class="text-on-surface-primary text-sm font-medium leading-normal"
+                      >
+                        <span id="stockStatusFilterText">Stok Durumu</span>
+                      </p>
+                      <span
+                        class="material-symbols-outlined text-on-surface-secondary"
+                        >expand_more</span
+                      >
+                    </button>
+                    <div
+                      id="stockStatusDropdown"
+                      class="hidden absolute z-10 mt-1 w-full bg-surface border border-border-color rounded-lg shadow-lg"
+                    >
+                      <ul class="py-1 text-sm text-on-surface-primary">
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectStockStatusFilter('all'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Tümü</a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectStockStatusFilter('in_stock'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Stokta Var</a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectStockStatusFilter('low_stock'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Düşük Stok</a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            onclick="selectStockStatusFilter('out_of_stock'); return false;"
+                            class="block px-4 py-2 hover:bg-black/5"
+                          >Stok Yok</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="overflow-x-auto bg-surface rounded-lg border border-border-color"
+              >
+                <table class="w-full text-left text-sm text-on-surface-primary">
+                  <thead
+                    class="text-xs text-on-surface-secondary uppercase bg-black/5"
+                  >
+                    <tr>
+
+                      <th class="px-6 py-3" scope="col">Ürün Adı</th>
+                      <th class="px-6 py-3" scope="col">Tip</th>
+                      <th class="px-6 py-3" scope="col">Mevcut Stok</th>
+                      <th class="px-6 py-3" scope="col">Birim Fiyatı</th>
+                      <th class="px-6 py-3" scope="col">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stockTable"></tbody>
+                </table>
+                <nav
+                id="paginationNav"
+                  aria-label="Table navigation"
+                  class="flex items-center justify-between p-4"
+                >
+                  <span
+                    id="paginationInfo"
+                    class="text-sm font-normal text-on-surface-secondary"
+                    >Toplam
+                    <span class="font-semibold text-on-surface-primary">0</span>
+                    üründen gösteriliyor</span
+                  >
+                <ul id="paginationList" class="inline-flex -space-x-px text-sm h-8">
+                  <!-- Pagination dinamik olarak oluşturulacak -->
+                  </ul>
+                </nav>
+              </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      /**
+       * Yetki kontrolü - Sadece admin kullanıcılar bu sayfaya erişebilir
+       * Kasa kullanıcıları cashier sayfasına yönlendirilir
+       */
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      /**
+       * Düşük stok uyarısını yükler ve gösterir
+       * Minimum stok seviyesinin altındaki malzemeleri kontrol eder
+       * Eğer düşük stoklu malzeme varsa uyarı mesajı gösterir
+       */
+      async function loadLowStockWarning() {
+        try {
+          const response = await fetch("/api/stock/ingredients/low");
+          const lowStock = await response.json();
+
+          const warningElement = document.getElementById("lowStockWarning");
+
+          if (lowStock.length > 0) {
+            // Düşük stoklu malzeme var - uyarı göster
+            document.getElementById(
+              "lowStockMessage"
+            ).textContent = `Aşağıdaki ${lowStock.length} ürünün stokları kritik seviyenin altında. Lütfen tedarik sağlayın.`;
+            warningElement.style.display = "flex";
+          } else {
+            // Düşük stok yok - uyarıyı gizle
+            warningElement.style.display = "none";
+          }
+        } catch (error) {
+          console.error("Load low stock warning error:", error);
+          // Hata durumunda da uyarıyı gizle
+          document.getElementById("lowStockWarning").style.display = "none";
+        }
+      }
+
+      // Sayfalama durumu
+      let currentPage = 1;
+      const itemsPerPage = 10; // Sayfa başına gösterilecek ürün sayısı
+      let allIngredientsOriginal = []; // Orijinal tüm ürünler (arama için)
+      let allIngredientsFiltered = []; // Filtrelenmiş ürünler (gösterim için)
+      
+      // Filtre durumu
+      let selectedCategory = 'all'; // 'all', 'malzeme', 'ürün'
+      let selectedStockStatus = 'all'; // 'all', 'in_stock', 'low_stock', 'out_of_stock'
+
+      /**
+       * Pagination'ı render eder
+       * Toplam ürün sayısına göre sayfa sayısını hesaplar ve pagination butonlarını oluşturur
+       * @param {number} totalItems - Toplam ürün sayısı
+       */
+      function renderPagination(totalItems) {
+        const paginationList = document.getElementById("paginationList");
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        paginationList.innerHTML = "";
+
+        // Eğer 1 sayfa veya daha az varsa pagination gösterme
+        if (totalPages <= 1) {
+          return;
+        }
+
+        // Geri butonu
+        const prevLi = document.createElement("li");
+        prevLi.innerHTML = `
+          <a
+            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-on-surface-secondary bg-surface border border-border-color rounded-s-lg hover:bg-black/5 hover:text-on-surface-primary ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
+            href="#"
+            onclick="changePage(${currentPage - 1}); return false;"
+          >Geri</a>
+        `;
+        paginationList.appendChild(prevLi);
+
+        // Sayfa numaraları
+        // İlk sayfa
+        if (totalPages > 0) {
+          const firstLi = document.createElement("li");
+          firstLi.innerHTML = `
+            <a
+              class="flex items-center justify-center px-3 h-8 ${currentPage === 1 ? 'text-white border border-primary bg-primary hover:bg-primary/90' : 'leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary'}"
+              href="#"
+              onclick="changePage(1); return false;"
+            >1</a>
+          `;
+          paginationList.appendChild(firstLi);
+        }
+
+        // Sayfa numaraları arasında "..." göster
+        if (totalPages > 7) {
+          // Çok sayfa varsa kısaltılmış gösterim
+          if (currentPage > 3) {
+            const dotsLi = document.createElement("li");
+            dotsLi.innerHTML = `
+              <a
+                class="flex items-center justify-center px-3 h-8 leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary"
+                href="#"
+                onclick="return false;"
+              >...</a>
+            `;
+            paginationList.appendChild(dotsLi);
+          }
+
+          // Mevcut sayfa ve etrafındaki sayfalar
+          const startPage = Math.max(2, currentPage - 1);
+          const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+          for (let i = startPage; i <= endPage; i++) {
+            if (i === 1 || i === totalPages) continue; // İlk ve son sayfa zaten eklendi
+            const pageLi = document.createElement("li");
+            pageLi.innerHTML = `
+              <a
+                class="flex items-center justify-center px-3 h-8 ${currentPage === i ? 'text-white border border-primary bg-primary hover:bg-primary/90' : 'leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary'}"
+                href="#"
+                onclick="changePage(${i}); return false;"
+              >${i}</a>
+            `;
+            paginationList.appendChild(pageLi);
+          }
+
+          if (currentPage < totalPages - 2) {
+            const dotsLi = document.createElement("li");
+            dotsLi.innerHTML = `
+              <a
+                class="flex items-center justify-center px-3 h-8 leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary"
+                href="#"
+                onclick="return false;"
+              >...</a>
+            `;
+            paginationList.appendChild(dotsLi);
+          }
+        } else {
+          // Az sayfa varsa hepsini göster
+          for (let i = 2; i < totalPages; i++) {
+            const pageLi = document.createElement("li");
+            pageLi.innerHTML = `
+              <a
+                class="flex items-center justify-center px-3 h-8 ${currentPage === i ? 'text-white border border-primary bg-primary hover:bg-primary/90' : 'leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary'}"
+                href="#"
+                onclick="changePage(${i}); return false;"
+              >${i}</a>
+            `;
+            paginationList.appendChild(pageLi);
+          }
+        }
+
+        // Son sayfa
+        if (totalPages > 1) {
+          const lastLi = document.createElement("li");
+          lastLi.innerHTML = `
+            <a
+              class="flex items-center justify-center px-3 h-8 ${currentPage === totalPages ? 'text-white border border-primary bg-primary hover:bg-primary/90' : 'leading-tight text-on-surface-secondary bg-surface border border-border-color hover:bg-black/5 hover:text-on-surface-primary'}"
+              href="#"
+              onclick="changePage(${totalPages}); return false;"
+            >${totalPages}</a>
+          `;
+          paginationList.appendChild(lastLi);
+        }
+
+        // İleri butonu
+        const nextLi = document.createElement("li");
+        nextLi.innerHTML = `
+          <a
+            class="flex items-center justify-center px-3 h-8 leading-tight text-on-surface-secondary bg-surface border border-border-color rounded-e-lg hover:bg-black/5 hover:text-on-surface-primary ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
+            href="#"
+            onclick="changePage(${currentPage + 1}); return false;"
+          >İleri</a>
+        `;
+        paginationList.appendChild(nextLi);
+      }
+
+      /**
+       * Sayfa değiştirir ve listeyi yeniden render eder
+       * @param {number} page - Gidilecek sayfa numarası
+       */
+      function changePage(page) {
+        const totalItems = allIngredientsFiltered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        if (page < 1 || page > totalPages) return;
+        
+        currentPage = page;
+        renderStockTable();
+        renderPagination(totalItems);
+        
+        // Sayfalama bilgisini güncelle
+        const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+        const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+        document.getElementById(
+          "paginationInfo"
+        ).innerHTML = `Toplam <span class="font-semibold text-on-surface-primary">${totalItems}</span> üründen ${totalItems > 0 ? `<span class="font-semibold text-on-surface-primary">${startItem}-${endItem}</span> arası` : ''} gösteriliyor`;
+      }
+
+      /**
+       * Stok tablosunu render eder
+       * Mevcut sayfaya göre ürünleri filtreler ve gösterir
+       */
+      function renderStockTable() {
+        if (!allIngredientsFiltered || allIngredientsFiltered.length === 0) {
+          const tbody = document.getElementById("stockTable");
+          tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-on-surface-secondary">Ürün bulunamadı</td></tr>';
+          return;
+        }
+
+          const tbody = document.getElementById("stockTable");
+          tbody.innerHTML = "";
+
+        // Mevcut sayfa için ürünleri filtrele
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageIngredients = allIngredientsFiltered.slice(startIndex, endIndex);
+
+        pageIngredients.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.className = "border-b border-border-color hover:bg-black/5";
+
+          // Stok durumuna göre renk belirle
+          let stockClass = "bg-green-100 text-green-800"; // Normal stok
+            let stockText = item.stock;
+            if (parseFloat(item.stock) === 0) {
+            stockClass = "bg-red-100 text-red-800"; // Stok yok
+            } else if (parseFloat(item.stock) <= parseFloat(item.min_stock)) {
+            stockClass = "bg-yellow-100 text-yellow-800"; // Düşük stok
+            }
+
+            // Ürün veya malzeme kontrolü
+            const isProduct = item.type === 'ürün';
+            // Ürün stokları için ID'yi string olarak gönder (product_ prefix'li)
+            const editFunction = isProduct ? `editProductStock('${item.id}')` : `editIngredient(${item.id})`;
+            const deleteFunction = isProduct ? `deleteProductStock('${item.id}')` : `deleteIngredient(${item.id})`;
+
+            const stockValue = parseFloat(item.stock) || 0;
+            const unitLabel = item.unit || 'adet';
+            const stockDisplay = stockValue.toLocaleString("tr-TR", {
+              minimumFractionDigits: unitLabel === "adet" ? 0 : 2,
+              maximumFractionDigits: unitLabel === "adet" ? 0 : 2,
+            });
+
+            row.innerHTML = `
+
+              <td class="px-6 py-4 font-medium text-on-surface-primary whitespace-nowrap">
+                ${item.name}
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  isProduct ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                }">
+                  ${item.type_label || (isProduct ? 'Ürün' : 'Malzeme')}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="${stockClass} text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">
+                  ${stockDisplay} ${unitLabel}
+                </span>
+              </td>
+            <td class="px-6 py-4">₺${parseFloat(item.unit_price || 0).toFixed(
+              2
+            )}</td>
+              <td class="px-6 py-4 flex gap-2">
+                <button
+                  class="text-on-surface-secondary hover:text-on-surface-primary"
+                  onclick="${editFunction}"
+                >
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button 
+                  class="text-red-500/70 hover:text-red-500"
+                  onclick="${deleteFunction}"
+                >
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+      }
+
+      /**
+       * Stok listesini API'den yükler ve tabloya render eder
+       * Hem malzemeleri hem de ürün stoklarını getirir
+       * Her stok için stok durumuna göre renk kodlaması yapar:
+       * - Kırmızı: Stok = 0
+       * - Sarı: Stok <= Minimum stok
+       * - Yeşil: Stok > Minimum stok
+       */
+      async function loadStockList() {
+        try {
+          const response = await fetch("/api/stock/all");
+          const stockItems = await response.json();
+
+          // Orijinal listeyi güncelle
+          allIngredientsOriginal = stockItems;
+
+          // Filtreleri uygula (arama, kategori, stok durumu)
+          applyFilters();
+        } catch (error) {
+          console.error("Load stock list error:", error);
+        }
+      }
+
+      /**
+       * Malzeme düzenleme sayfasına yönlendirir
+       * @param {number} id - Düzenlenecek malzeme ID'si
+       */
+      function editIngredient(id) {
+        window.location.href = `/stock/ingredient/update?id=${id}`;
+      }
+
+      /**
+       * Malzemeyi siler
+       * Kullanıcıya onay mesajı gösterir
+       * Başarılı olursa listeyi ve uyarıları yeniler
+       * @param {number} id - Silinecek malzeme ID'si
+       */
+      async function deleteIngredient(id) {
+        if (!confirm("Bu malzemeyi silmek istediğinize emin misiniz?")) return;
+
+        try {
+          const response = await fetch(`/api/stock/ingredients/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            toast.success("Malzeme silindi");
+            // Listeyi ve düşük stok uyarısını yenile
+            loadStockList();
+            loadLowStockWarning();
+          } else {
+            toast.error("Silme işlemi başarısız");
+          }
+        } catch (error) {
+          console.error("Delete ingredient error:", error);
+          toast.error("Bir hata oluştu");
+        }
+      }
+
+      /**
+       * Ürün stokunu düzenleme sayfasına yönlendirir
+       * @param {string} stockId - Düzenlenecek ürün stok ID'si (product_ prefix'li)
+       */
+      function editProductStock(stockId) {
+        // ID'den product_ prefix'ini kaldır
+        const id = stockId.replace('product_', '');
+        window.location.href = `/stock/product-stock/update?id=${id}`;
+      }
+
+      /**
+       * Ürün stokunu siler
+       * @param {string} id - Silinecek ürün stok ID'si (product_ prefix'li)
+       */
+      async function deleteProductStock(id) {
+        if (!confirm("Bu ürün stokunu silmek istediğinize emin misiniz?")) return;
+
+        try {
+          // ID'den product_ prefix'ini kaldır
+          const stockId = id.replace('product_', '');
+          const response = await fetch(`/api/stock/product-stock/${stockId}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            toast.success("Ürün stoku silindi");
+            loadStockList();
+            loadLowStockWarning();
+          } else {
+            toast.error("Silme işlemi başarısız");
+          }
+        } catch (error) {
+          console.error("Delete product stock error:", error);
+          toast.error("Bir hata oluştu");
+        }
+      }
+
+      /**
+       * Tüm filtreleri uygular ve listeyi günceller
+       * Arama, kategori ve stok durumu filtrelerini birleştirir
+       */
+      function applyFilters() {
+        if (!allIngredientsOriginal || allIngredientsOriginal.length === 0) return;
+
+        const searchTerm = document.querySelector('input[placeholder*="ara"]')?.value.toLowerCase() || '';
+        
+        // Tüm filtreleri uygula
+        allIngredientsFiltered = allIngredientsOriginal.filter((item) => {
+          // Arama filtresi
+          if (searchTerm.trim() !== "") {
+            const name = (item.name || "").toLowerCase();
+            if (!name.includes(searchTerm)) return false;
+          }
+          
+          // Kategori filtresi
+          if (selectedCategory !== 'all') {
+            if (selectedCategory === 'malzeme' && item.type !== 'malzeme') return false;
+            if (selectedCategory === 'ürün' && item.type !== 'ürün') return false;
+          }
+          
+          // Stok durumu filtresi
+          if (selectedStockStatus !== 'all') {
+            const stock = parseFloat(item.stock) || 0;
+            const minStock = parseFloat(item.min_stock) || 0;
+            
+            if (selectedStockStatus === 'in_stock') {
+              // Stokta var: stock > min_stock ve stock > 0
+              if (stock <= 0 || (minStock > 0 && stock <= minStock)) return false;
+            } else if (selectedStockStatus === 'low_stock') {
+              // Düşük stok: stock > 0 ve stock <= min_stock (min_stock > 0 olmalı)
+              if (stock <= 0 || minStock <= 0 || stock > minStock) return false;
+            } else if (selectedStockStatus === 'out_of_stock') {
+              // Stok yok: stock = 0
+              if (stock > 0) return false;
+            }
+          }
+          
+          return true;
+        });
+        
+        // İlk sayfaya dön
+        currentPage = 1;
+
+        // Tabloyu yeniden render et
+        renderStockTable();
+
+        // Sayfalama bilgisini güncelle
+        const startItem = allIngredientsFiltered.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+        const endItem = Math.min(currentPage * itemsPerPage, allIngredientsFiltered.length);
+        document.getElementById(
+          "paginationInfo"
+        ).innerHTML = `Toplam <span class="font-semibold text-on-surface-primary">${allIngredientsFiltered.length}</span> üründen ${allIngredientsFiltered.length > 0 ? `<span class="font-semibold text-on-surface-primary">${startItem}-${endItem}</span> arası` : ''} gösteriliyor`;
+
+        // Pagination'ı yeniden render et
+        renderPagination(allIngredientsFiltered.length);
+      }
+
+      /**
+       * Kategori dropdown'ını açar/kapatır
+       */
+      function toggleCategoryDropdown() {
+        const dropdown = document.getElementById("categoryDropdown");
+        const stockDropdown = document.getElementById("stockStatusDropdown");
+        
+        // Diğer dropdown'ı kapat
+        stockDropdown.classList.add("hidden");
+        
+        // Bu dropdown'ı aç/kapat
+        dropdown.classList.toggle("hidden");
+      }
+
+      /**
+       * Stok durumu dropdown'ını açar/kapatır
+       */
+      function toggleStockStatusDropdown() {
+        const dropdown = document.getElementById("stockStatusDropdown");
+        const categoryDropdown = document.getElementById("categoryDropdown");
+        
+        // Diğer dropdown'ı kapat
+        categoryDropdown.classList.add("hidden");
+        
+        // Bu dropdown'ı aç/kapat
+        dropdown.classList.toggle("hidden");
+      }
+
+      /**
+       * Kategori filtresini seçer ve uygular
+       * @param {string} category - Seçilen kategori ('all', 'malzeme', 'ürün')
+       */
+      function selectCategoryFilter(category) {
+        selectedCategory = category;
+        
+        // Dropdown'ı kapat
+        document.getElementById("categoryDropdown").classList.add("hidden");
+        
+        // Buton metnini güncelle
+        const filterText = document.getElementById("categoryFilterText");
+        switch(category) {
+          case 'all':
+            filterText.textContent = 'Kategori';
+            break;
+          case 'malzeme':
+            filterText.textContent = 'Malzeme';
+            break;
+          case 'ürün':
+            filterText.textContent = 'Ürün';
+            break;
+        }
+        
+        // Filtreleri uygula
+        applyFilters();
+      }
+
+      /**
+       * Stok durumu filtresini seçer ve uygular
+       * @param {string} status - Seçilen stok durumu ('all', 'in_stock', 'low_stock', 'out_of_stock')
+       */
+      function selectStockStatusFilter(status) {
+        selectedStockStatus = status;
+        
+        // Dropdown'ı kapat
+        document.getElementById("stockStatusDropdown").classList.add("hidden");
+        
+        // Buton metnini güncelle
+        const filterText = document.getElementById("stockStatusFilterText");
+        switch(status) {
+          case 'all':
+            filterText.textContent = 'Stok Durumu';
+            break;
+          case 'in_stock':
+            filterText.textContent = 'Stokta Var';
+            break;
+          case 'low_stock':
+            filterText.textContent = 'Düşük Stok';
+            break;
+          case 'out_of_stock':
+            filterText.textContent = 'Stok Yok';
+            break;
+        }
+        
+        // Filtreleri uygula
+        applyFilters();
+      }
+
+      /**
+       * Arama fonksiyonu
+       * Kullanıcı arama kutusuna yazdıkça ürünleri filtreler
+       * Filtrelenmiş sonuçlara göre tabloyu ve pagination'ı yeniden render eder
+       */
+      document
+        .querySelector('input[placeholder*="ara"]')
+        .addEventListener("input", (e) => {
+          applyFilters();
+        });
+      
+      // Dropdown dışına tıklandığında kapat
+      document.addEventListener("click", (e) => {
+        const categoryBtn = document.getElementById("categoryFilterBtn");
+        const categoryDropdown = document.getElementById("categoryDropdown");
+        const stockBtn = document.getElementById("stockStatusFilterBtn");
+        const stockDropdown = document.getElementById("stockStatusDropdown");
+        
+        if (!categoryBtn.contains(e.target) && !categoryDropdown.contains(e.target)) {
+          categoryDropdown.classList.add("hidden");
+        }
+        
+        if (!stockBtn.contains(e.target) && !stockDropdown.contains(e.target)) {
+          stockDropdown.classList.add("hidden");
+        }
+      });
+
+      // Sayfa yüklendiğinde
+      loadLowStockWarning();
+      loadStockList();
+
+      // "Hepsini Sipariş Et" butonu - düşük stoktan otomatik sevkiyat oluştur
+      const orderAllBtn = document.getElementById("orderAllLowStockBtn");
+      if (orderAllBtn) {
+        orderAllBtn.addEventListener("click", async () => {
+          if (
+            !confirm(
+              "Düşük stokta olan ve tedarikçisi tanımlı tüm kalemler için otomatik sevkiyat oluşturulsun mu?"
+            )
+          ) {
+            return;
+          }
+
+          const originalHtml = orderAllBtn.innerHTML;
+          orderAllBtn.disabled = true;
+          orderAllBtn.classList.add("opacity-70", "cursor-not-allowed");
+          orderAllBtn.innerHTML =
+            '<span class="material-symbols-outlined animate-spin">hourglass_empty</span><span class="truncate">İşleniyor...</span>';
+
+          try {
+            const response = await fetch(
+              "/api/purchase-orders/auto-from-low-stock",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+              }
+            );
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+              const msg =
+                data.error ||
+                "Sevkiyatlar oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.";
+              toast.error(msg);
+            } else {
+              const createdCount = data.created_count || 0;
+              if (createdCount > 0) {
+                toast.success(
+                  `${createdCount} tedarikçi için otomatik sevkiyat oluşturuldu.`
+                );
+              } else {
+                toast.info(
+                  "Oluşturulacak uygun düşük stoklu kayıt bulunamadı."
+                );
+              }
+
+              // Düşük stok uyarısını ve tabloyu güncelle
+              await loadStockList();
+              await loadLowStockWarning();
+            }
+          } catch (error) {
+            console.error("Auto order low stock error:", error);
+            toast.error("Sevkiyatlar oluşturulurken bir hata oluştu");
+          } finally {
+            orderAllBtn.disabled = false;
+            orderAllBtn.classList.remove("opacity-70", "cursor-not-allowed");
+            orderAllBtn.innerHTML = originalHtml;
+          }
+        });
+      }
+    </script>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Maaş Hesaplama ve Raporlama - Keşiş Kafe</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              matcha: {
+                50: "#f6f9f4",
+                100: "#eaf2e6",
+                200: "#d3e3cb",
+                300: "#b0ccb0",
+                400: "#8eb58c", // Soft Matcha
+                500: "#7c9a63", // Deep Matcha - Primary
+                600: "#607a4b",
+                700: "#4d613d",
+                900: "#2a3622",
+              },
+              beige: {
+                50: "#fdfdfc",
+                100: "#fbfaf7", // Main Background
+                200: "#f3f2ed", // Borders
+                300: "#e6e5df",
+                800: "#5c5b56",
+              },
+              primary: "#7c9a63",
+              "primary-hover": "#607a4b",
+              "background-light": "#fbfaf7",
+              "background-dark": "#1C1F1A",
+              "text-main": "#2a3622",
+              "text-secondary": "#63705a",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+              body: ["Noto Sans", "sans-serif"],
+            },
+            boxShadow: {
+              soft: "0 4px 20px -2px rgba(124, 154, 99, 0.08)",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark h-screen flex font-display text-text-main dark:text-white overflow-hidden selection:bg-matcha-200 selection:text-matcha-900"
+  >
+    <div id="sidebar-container"></div>
+    <div class="flex-1 flex flex-col h-full relative overflow-hidden">
+      <header
+        class="lg:hidden w-full bg-white dark:bg-[#1a2111] border-b border-beige-200 dark:border-[#2f3a23] px-6 py-4 flex items-center justify-between shrink-0"
+      >
+        <div class="flex items-center gap-3">
+          <div class="size-8 text-matcha-500">
+            <svg
+              class="size-full"
+              fill="currentColor"
+              viewBox="0 0 48 48"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"
+              ></path>
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold text-matcha-900 dark:text-white">
+            Keşiş Kafe
+          </h2>
+        </div>
+        <button class="p-2 text-gray-500">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </header>
+      <main
+        class="flex-1 w-full overflow-y-auto bg-background-light dark:bg-background-dark"
+      >
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 py-8 lg:py-10">
+          <div
+            class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-10"
+          >
+            <div class="flex flex-col gap-2 max-w-2xl">
+              <div
+                class="flex items-center gap-2 text-matcha-600 dark:text-matcha-400 text-sm font-semibold mb-1"
+              >
+                <span class="material-symbols-outlined text-lg">home</span>
+                <span>/</span>
+                <span>Finans</span>
+                <span>/</span>
+                <span>Maaşlar</span>
+              </div>
+              <h1
+                class="text-3xl lg:text-4xl font-black leading-tight tracking-tight text-matcha-900 dark:text-white"
+              >
+                Maaş Hesaplama ve Raporlama
+              </h1>
+              <p
+                id="periodDescription"
+                class="text-text-secondary dark:text-gray-400 text-base leading-relaxed"
+              >
+                Seçilen dönem için çalışan maaş özetleri, çalışma saatleri ve
+                detaylı bordro bilgileri.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button
+                id="exportExcelBtn"
+                class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#2f3a23] border border-beige-200 dark:border-[#425032] rounded-xl text-sm font-bold text-matcha-900 dark:text-white hover:bg-beige-50 hover:border-matcha-200 dark:hover:bg-[#38452b] transition-all shadow-sm"
+              >
+                <span class="material-symbols-outlined text-xl">download</span>
+                <span>Excel İndir</span>
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div
+              class="flex flex-col gap-1 rounded-2xl p-6 bg-white dark:bg-[#1f291a] shadow-soft border border-beige-100 dark:border-[#2f3a23] hover:border-matcha-200 transition-colors"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <p
+                  class="text-text-secondary dark:text-gray-400 text-sm font-semibold uppercase tracking-wide"
+                >
+                  Toplam Ödenecek
+                </p>
+                <div
+                  class="bg-matcha-50 dark:bg-matcha-900/40 p-2.5 rounded-full text-matcha-600 dark:text-matcha-400"
+                >
+                  <span class="material-symbols-outlined text-xl block"
+                    >payments</span
+                  >
+                </div>
+              </div>
+              <p
+                id="totalNetSalary"
+                class="text-matcha-900 dark:text-white text-3xl font-black leading-tight tracking-tight"
+              >
+                ₺0.00
+              </p>
+              <div
+                class="flex items-center gap-1.5 text-matcha-600 dark:text-matcha-400 text-sm font-medium mt-1"
+              >
+                <span
+                  class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md px-1.5 py-0.5 text-xs font-bold"
+                  >+5%</span
+                >
+                <span class="text-gray-400 text-xs">geçen aya göre</span>
+              </div>
+            </div>
+            <div
+              class="flex flex-col gap-1 rounded-2xl p-6 bg-white dark:bg-[#1f291a] shadow-soft border border-beige-100 dark:border-[#2f3a23] hover:border-matcha-200 transition-colors"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <p
+                  class="text-text-secondary dark:text-gray-400 text-sm font-semibold uppercase tracking-wide"
+                >
+                  Toplam Çalışma
+                </p>
+                <div
+                  class="bg-matcha-50 dark:bg-matcha-900/40 p-2.5 rounded-full text-matcha-600 dark:text-matcha-400"
+                >
+                  <span class="material-symbols-outlined text-xl block"
+                    >schedule</span
+                  >
+                </div>
+              </div>
+              <p
+                id="totalHours"
+                class="text-matcha-900 dark:text-white text-3xl font-black leading-tight tracking-tight"
+              >
+                0 Saat
+              </p>
+              <div
+                class="flex items-center gap-1.5 text-matcha-600 dark:text-matcha-400 text-sm font-medium mt-1"
+              >
+                <span
+                  class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md px-1.5 py-0.5 text-xs font-bold"
+                  >+2%</span
+                >
+                <span class="text-gray-400 text-xs">geçen aya göre</span>
+              </div>
+            </div>
+            <div
+              class="flex flex-col gap-1 rounded-2xl p-6 bg-white dark:bg-[#1f291a] shadow-soft border border-beige-100 dark:border-[#2f3a23] hover:border-matcha-200 transition-colors"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <p
+                  class="text-text-secondary dark:text-gray-400 text-sm font-semibold uppercase tracking-wide"
+                >
+                  Aktif Personel
+                </p>
+                <div
+                  class="bg-matcha-50 dark:bg-matcha-900/40 p-2.5 rounded-full text-matcha-600 dark:text-matcha-400"
+                >
+                  <span class="material-symbols-outlined text-xl block"
+                    >group</span
+                  >
+                </div>
+              </div>
+              <p
+                id="activeEmployees"
+                class="text-matcha-900 dark:text-white text-3xl font-black leading-tight tracking-tight"
+              >
+                0
+              </p>
+              <div
+                class="flex items-center gap-1.5 text-matcha-600 dark:text-matcha-400 text-sm font-medium mt-1"
+              >
+                <span
+                  class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md px-1.5 py-0.5 text-xs font-bold"
+                  >-</span
+                >
+                <span class="text-gray-400 text-xs">değişim yok</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col bg-white dark:bg-[#1f291a] rounded-2xl shadow-soft border border-beige-100 dark:border-[#2f3a23] overflow-hidden"
+          >
+            <div
+              class="p-5 border-b border-beige-100 dark:border-[#2f3a23] bg-beige-50/50 dark:bg-[#25301f] flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center"
+            >
+              <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                <div
+                  class="flex items-center gap-3 bg-white dark:bg-[#1a2111] border border-beige-200 dark:border-[#425032] rounded-xl px-4 py-2 w-full sm:w-auto hover:border-matcha-300 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-matcha-400"
+                    >calendar_today</span
+                  >
+                  <div class="flex flex-col">
+                    <label
+                      class="text-[10px] text-matcha-500 font-bold uppercase tracking-wider"
+                      >Başlangıç</label
+                    >
+                    <input
+                      id="startDate"
+                      class="p-0 border-none bg-transparent text-sm font-bold text-matcha-900 dark:text-white focus:ring-0 h-5 w-32 cursor-pointer"
+                      type="date"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-3 bg-white dark:bg-[#1a2111] border border-beige-200 dark:border-[#425032] rounded-xl px-4 py-2 w-full sm:w-auto hover:border-matcha-300 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-matcha-400"
+                    >event</span
+                  >
+                  <div class="flex flex-col">
+                    <label
+                      class="text-[10px] text-matcha-500 font-bold uppercase tracking-wider"
+                      >Bitiş</label
+                    >
+                    <input
+                      id="endDate"
+                      class="p-0 border-none bg-transparent text-sm font-bold text-matcha-900 dark:text-white focus:ring-0 h-5 w-32 cursor-pointer"
+                      type="date"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                <div class="relative flex-1 lg:flex-none lg:w-72">
+                  <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                    >search</span
+                  >
+                  <input
+                    id="searchInput"
+                    class="w-full pl-10 pr-4 py-3 bg-white dark:bg-[#1a2111] border border-beige-200 dark:border-[#425032] rounded-xl text-sm text-matcha-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 transition-shadow"
+                    placeholder="Çalışan adı ile ara..."
+                    type="text"
+                  />
+                </div>
+                <button
+                  id="loadReportBtn"
+                  class="flex items-center justify-center bg-matcha-500 text-white p-3 rounded-xl hover:bg-matcha-600 transition-colors shadow-sm shadow-matcha-500/20"
+                  title="Raporu Yenile"
+                >
+                  <span class="material-symbols-outlined text-xl">sync</span>
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-beige-50 dark:bg-[#25301f] border-b border-beige-100 dark:border-[#2f3a23]"
+                  >
+                    <th
+                      class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400"
+                    >
+                      Çalışan
+                    </th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400 text-right">
+                      Vardiya Saati
+                    </th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400 text-right">
+                      Çalışılan Saat
+                    </th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400 text-right">
+                      Mesai Ücreti
+                    </th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-matcha-600 dark:text-primary text-right">
+                      Net Maaş
+                    </th>
+                    <th
+                      class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400 text-center"
+                    >
+                      Durum
+                    </th>
+                    <th
+                      class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-secondary dark:text-gray-400 text-center"
+                    >
+                      İşlem
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="salaryTableBody"
+                  class="divide-y divide-beige-100 dark:divide-[#2f3a23]"
+                >
+                  <tr>
+                    <td
+                      colspan="8"
+                      class="py-8 text-center text-text-secondary dark:text-gray-400"
+                    >
+                      Raporu yüklemek için "Raporu Getir" butonuna tıklayın
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              class="px-6 py-4 border-t border-beige-100 dark:border-[#2f3a23] bg-beige-50/50 dark:bg-[#25301f] flex flex-col sm:flex-row items-center justify-between gap-4"
+            >
+              <p class="text-sm text-text-secondary dark:text-gray-400">
+                Toplam
+                <span
+                  id="totalEmployeesCount"
+                  class="font-bold text-matcha-900 dark:text-white"
+                  >0</span
+                >
+                çalışan gösteriliyor
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div id="detailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#1f291a] rounded-2xl w-full max-w-lg shadow-2xl border border-beige-100 dark:border-[#2f3a23] overflow-hidden">
+        <div class="p-6 border-b border-beige-100 dark:border-[#2f3a23] flex items-center justify-between">
+          <h3 class="text-xl font-bold text-matcha-900 dark:text-white" id="modalTitle">Maaş Detayı</h3>
+          <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-4" id="modalBody">
+          <!-- Dinamik içerik -->
+        </div>
+        <div class="p-6 bg-beige-50/50 dark:bg-[#25301f] border-t border-beige-100 dark:border-[#2f3a23] flex justify-end">
+          <button onclick="closeDetailModal()" class="px-6 py-2 bg-matcha-500 text-white rounded-xl font-bold">Kapat</button>
+        </div>
+      </div>
+    </div>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+    <script>
+      let allSalaryData = [];
+      let filteredSalaryData = [];
+
+      /**
+       * Yetki kontrolü
+       */
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      /**
+       * Tarih aralığını ayarla (varsayılan: bu ay)
+       */
+      function setDefaultDateRange() {
+        const now = new Date();
+        const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+
+        startDateInput.value = startDate.toISOString().split("T")[0];
+        endDateInput.value = endDate.toISOString().split("T")[0];
+      }
+
+      /**
+       * Maaş özetini yükle
+       */
+      async function loadSummary() {
+        try {
+          const startDate = document.getElementById("startDate").value;
+          const endDate = document.getElementById("endDate").value;
+
+          if (!startDate || !endDate) {
+            return;
+          }
+
+          const response = await fetch(
+            `/api/salary/summary?startDate=${startDate}&endDate=${endDate}`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            document.getElementById(
+              "totalNetSalary"
+            ).textContent = `₺${parseFloat(data.totalGrossSalary).toLocaleString(
+              "tr-TR",
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+            )}`;
+            document.getElementById(
+              "totalHours"
+            ).textContent = `${data.totalHours} Saat`;
+            document.getElementById("activeEmployees").textContent =
+              data.activeEmployees;
+          }
+        } catch (error) {
+          console.error("Load summary error:", error);
+        }
+      }
+
+      /**
+       * Maaş verilerini yükle
+       */
+      async function loadSalaryData() {
+        const btn = document.getElementById("loadReportBtn");
+        const originalContent = btn.innerHTML;
+        
+        try {
+          const startDate = document.getElementById("startDate").value;
+          const endDate = document.getElementById("endDate").value;
+
+          if (!startDate || !endDate) {
+            toast.warning("Lütfen başlangıç ve bitiş tarihi seçin");
+            return;
+          }
+
+          if (new Date(startDate) > new Date(endDate)) {
+            toast.warning("Başlangıç tarihi bitiş tarihinden sonra olamaz");
+            return;
+          }
+
+          // Loading State
+          btn.disabled = true;
+          btn.innerHTML = `<span class="material-symbols-outlined text-xl animate-spin">sync</span>`;
+
+          const response = await fetch(
+            `/api/salary/calculate?startDate=${startDate}&endDate=${endDate}`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            allSalaryData = data;
+            filteredSalaryData = [...allSalaryData];
+            renderSalaryTable();
+            loadSummary();
+            updatePeriodDescription();
+            toast.success("Rapor güncellendi");
+          } else {
+            toast.error(
+              data.error || "Maaş verileri yüklenirken bir hata oluştu"
+            );
+          }
+        } catch (error) {
+          console.error("Load salary data error:", error);
+          toast.error("Bir hata oluştu");
+        } finally {
+            // Restore button
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+        }
+      }
+
+      /**
+       * Dönem açıklamasını güncelle
+       */
+      function updatePeriodDescription() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (!startDate || !endDate) return;
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        const startStr = start.toLocaleDateString("tr-TR", {
+          month: "long",
+          year: "numeric",
+          day: "numeric",
+        });
+        const endStr = end.toLocaleDateString("tr-TR", {
+          month: "long",
+          year: "numeric",
+          day: "numeric",
+        });
+
+        document.getElementById(
+          "periodDescription"
+        ).textContent = `${startStr} - ${endStr} dönemi için çalışan maaş özetleri, çalışma saatleri ve detaylı bordro bilgileri.`;
+      }
+
+      /**
+       * Maaş tablosunu render et
+       */
+      function renderSalaryTable() {
+        const tbody = document.getElementById("salaryTableBody");
+        const totalCount = document.getElementById("totalEmployeesCount");
+
+        totalCount.textContent = filteredSalaryData.length;
+
+        if (filteredSalaryData.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="py-8 text-center text-text-secondary dark:text-gray-400">
+                Veri bulunamadı
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filteredSalaryData
+          .map(
+            (emp) => `
+          <tr class="group hover:bg-matcha-50/50 dark:hover:bg-[#25301f] transition-colors">
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-3">
+                <div class="size-10 rounded-full bg-gray-200 border border-white dark:border-gray-700 shadow-sm flex items-center justify-center text-matcha-600 dark:text-matcha-400 font-bold">
+                  ${emp.name.charAt(0)}${emp.surname.charAt(0)}
+                </div>
+                <div class="flex flex-col">
+                  <p class="text-sm font-bold text-matcha-900 dark:text-white">
+                    ${emp.fullName}
+                  </p>
+                  <p class="text-xs text-text-secondary dark:text-gray-400">
+                    ${emp.positionDisplay}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-right text-sm text-text-main dark:text-gray-200">
+              <span class="font-bold">${emp.baseHours}</span><span class="text-[10px] text-text-secondary ml-1">saat</span>
+            </td>
+            <td class="py-4 px-6 text-right text-sm text-text-main dark:text-gray-200">
+              ${emp.hoursDisplay}
+            </td>
+            <td class="py-4 px-6 text-right text-sm font-medium ${parseFloat(emp.overtimePay) > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-text-secondary'}">
+              ${parseFloat(emp.overtimePay) > 0 ? `+₺${parseFloat(emp.overtimePay).toLocaleString('tr-TR')}` : '—'}
+            </td>
+            <td class="py-4 px-6 text-right text-sm font-bold text-matcha-600 dark:text-primary text-lg">
+              ₺${parseFloat(emp.netSalary).toLocaleString("tr-TR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </td>
+            <td class="py-4 px-6 text-center">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                emp.status === "Ödendi"
+                  ? "bg-matcha-100 text-matcha-700 dark:bg-green-900/30 dark:text-green-400 border border-matcha-200 dark:border-green-900/50"
+                  : "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50"
+              }">
+                ${emp.status}
+              </span>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex items-center justify-center gap-2">
+                <button 
+                  onclick='showSalaryDetail(${JSON.stringify(emp)})'
+                  class="p-2 text-matcha-600 hover:bg-matcha-50 dark:hover:bg-matcha-900/20 rounded-lg transition-colors"
+                  title="Detayları Gör"
+                >
+                  <span class="material-symbols-outlined">info</span>
+                </button>
+                ${
+                  emp.status === "Ödendi"
+                    ? `<span class="text-xs text-text-secondary dark:text-gray-400 whitespace-nowrap">Ödendi</span>`
+                    : `<button
+                        class="flex items-center gap-1.5 px-3 py-1.5 bg-matcha-500 text-white rounded-lg text-xs font-bold hover:bg-matcha-600 transition-colors shadow-sm whitespace-nowrap"
+                        onclick="makePayment(${emp.id}, '${emp.fullName}', ${emp.netSalary})"
+                      >
+                        <span class="material-symbols-outlined text-sm">payments</span>
+                        <span>Öde</span>
+                      </button>`
+                }
+              </div>
+            </td>
+          </tr>
+        `
+          )
+          .join("");
+      }
+
+      /**
+       * Arama fonksiyonu
+       */
+      function filterData() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase()
+          .trim();
+
+        if (!searchTerm) {
+          filteredSalaryData = [...allSalaryData];
+        } else {
+          filteredSalaryData = allSalaryData.filter(
+            (emp) =>
+              emp.fullName.toLowerCase().includes(searchTerm) ||
+              emp.position.toLowerCase().includes(searchTerm)
+          );
+        }
+
+        renderSalaryTable();
+      }
+
+      /**
+       * Excel'e aktar (CSV formatında)
+       */
+      function exportToExcel() {
+        if (filteredSalaryData.length === 0) {
+          toast.warning("Export edilecek veri bulunamadı");
+          return;
+        }
+
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const dateRange = `${startDate}_${endDate}`;
+
+        // CSV başlıkları
+        const headers = [
+          "Çalışan",
+          "Pozisyon",
+          "Vardiya Saati",
+          "Fiili Saat",
+          "Normal Ödeme",
+          "Mesai Ücreti",
+          "Brüt Toplam",
+          "SGK Kesintisi",
+          "Net Ödenecek",
+          "Durum",
+        ];
+
+        // CSV satırları
+        const rows = filteredSalaryData.map((emp) => [
+          emp.fullName,
+          emp.positionDisplay,
+          emp.baseHours,
+          emp.actualHours,
+          `₺${parseFloat(emp.normalPay).toFixed(2)}`,
+          `₺${parseFloat(emp.overtimePay).toFixed(2)}`,
+          `₺${parseFloat(emp.grossSalary).toFixed(2)}`,
+          `₺${parseFloat(emp.deductions).toFixed(2)}`,
+          `₺${parseFloat(emp.netSalary).toFixed(2)}`,
+          emp.status,
+        ]);
+
+        // CSV içeriğini oluştur
+        const csvContent = [
+          headers.join(","),
+          ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+        ].join("\n");
+
+        // BOM ekle (Türkçe karakterler için)
+        const BOM = "\uFEFF";
+        const blob = new Blob([BOM + csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+
+        // Dosyayı indir
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `maas-raporu_${dateRange}.csv`);
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast.success("Excel dosyası indirildi");
+      }
+
+      /**
+       * Maaş detay modalını göster
+       */
+      function showSalaryDetail(emp) {
+        document.getElementById('modalTitle').textContent = `${emp.fullName} - Maaş Detayı`;
+        const body = document.getElementById('modalBody');
+        
+        body.innerHTML = `
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-beige-50 dark:bg-white/5 p-3 rounded-xl">
+              <p class="text-[10px] text-matcha-500 uppercase font-bold mb-1">Planlanan (Vardiya)</p>
+              <p class="text-xl font-bold">${emp.baseHours} saat</p>
+            </div>
+            <div class="bg-beige-50 dark:bg-white/5 p-3 rounded-xl">
+              <p class="text-[10px] text-matcha-500 uppercase font-bold mb-1">Kayıtlı Çalışma</p>
+              <p class="text-xl font-bold">${emp.actualHours} saat</p>
+            </div>
+          </div>
+          
+          <div class="space-y-3 pt-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-text-secondary">Normal Ödeme</span>
+              <span class="font-medium">₺${parseFloat(emp.normalPay).toLocaleString('tr-TR')}</span>
+            </div>
+            <div class="flex justify-between text-sm ${parseFloat(emp.overtimePay) > 0 ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-text-secondary'}">
+              <span>Mesai Ücreti (x${emp.overtimeMultiplier || 1.5})</span>
+              <span>₺${parseFloat(emp.overtimePay).toLocaleString('tr-TR')}</span>
+            </div>
+            <div class="border-t border-beige-200 dark:border-white/10 pt-2 flex justify-between font-bold">
+              <span>Brüt Toplam</span>
+              <span>₺${parseFloat(emp.grossSalary).toLocaleString('tr-TR')}</span>
+            </div>
+            <div class="flex justify-between text-sm text-red-500">
+              <span>SGK Kesintisi (%${(emp.sgkRate * 100).toFixed(1)})</span>
+              <span>-₺${parseFloat(emp.deductions).toLocaleString('tr-TR')}</span>
+            </div>
+            <div class="bg-matcha-500 text-white p-4 rounded-xl flex justify-between items-center shadow-lg mt-2">
+              <span class="font-bold">NET ÖDENECEK</span>
+              <span class="text-2xl font-black">₺${parseFloat(emp.netSalary).toLocaleString('tr-TR')}</span>
+            </div>
+          </div>
+          
+          <div class="text-[11px] text-text-secondary italic pt-2">
+            * Saatlik Ücret: ₺${emp.hourlyRate} (Sistem tarafından ${emp.baseHours} saatlik vardiya planına göre hesaplanmıştır).
+          </div>
+        `;
+        
+        document.getElementById('detailModal').classList.remove('hidden');
+      }
+
+      function closeDetailModal() {
+        document.getElementById('detailModal').classList.add('hidden');
+      }
+
+      /**
+       * Ödeme yap
+       */
+      async function makePayment(empId, empName, netSalary) {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (!startDate || !endDate) {
+          toast.warning("Lütfen tarih aralığını seçin");
+          return;
+        }
+
+        // Onay al
+        const confirmMessage = `${empName} için ₺${parseFloat(
+          netSalary
+        ).toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} ödeme yapmak istediğinize emin misiniz?`;
+
+        if (!confirm(confirmMessage)) {
+          return;
+        }
+
+        try {
+          // Bugünün tarihini al
+          const today = new Date().toISOString().split("T")[0];
+
+          const response = await fetch("/api/salary/payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              empId: empId,
+              amount: parseFloat(netSalary),
+              paymentDate: today,
+              empName: empName,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            toast.success("Ödeme başarıyla kaydedildi");
+            // Sayfayı yenile
+            setTimeout(() => {
+              loadSalaryData();
+            }, 500);
+          } else {
+            toast.error(data.error || "Ödeme yapılırken bir hata oluştu");
+          }
+        } catch (error) {
+          console.error("Make payment error:", error);
+          toast.error("Bir hata oluştu");
+        }
+      }
+
+      // Event listeners
+      document
+        .getElementById("loadReportBtn")
+        .addEventListener("click", loadSalaryData);
+      document
+        .getElementById("exportExcelBtn")
+        .addEventListener("click", exportToExcel);
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", filterData);
+      document
+        .getElementById("startDate")
+        .addEventListener("change", updatePeriodDescription);
+      document
+        .getElementById("endDate")
+        .addEventListener("change", updatePeriodDescription);
+
+      // Sayfa yüklendiğinde
+      setDefaultDateRange();
+      loadSidebar();
+      loadSalaryData();
+    </script>
+  </body>
+</html>

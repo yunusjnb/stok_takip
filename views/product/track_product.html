@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ürün Yönetimi - Keşiş Kafe Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "background-dark": "#211114",
+              surface: "#FFFFFF",
+              "on-surface": "#1C1917",
+              "on-surface-variant": "#6B7280",
+              "primary-container": "#F7F9F5",
+              "on-primary-container": "#386641",
+              "neutral-subtle": "#F5F5F5",
+              "border-color": "#E5E7EB",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-feature-settings: "liga";
+        -webkit-font-feature-settings: "liga";
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-wrap justify-between items-start gap-4 mb-8">
+            <div class="flex flex-col gap-2">
+              <h1
+                class="text-on-surface text-4xl font-black leading-tight tracking-[-0.033em]"
+              >
+                Ürün Yönetimi
+              </h1>
+              <p
+                class="text-on-surface-variant text-base font-normal leading-normal"
+              >
+                Ürünleri görüntüleyin, ekleyin, düzenleyin ve silin.
+              </p>
+            </div>
+            <a
+              href="/product/add"
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 hover:bg-opacity-90 transition-colors"
+            >
+              <span class="material-symbols-outlined !text-xl">add</span>
+              <span class="truncate">Yeni Ürün Ekle</span>
+            </a>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-4 mb-6">
+            <div class="flex-1">
+              <label class="flex flex-col min-w-40 h-12 w-full">
+                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                  <div
+                    class="text-on-surface-variant flex border border-r-0 border-border-color bg-neutral-subtle items-center justify-center pl-4 rounded-l-lg"
+                  >
+                    <span class="material-symbols-outlined">search</span>
+                  </div>
+                  <input
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 border border-l-0 border-border-color bg-neutral-subtle h-full placeholder:text-on-surface-variant px-4 rounded-l-none pl-2 text-sm font-normal leading-normal"
+                    placeholder="Ürün adı ile ara"
+                    value=""
+                  />
+                </div>
+              </label>
+            </div>
+            <div class="flex w-full sm:w-auto items-center">
+              <div
+                class="flex h-12 items-center justify-center rounded-lg bg-white border border-border-color px-4 shadow-sm"
+              >
+               <span class="text-sm font-medium text-on-surface-variant mr-2">Toplam Ürün Çeşidi:</span>
+               <span id="totalProductCount" class="text-lg font-bold text-primary">0</span>
+              </div>
+            </div>
+          </div>
+          <div
+            id="productsGrid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          ></div>
+        </div>
+      </main>
+    </div>
+    <script>
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      // Ürünleri yükle
+      async function loadProducts() {
+        try {
+          const response = await fetch("/api/products");
+          const products = await response.json();
+
+          // Toplam ürün sayısını güncelle
+          const countEl = document.getElementById("totalProductCount");
+          if(countEl) countEl.textContent = products.length;
+
+          const grid = document.getElementById("productsGrid");
+          grid.innerHTML = "";
+
+          products.forEach((product) => {
+            const card = document.createElement("div");
+            card.className =
+              "flex flex-col bg-surface rounded-xl border border-border-color overflow-hidden group";
+
+            // Resim yolu - veritabanındaki path'i düzelt (products -> product)
+            const imagePath = product.image
+              ? product.image.replace("/uploads/products/", "/uploads/product/")
+              : "";
+
+            // Ürün tipi
+            const productType = product.type_name || "Ürün";
+
+            // process_type kontrolü - al-sat ürünleri için stok göster
+            const isAlSat = product.process_type === "al-sat";
+            
+            // Stok değerlerini güvenli şekilde parse et (product_stock tablosundan geliyor)
+            let stock = 0;
+            if (product.stock !== undefined && product.stock !== null && product.stock !== '') {
+              stock = parseFloat(product.stock);
+              if (isNaN(stock)) stock = 0;
+            }
+            
+            let minStock = 0;
+            if (product.min_stock !== undefined && product.min_stock !== null && product.min_stock !== '') {
+              minStock = parseFloat(product.min_stock);
+              if (isNaN(minStock)) minStock = 0;
+            }
+
+            // Stok durumuna göre renk ve metin belirle
+            let stockBadgeHtml = "";
+            if (isAlSat) {
+              let stockClass = "bg-green-100 text-green-800"; // Normal stok
+              let stockText = `Stok: ${stock.toFixed(0)}`;
+              
+              // Stok kontrolü: önce 0 kontrolü, sonra min_stock kontrolü (min_stock > 0 ise)
+              // stock değerini number olarak kontrol et
+              const stockNum = Number(stock);
+              const minStockNum = Number(minStock);
+              
+              if (isNaN(stockNum) || stockNum <= 0) {
+                // Stok 0, negatif veya geçersiz ise
+                stockClass = "bg-red-100 text-red-800";
+                stockText = "Stok Yok";
+              } else if (minStockNum > 0 && stockNum <= minStockNum) {
+                // Stok pozitif ama min_stock'un altında veya eşitse
+                stockClass = "bg-yellow-100 text-yellow-800";
+                stockText = `Düşük Stok: ${stockNum.toFixed(0)}`;
+              } else {
+                // Normal stok (stock > minStock veya minStock = 0)
+                stockClass = "bg-green-100 text-green-800";
+                stockText = `Stok: ${stockNum.toFixed(0)}`;
+              }
+              
+              stockBadgeHtml = `<div class="${stockClass} text-xs font-medium px-2.5 py-0.5 rounded-full">
+                ${stockText}
+              </div>`;
+            } else {
+              // İçecek değilse stok etiketi göster (eski mantık)
+            const showStockBadge = productType !== "İçecek";
+              if (showStockBadge) {
+                stockBadgeHtml = `<div class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  Stokta Var
+                </div>`;
+              }
+            }
+
+            // Resim HTML'i
+            const imageHtml = imagePath
+              ? `<img src="${imagePath}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-6xl text-gray-400\\'>image</span>'">`
+              : `<span class="material-symbols-outlined text-6xl text-gray-400">image</span>`;
+
+            card.innerHTML = `
+              <div class="bg-gray-200 aspect-video flex items-center justify-center overflow-hidden">
+                ${imageHtml}
+              </div>
+              <div class="p-4 flex flex-col flex-1">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-lg font-bold text-on-surface">${
+                    product.name
+                  }</h3>
+                  ${stockBadgeHtml}
+                </div>
+                <p class="text-sm text-on-surface-variant mb-4">${productType}</p>
+                <p class="text-xl font-black text-on-surface mt-auto">₺${parseFloat(
+                  product.price || 0
+                ).toFixed(2)}</p>
+              </div>
+              <div class="border-t border-border-color p-2 flex gap-2">
+                <button
+                  onclick="editProduct(${product.id})"
+                  class="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-on-surface-variant h-9 rounded-md hover:bg-neutral-subtle"
+                >
+                  <span class="material-symbols-outlined !text-xl">edit</span>
+                  Düzenle
+                </button>
+                <button
+                  onclick="deleteProduct(${product.id})"
+                  class="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-primary h-9 rounded-md hover:bg-primary/10"
+                >
+                  <span class="material-symbols-outlined !text-xl">delete</span>
+                  Sil
+                </button>
+              </div>
+            `;
+            grid.appendChild(card);
+          });
+        } catch (error) {
+          console.error("Load products error:", error);
+        }
+      }
+
+      function editProduct(id) {
+        window.location.href = `/product/update?id=${id}`;
+      }
+
+      async function deleteProduct(id) {
+        if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;
+
+        try {
+          const response = await fetch(`/api/products/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            alert("Ürün silindi");
+            loadProducts();
+          } else {
+            alert("Silme işlemi başarısız");
+          }
+        } catch (error) {
+          console.error("Delete product error:", error);
+          alert("Bir hata oluştu");
+        }
+      }
+
+      // Arama
+      document
+        .querySelector('input[placeholder*="ara"]')
+        .addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          const cards = document.querySelectorAll("#productsGrid > div");
+          cards.forEach((card) => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(searchTerm) ? "" : "none";
+          });
+        });
+
+      // Sayfa yüklendiğinde
+      loadProducts();
+    </script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

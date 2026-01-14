@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Yeni Malzeme Ekleme - Keşiş Kafe</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              surface: "#FFFFFF",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+              "on-surface-primary": "#1C1917",
+              "on-surface-secondary": "#6B7280",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            boxShadow: {
+              soft: "0 4px 20px -2px rgba(106, 153, 78, 0.1)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-filled {
+        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light font-display text-text-primary"
+  >
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-5xl mx-auto">
+          <div class="mb-8">
+            <nav aria-label="Breadcrumb" class="mb-6">
+              <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                  <a
+                    class="inline-flex items-center text-sm font-medium text-text-secondary hover:text-primary transition-colors"
+                    href="/dashboard"
+                  >
+                    Yönetim
+                  </a>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <span
+                      class="material-symbols-outlined text-text-secondary text-lg"
+                      >chevron_right</span
+                    >
+                    <a
+                      class="ml-1 text-sm font-medium text-text-secondary hover:text-primary transition-colors md:ml-2"
+                      href="/stock"
+                      >Stok Yönetimi</a
+                    >
+                  </div>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <span
+                      class="material-symbols-outlined text-text-secondary text-lg"
+                      >chevron_right</span
+                    >
+                    <span class="ml-1 text-sm font-bold text-primary md:ml-2"
+                      >Yeni Malzeme Ekle</span
+                    >
+                  </div>
+                </li>
+              </ol>
+            </nav>
+            <div
+              class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4"
+            >
+              <div>
+                <h1
+                  class="text-3xl font-black text-text-primary tracking-tight mb-2"
+                >
+                  Yeni Malzeme Ekle
+                </h1>
+                <p
+                  class="text-text-secondary text-base max-w-2xl leading-relaxed"
+                >
+                  Envanter takibi için yeni bir malzeme veya ürün tanımlaması
+                  yapın. Bu bilgiler stok takibi ve maliyet analizlerinde
+                  kullanılacaktır.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-8">
+          <div
+            class="bg-surface rounded-2xl border border-border-color shadow-soft"
+          >
+            <form class="p-8 md:p-10 space-y-10">
+              <div class="space-y-6">
+                <div
+                  class="flex items-center gap-3 text-primary border-b border-primary/10 pb-4"
+                >
+                  <div class="p-2 bg-primary-light rounded-lg">
+                    <span class="material-symbols-outlined">info</span>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-bold text-text-primary">
+                      Malzeme Detayları
+                    </h2>
+                    <p class="text-xs text-text-secondary font-normal">
+                      Temel malzeme bilgileri
+                    </p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="col-span-1 md:col-span-2">
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="material_name"
+                      >Malzeme Adı</label
+                    >
+                    <input
+                      class="w-full rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 placeholder-text-secondary/40 text-text-primary transition-all py-3 shadow-sm"
+                      id="material_name"
+                      name="material_name"
+                      placeholder="Örn: Etiyopya Yirgacheffe Kahve Çekirdeği"
+                      type="text"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="supplier"
+                      >Tedarikçi Firma</label
+                    >
+                    <div class="relative">
+                      <select
+                        class="w-full appearance-none rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 text-text-primary pr-10 py-3 shadow-sm"
+                        id="supplier"
+                        name="supplier"
+                      >
+                        <option value="">Tedarikçi Seçiniz (Opsiyonel)</option>
+                      </select>
+                      <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-text-secondary"
+                      >
+                        <span class="material-symbols-outlined"
+                          >expand_more</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-6">
+                <div
+                  class="flex items-center gap-3 text-primary border-b border-primary/10 pb-4"
+                >
+                  <div class="p-2 bg-primary-light rounded-lg">
+                    <span class="material-symbols-outlined">inventory</span>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-bold text-text-primary">
+                      Stok ve Birim Bilgileri
+                    </h2>
+                    <p class="text-xs text-text-secondary font-normal">
+                      Miktar ve ölçü tanımlamaları
+                    </p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="unit"
+                      >Ölçü Birimi</label
+                    >
+                    <div class="relative">
+                      <select
+                        class="w-full appearance-none rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 text-text-primary pr-10 py-3 shadow-sm"
+                        id="unit"
+                        name="unit"
+                        required
+                      >
+                        <option value="">Birim Seçiniz</option>
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="L">Litre (L)</option>
+                        <option value="adet">Adet</option>
+                        <option value="paket">Paket</option>
+                        <option value="g">Gram (g)</option>
+                        <option value="ml">Mililitre (ml)</option>
+                      </select>
+                      <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-text-secondary"
+                      >
+                        <span class="material-symbols-outlined"
+                          >expand_more</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="initial_stock"
+                      >Başlangıç Stok Miktarı</label
+                    >
+                    <input
+                      class="w-full rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 text-text-primary py-3 shadow-sm"
+                      id="initial_stock"
+                      min="0"
+                      name="initial_stock"
+                      placeholder="0"
+                      step="0.01"
+                      type="number"
+                      value="0"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="min_stock"
+                      >Min. Kritik Stok Seviyesi</label
+                    >
+                    <div class="relative">
+                      <input
+                        class="w-full rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 text-text-primary pr-10 py-3 shadow-sm"
+                        id="min_stock"
+                        min="0"
+                        name="min_stock"
+                        placeholder="10"
+                        step="0.01"
+                        type="number"
+                        value="0"
+                      />
+                      <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-orange-400"
+                      >
+                        <span
+                          class="material-symbols-outlined text-xl"
+                          title="Bu seviyenin altına düştüğünde uyarı verilir"
+                          >warning</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="min_purch"
+                      >Minimum Alım Miktarı</label
+                    >
+                    <input
+                      class="w-full rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 text-text-primary py-3 shadow-sm"
+                      id="min_purch"
+                      min="0"
+                      name="min_purch"
+                      placeholder="Örn: 5"
+                      step="0.01"
+                      type="number"
+                      value="0"
+                    />
+                    <p class="mt-2 text-xs text-text-secondary">
+                      Tedarikçiden tek seferde yapılabilecek en az alış miktarı.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-6">
+                <div
+                  class="flex items-center gap-3 text-primary border-b border-primary/10 pb-4"
+                >
+                  <div class="p-2 bg-primary-light rounded-lg">
+                    <span class="material-symbols-outlined">payments</span>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-bold text-text-primary">
+                      Maliyetlendirme
+                    </h2>
+                    <p class="text-xs text-text-secondary font-normal">
+                      Fiyat bilgileri
+                    </p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <label
+                      class="block text-sm font-bold text-text-primary mb-2"
+                      for="unit_price"
+                      >Birim Fiyatı</label
+                    >
+                    <div class="relative">
+                      <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4"
+                      >
+                        <span class="text-text-primary font-bold">₺</span>
+                      </div>
+                      <input
+                        class="w-full rounded-xl border border-border-color bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 pl-9 text-text-primary py-3 shadow-sm"
+                        id="unit_price"
+                        min="0"
+                        name="unit_price"
+                        placeholder="0.00"
+                        step="0.01"
+                        type="number"
+                        required
+                      />
+                    </div>
+                    <p
+                      class="mt-2 text-xs text-text-secondary flex items-center gap-1"
+                    >
+                      <span class="material-symbols-outlined text-sm"
+                        >info</span
+                      >
+                      Son satın alım faturasına göre birim fiyatı giriniz.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col-reverse md:flex-row items-center justify-end gap-4 pt-8 mt-4 border-t border-border-color"
+              >
+                <button
+                  class="w-full md:w-auto px-8 py-4 rounded-xl border border-border-color text-text-secondary hover:text-text-primary hover:bg-background-light font-bold transition-colors"
+                  type="button"
+                  onclick="window.location.href='/stock'"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  class="w-full md:w-auto px-10 py-4 rounded-xl bg-primary text-white hover:bg-primary-darker font-bold shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 group hover:-translate-y-0.5"
+                  type="submit"
+                  id="saveBtn"
+                >
+                  <span
+                    class="material-symbols-outlined group-hover:scale-110 transition-transform"
+                    >save</span
+                  >
+                  Malzemeyi Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      /**
+       * Yetki kontrolü - Sadece admin kullanıcılar bu sayfaya erişebilir
+       * Kasa kullanıcıları cashier sayfasına yönlendirilir
+       */
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      /**
+       * Tedarikçileri API'den yükler ve dropdown menüye ekler
+       * Malzeme ekleme formunda tedarikçi seçimi için kullanılır
+       */
+      async function loadWholesalers() {
+        try {
+          const response = await fetch("/api/stock/wholesalers");
+          const wholesalers = await response.json();
+          
+          const select = document.getElementById("supplier");
+          select.innerHTML = '<option value="">Tedarikçi Seçiniz (Opsiyonel)</option>';
+          
+          // Her tedarikçiyi dropdown'a ekle
+          wholesalers.forEach((wholesaler) => {
+            const option = document.createElement("option");
+            option.value = wholesaler.id;
+            option.textContent = wholesaler.name;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Load wholesalers error:", error);
+        }
+      }
+
+      /**
+       * Form submit event handler
+       * Yeni malzeme ekleme formunu işler
+       * Form verilerini doğrular ve API'ye gönderir
+       */
+      document.querySelector("form").addEventListener("submit", async (e) => {
+        e.preventDefault(); // Sayfa yenilenmesini engelle
+        
+        // Butonu devre dışı bırak ve loading göster
+        const saveBtn = document.getElementById("saveBtn");
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">hourglass_empty</span> Kaydediliyor...';
+        
+        try {
+          // Form verilerini topla
+          const formData = {
+            name: document.getElementById("material_name").value.trim(),
+            stock: parseFloat(document.getElementById("initial_stock").value) || 0,
+            unit: document.getElementById("unit").value,
+            wholesaler_id: document.getElementById("supplier").value || null,
+            min_stock: parseFloat(document.getElementById("min_stock").value) || 0,
+            unit_price: parseFloat(document.getElementById("unit_price").value) || 0,
+            min_purch: parseFloat(document.getElementById("min_purch").value) || 0,
+          };
+
+          // Zorunlu alan kontrolü
+          if (!formData.name || !formData.unit) {
+            toast.warning("Malzeme adı ve birim zorunludur");
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+            return;
+          }
+
+          // Birim fiyat kontrolü
+          if (formData.unit_price <= 0) {
+            toast.warning("Birim fiyatı 0'dan büyük olmalıdır");
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+            return;
+          }
+
+          // API'ye POST isteği gönder
+          const response = await fetch("/api/stock/ingredients", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            toast.success("Malzeme başarıyla eklendi!");
+            // Başarılı olursa stock sayfasına yönlendir
+            setTimeout(() => {
+              window.location.href = "/stock";
+            }, 500);
+          } else {
+            toast.error(data.error || "Malzeme eklenirken bir hata oluştu");
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+          }
+        } catch (error) {
+          console.error("Save ingredient error:", error);
+          toast.error("Bir hata oluştu");
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+        }
+      });
+
+      // Sayfa yüklendiğinde tedarikçileri yükle
+      loadWholesalers();
+    </script>
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe - Aylık Kapanış Raporu</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#5bec13",
+              "primary-dark": "#4ec910",
+              "background-light": "#f9fcf8", // Keeping the provided slightly greenish off-white
+              "background-dark": "#162210",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1f2b1a",
+              "text-main": "#121b0d",
+              "text-secondary": "#669a4c",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @media print {
+        body {
+          background-color: white !important;
+          color: black !important;
+        }
+        #sidebar-container, 
+        button, 
+        select, 
+        .material-symbols-outlined,
+        #expenseSearch {
+          display: none !important;
+        }
+        /* Gizlenmesi gereken elementlerin containerları da düzenlenmeli */
+        .layout-container {
+          padding: 0 !important;
+          max-width: 100% !important;
+        }
+        /* İkonları gizle ama metinleri koru */
+        button span:not(.material-symbols-outlined),
+        h2, p, span, div {
+            color: black !important;
+        }
+        /* Butonları tamamen gizle */
+        .flex.flex-wrap.items-center.gap-4 {
+            display: none !important;
+        }
+        /* Arama kutusunu gizle */
+        .relative.max-w-xs {
+            display: none !important;
+        }
+        /* Sayfalama butonlarını gizle */
+        .px-6.py-4.border-t {
+            display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="font-display bg-background-light dark:bg-background-dark text-text-main antialiased selection:bg-primary selection:text-black"
+  >
+    <div class="flex h-screen overflow-hidden">
+      <div id="sidebar-container"></div>
+      <!-- Main Content -->
+      <main
+        class="flex-1 flex flex-col h-full overflow-y-auto relative bg-[#f9fcf8] dark:bg-[#162210]"
+      >
+        <div
+          class="layout-container flex flex-col w-full max-w-[1200px] mx-auto p-4 md:p-8 gap-8"
+        >
+          <!-- Page Heading & Filters -->
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6"
+          >
+            <div class="flex flex-col gap-2">
+              <h2
+                class="text-text-main dark:text-white text-3xl md:text-4xl font-black tracking-tight"
+              >
+                Aylık Kapanış Raporu
+              </h2>
+              <p class="text-text-secondary text-base">
+                Finansal özet, gider dağılımı ve karlılık analizi
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-4">
+              <!-- Date Selector -->
+              <div class="relative group">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <span class="material-symbols-outlined text-text-secondary"
+                    >calendar_today</span
+                  >
+                </div>
+                <select
+                  id="monthSelector"
+                  class="pl-10 pr-10 py-2.5 h-11 bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-lg text-text-main dark:text-white text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer shadow-sm min-w-[180px]"
+                >
+                  <option value="">Yükleniyor...</option>
+                </select>
+                <div
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+                >
+                  <span
+                    class="material-symbols-outlined text-text-secondary text-sm"
+                    >expand_more</span
+                  >
+                </div>
+              </div>
+              <!-- Action Button -->
+              <!-- PDF Button -->
+              <button
+                id="pdfDownloadBtn"
+                class="flex items-center justify-center gap-2 h-11 px-6 bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-text-main dark:text-white rounded-lg text-sm font-bold shadow-sm transition-all active:scale-95"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >print</span
+                >
+                <span>PDF İndir</span>
+              </button>
+              
+              <!-- Excel Button -->
+              <button
+                id="excelDownloadBtn"
+                class="flex items-center justify-center gap-2 h-11 px-6 bg-[#1D6F42] hover:bg-[#185c37] text-white rounded-lg text-sm font-bold shadow-sm transition-all active:scale-95"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >table_view</span
+                >
+                <span>Excel İndir</span>
+              </button>
+            </div>
+          </div>
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Total Income -->
+            <div
+              class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group"
+            >
+              <div
+                class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-6xl text-[#669a4c]"
+                  >payments</span
+                >
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  class="bg-[#ebf3e7] dark:bg-gray-800 p-2 rounded-lg text-[#669a4c]"
+                >
+                  <span class="material-symbols-outlined">trending_up</span>
+                </div>
+                <p
+                  class="text-text-secondary text-sm font-semibold uppercase tracking-wider"
+                >
+                  Toplam Gelir
+                </p>
+              </div>
+              <div>
+                <p
+                  id="totalIncome"
+                  class="text-text-main dark:text-white text-3xl font-bold tracking-tight"
+                >
+                  ₺0.00
+                </p>
+                <p
+                  id="incomeChange"
+                  class="text-sm font-medium mt-1 flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-sm">remove</span>
+                  <span>Yükleniyor...</span>
+                </p>
+              </div>
+            </div>
+            <!-- Total Expenses -->
+            <div
+              class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group"
+            >
+              <div
+                class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-6xl text-red-500"
+                  >shopping_cart_checkout</span
+                >
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  class="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg text-red-600"
+                >
+                  <span class="material-symbols-outlined">trending_down</span>
+                </div>
+                <p
+                  class="text-text-secondary text-sm font-semibold uppercase tracking-wider"
+                >
+                 <!-- Toplam gider yoksa boş göster -->
+                 Toplam Gider
+                </p>
+              </div>
+              <div>
+                <p
+                  id="totalExpenses"
+                  class="text-text-main dark:text-white text-3xl font-bold tracking-tight"
+                >
+                  ₺0.00
+                </p>
+                <p
+                  id="expenseChange"
+                  class="text-sm font-medium mt-1 flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-sm">remove</span>
+                  <span>Yükleniyor...</span>
+                </p>
+              </div>
+            </div>
+            <!-- Net Profit -->
+            <div
+              class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group"
+            >
+              <div
+                class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-6xl text-primary"
+                  >savings</span
+                >
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="bg-primary/20 p-2 rounded-lg text-primary">
+                  <span class="material-symbols-outlined"
+                    >account_balance_wallet</span
+                  >
+                </div>
+                <p
+                  class="text-text-secondary text-sm font-semibold uppercase tracking-wider"
+                >
+                  Net Kar
+                </p>
+              </div>
+              <div>
+                <p
+                  id="netProfit"
+                  class="text-text-main dark:text-white text-3xl font-bold tracking-tight"
+                >
+                  ₺0.00
+                </p>
+                <p
+                  id="profitStatus"
+                  class="text-primary text-sm font-medium mt-1 flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-sm">remove</span>
+                  <span>Yükleniyor...</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Charts Area -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Line Chart -->
+            <div
+              class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col gap-6"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-text-main dark:text-white text-lg font-bold">
+                    Gelir Akışı
+                  </h3>
+                  <p class="text-text-secondary text-sm">Günlük ciro takibi</p>
+                </div>
+                <div class="flex gap-2">
+                  <span
+                    class="px-2 py-1 bg-[#ebf3e7] dark:bg-gray-800 text-[#07881f] text-xs font-bold rounded"
+                    >Gelir</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded"
+                    >Gider</span
+                  >
+                </div>
+              </div>
+              <div class="relative w-full aspect-[2/1]">
+                <!-- Chart SVG -->
+                <svg
+                  id="incomeExpenseChart"
+                  class="w-full h-full overflow-visible"
+                  preserveAspectRatio="none"
+                  viewBox="0 0 400 200"
+                >
+                  <defs>
+                    <linearGradient
+                      id="gradient-income"
+                      x1="0"
+                      x2="0"
+                      y1="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stop-color="#5bec13"
+                        stop-opacity="0.2"
+                      ></stop>
+                      <stop
+                        offset="100%"
+                        stop-color="#5bec13"
+                        stop-opacity="0"
+                      ></stop>
+                    </linearGradient>
+                  </defs>
+                  <!-- Grid Lines -->
+                  <line
+                    stroke="#e5e7eb"
+                    stroke-dasharray="4 4"
+                    x1="0"
+                    x2="400"
+                    y1="0"
+                    y2="0"
+                  ></line>
+                  <line
+                    stroke="#e5e7eb"
+                    stroke-dasharray="4 4"
+                    x1="0"
+                    x2="400"
+                    y1="50"
+                    y2="50"
+                  ></line>
+                  <line
+                    stroke="#e5e7eb"
+                    stroke-dasharray="4 4"
+                    x1="0"
+                    x2="400"
+                    y1="100"
+                    y2="100"
+                  ></line>
+                  <line
+                    stroke="#e5e7eb"
+                    stroke-dasharray="4 4"
+                    x1="0"
+                    x2="400"
+                    y1="150"
+                    y2="150"
+                  ></line>
+                  <line
+                    stroke="#e5e7eb"
+                    stroke-width="1"
+                    x1="0"
+                    x2="400"
+                    y1="200"
+                    y2="200"
+                  ></line>
+                  <!-- Gider Çizgisi (Gri) -->
+                  <polyline
+                    fill="none"
+                    opacity="0.5"
+                    points="0,140 40,130 80,150 120,120 160,110 200,130 240,100 280,110 320,90 360,100 400,80"
+                    stroke="#94a3b8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></polyline>
+                  <!-- Gelir Alanı & Çizgisi (Yeşil) -->
+                  <path
+                    d="M0,100 Q40,80 80,90 T160,60 T240,70 T320,40 T400,20 V200 H0 Z"
+                    fill="url(#gradient-income)"
+                  ></path>
+                  <path
+                    d="M0,100 Q40,80 80,90 T160,60 T240,70 T320,40 T400,20"
+                    fill="none"
+                    stroke="#5bec13"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                  ></path>
+                  <!-- Points -->
+                  <circle
+                    cx="160"
+                    cy="60"
+                    fill="white"
+                    r="4"
+                    stroke="#5bec13"
+                    stroke-width="2"
+                  ></circle>
+                  <circle
+                    cx="320"
+                    cy="40"
+                    fill="white"
+                    r="4"
+                    stroke="#5bec13"
+                    stroke-width="2"
+                  ></circle>
+                </svg>
+                <div
+                  class="flex justify-between mt-2 text-xs text-gray-400 font-medium font-sans"
+                >
+                  <span>1 Ağu</span>
+                  <span>7 Ağu</span>
+                  <span>14 Ağu</span>
+                  <span>21 Ağu</span>
+                  <span>31 Ağu</span>
+                </div>
+              </div>
+            </div>
+            <!-- Breakdown Chart -->
+            <div
+              class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col gap-6"
+            >
+              <div>
+                <h3 class="text-text-main dark:text-white text-lg font-bold">
+                  Gider Dağılımı
+                </h3>
+                <p class="text-text-secondary text-sm">
+                  Harcama kalemlerinin bütçedeki payı
+                </p>
+              </div>
+              <div
+                id="expenseBreakdown"
+                class="flex flex-col justify-center gap-5 my-auto"
+              >
+                <div class="text-center text-text-secondary py-8">
+                  Yükleniyor...
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Detailed Transactions Table -->
+          <div
+            class="bg-white dark:bg-surface-dark border border-[#d7e7cf] dark:border-gray-700 rounded-xl shadow-sm overflow-hidden flex flex-col"
+          >
+            <div
+              class="p-6 border-b border-[#d7e7cf] dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4"
+            >
+              <div>
+                <h3 class="text-text-main dark:text-white text-lg font-bold">
+                  Detaylı Gider Listesi
+                </h3>
+                <p class="text-text-secondary text-sm">
+                  Tüm operasyonel harcamalar
+                </p>
+              </div>
+              <div class="relative max-w-xs w-full">
+                <span
+                  class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                  >search</span
+                >
+                <input
+                  id="expenseSearch"
+                  class="w-full pl-9 pr-4 py-2 text-sm border border-[#d7e7cf] dark:border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-background-light dark:bg-gray-800 text-text-main dark:text-white placeholder:text-gray-400"
+                  placeholder="Harcama ara..."
+                  type="text"
+                />
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead>
+                  <tr
+                    class="bg-[#f9fcf8] dark:bg-gray-800 border-b border-[#d7e7cf] dark:border-gray-700 text-text-secondary font-medium uppercase tracking-wider text-xs"
+                  >
+                    <th class="px-6 py-4">Harcama Kalemi</th>
+                    <th class="px-6 py-4">Kategori</th>
+                    <th class="px-6 py-4">Tarih</th>
+                    <th class="px-6 py-4 text-right">Tutar</th>
+                    <th class="px-6 py-4 text-center">Detay</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="expenseTableBody"
+                  class="divide-y divide-[#edf5ea] dark:divide-gray-700"
+                >
+                  <tr>
+                    <td
+                      colspan="4"
+                      class="px-6 py-8 text-center text-text-secondary"
+                    >
+                      Yükleniyor...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              class="px-6 py-4 border-t border-[#d7e7cf] dark:border-gray-700 flex justify-between items-center bg-[#f9fcf8] dark:bg-gray-900/50"
+            >
+              <p id="expenseTableInfo" class="text-xs text-text-secondary">
+                Yükleniyor...
+              </p>
+              <div class="flex gap-2">
+                <button
+                  id="prevPageBtn"
+                  class="px-3 py-1 text-xs font-medium rounded border border-[#d7e7cf] hover:bg-white transition-colors disabled:opacity-50"
+                  disabled
+                >
+                  Önceki
+                </button>
+                <button
+                  id="nextPageBtn"
+                  class="px-3 py-1 text-xs font-medium rounded border border-[#d7e7cf] hover:bg-white transition-colors"
+                >
+                  Sonraki
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Description Modal -->
+    <div id="descModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeDescModal()"></div>
+        
+        <!-- Modal Panel -->
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-surface-dark text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-[#d7e7cf] dark:border-gray-700">
+                    <div class="bg-white dark:bg-surface-dark px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 sm:mx-0 sm:h-10 sm:w-10">
+                                <span class="material-symbols-outlined text-primary-dark">description</span>
+                            </div>
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg font-bold leading-6 text-text-main dark:text-white" id="modal-title">Gider Açıklaması</h3>
+                                <div class="mt-4">
+                                    <p id="descModalContent" class="text-sm text-text-secondary dark:text-gray-300 bg-[#f9fcf8] dark:bg-gray-800/50 p-4 rounded-xl border border-[#edf5ea] dark:border-gray-700 leading-relaxed">
+                                        <!-- Content -->
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#f9fcf8] dark:bg-surface-dark/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-[#d7e7cf] dark:border-gray-700">
+                        <button type="button" onclick="closeDescModal()" class="inline-flex w-full justify-center rounded-xl bg-primary px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-primary-dark sm:ml-3 sm:w-auto transition-colors">
+                            Tamam
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/components/toast.js"></script>
+    <script src="/components/sidebar.js"></script>
+    <script>
+      // Modal functions
+      function showDescModal(content) {
+          const modal = document.getElementById('descModal');
+          const contentEl = document.getElementById('descModalContent');
+          contentEl.textContent = content || 'Açıklama bulunmuyor.';
+          modal.classList.remove('hidden');
+          // Animasyon kontrolü buraya gelebilir
+      }
+
+      function closeDescModal() {
+          document.getElementById('descModal').classList.add('hidden');
+      }
+
+      // Close on escape
+      document.addEventListener('keydown', function(event) {
+          if (event.key === "Escape") {
+              closeDescModal();
+          }
+      });
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      let currentYear = new Date().getFullYear();
+      let currentMonth = new Date().getMonth() + 1;
+      let currentPage = 1;
+      let currentSearch = "";
+
+      const monthNames = [
+        "Ocak",
+        "Şubat",
+        "Mart",
+        "Nisan",
+        "Mayıs",
+        "Haziran",
+        "Temmuz",
+        "Ağustos",
+        "Eylül",
+        "Ekim",
+        "Kasım",
+        "Aralık",
+      ];
+
+      // Ay seçiciyi yükle
+      async function loadMonthSelector() {
+        try {
+          const response = await fetch("/api/reports/available-months");
+          const months = await response.json();
+
+          const selector = document.getElementById("monthSelector");
+          selector.innerHTML = "";
+
+          if (months.length === 0) {
+            selector.innerHTML = '<option value="">Veri yok</option>';
+            return;
+          }
+
+          months.forEach((month) => {
+            const option = document.createElement("option");
+            option.value = `${month.year}-${month.month}`;
+            option.textContent = month.display;
+            if (month.year === currentYear && month.month === currentMonth) {
+              option.selected = true;
+            }
+            selector.appendChild(option);
+          });
+
+          selector.addEventListener("change", (e) => {
+            const [year, month] = e.target.value.split("-").map(Number);
+            currentYear = year;
+            currentMonth = month;
+            currentPage = 1;
+            loadAllData();
+          });
+        } catch (error) {
+          console.error("Load month selector error:", error);
+          toast.error("Ay listesi yüklenirken hata oluştu");
+        }
+      }
+
+      // Tüm verileri yükle
+      async function loadAllData() {
+        await Promise.all([
+          loadSummary(),
+          loadDailyFlow(),
+          loadExpenseBreakdown(),
+          loadExpenseDetails(),
+        ]);
+      }
+
+      // Özet verileri yükle
+      async function loadSummary() {
+        try {
+          const response = await fetch(
+            `/api/reports/monthly-close?year=${currentYear}&month=${currentMonth}`
+          );
+          const data = await response.json();
+
+          document.getElementById("totalIncome").textContent = `₺${parseFloat(
+            data.totalIncome
+          ).toLocaleString("tr-TR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+
+          document.getElementById("totalExpenses").textContent = `₺${parseFloat(
+            data.totalExpenses
+          ).toLocaleString("tr-TR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+
+          document.getElementById("netProfit").textContent = `₺${parseFloat(
+            data.netProfit
+          ).toLocaleString("tr-TR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+
+          // Gelir değişimi
+          const incomeChange = document.getElementById("incomeChange");
+          const incomePercent = Math.abs(data.incomeChangePercent);
+          incomeChange.className = `text-sm font-medium mt-1 flex items-center gap-1 ${
+            data.isIncomeIncrease ? "text-[#07881f]" : "text-[#e71f08]"
+          }`;
+          incomeChange.innerHTML = `
+            <span class="material-symbols-outlined text-sm">${
+              data.isIncomeIncrease ? "arrow_upward" : "arrow_downward"
+            }</span>
+            <span>${incomePercent.toFixed(1)}% geçen aya göre</span>
+          `;
+
+          // Gider değişimi
+          const expenseChange = document.getElementById("expenseChange");
+          const expensePercent = Math.abs(data.expenseChangePercent);
+          expenseChange.className = `text-sm font-medium mt-1 flex items-center gap-1 ${
+            data.isExpenseIncrease ? "text-[#e71f08]" : "text-[#07881f]"
+          }`;
+          expenseChange.innerHTML = `
+            <span class="material-symbols-outlined text-sm">${
+              data.isExpenseIncrease ? "arrow_upward" : "arrow_downward"
+            }</span>
+            <span>${expensePercent.toFixed(1)}% geçen aya göre</span>
+          `;
+
+          // Kar durumu
+          const profitStatus = document.getElementById("profitStatus");
+          const netProfitEl = document.getElementById("netProfit");
+          
+          const profit = parseFloat(data.netProfit);
+          if (profit > 0) {
+            netProfitEl.className = "text-[#07881f] text-3xl font-bold tracking-tight";
+            profitStatus.className =
+              "text-[#07881f] text-sm font-medium mt-1 flex items-center gap-1";
+            profitStatus.innerHTML = `
+              <span class="material-symbols-outlined text-sm">arrow_upward</span>
+              <span>Karlı</span>
+            `;
+          } else if (profit < 0) {
+             netProfitEl.className = "text-[#e71f08] text-3xl font-bold tracking-tight";
+             profitStatus.className =
+              "text-[#e71f08] text-sm font-medium mt-1 flex items-center gap-1";
+            profitStatus.innerHTML = `
+              <span class="material-symbols-outlined text-sm">arrow_downward</span>
+              <span>Zarar</span>
+            `;
+          } else {
+             netProfitEl.className = "text-text-main dark:text-white text-3xl font-bold tracking-tight";
+             profitStatus.className =
+              "text-text-secondary text-sm font-medium mt-1 flex items-center gap-1";
+             profitStatus.innerHTML = `
+              <span class="material-symbols-outlined text-sm">remove</span>
+              <span>Nötr</span>
+            `;
+          }
+        } catch (error) {
+          console.error("Load summary error:", error);
+          toast.error("Özet veriler yüklenirken hata oluştu");
+        }
+      }
+
+      // Günlük akış grafiği
+      async function loadDailyFlow() {
+        try {
+          const response = await fetch(
+            `/api/reports/daily-flow?year=${currentYear}&month=${currentMonth}`
+          );
+          const data = await response.json();
+
+          if (data.length === 0) {
+            document.getElementById("incomeExpenseChart").innerHTML =
+              '<text x="200" y="100" text-anchor="middle" fill="#669a4c">Veri yok</text>';
+            return;
+          }
+
+          const maxValue = Math.max(
+            ...data.map((d) => Math.max(d.income, d.expenses)),
+            1
+          );
+          const chartHeight = 200;
+          const chartWidth = 400;
+          const padding = 40;
+          const plotWidth = chartWidth - padding * 2;
+          const plotHeight = chartHeight - padding * 2;
+
+          // SVG içeriğini oluştur
+          let svgContent = `
+            <defs>
+              <linearGradient id="gradient-income" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#5bec13" stop-opacity="0.2"></stop>
+                <stop offset="100%" stop-color="#5bec13" stop-opacity="0"></stop>
+              </linearGradient>
+            </defs>
+          `;
+
+          // Izgara çizgileri
+          for (let i = 0; i <= 4; i++) {
+            const y = (plotHeight / 4) * i + padding;
+            svgContent += `
+              <line x1="${padding}" y1="${y}" x2="${
+              chartWidth - padding
+            }" y2="${y}" 
+                    stroke="#e5e7eb" stroke-dasharray="4 4" />
+            `;
+          }
+
+          // Günlük veriler için noktalar hesapla
+          const points = data.map((d, i) => {
+            const x = (plotWidth / (data.length - 1 || 1)) * i + padding;
+            const incomeY =
+              chartHeight - padding - (d.income / maxValue) * plotHeight;
+            const expenseY =
+              chartHeight - padding - (d.expenses / maxValue) * plotHeight;
+            return { x, incomeY, expenseY, date: d.date };
+          });
+
+            // Gider çizgi ve noktaları
+            if (points.length > 1) {
+              const expensePath = points
+                .map((p) => `${p.x},${p.expenseY}`)
+                .join(" ");
+              svgContent += `
+                <polyline points="${expensePath}" fill="none" stroke="#ef4444" 
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" />
+              `;
+              
+              // Gider Noktaları
+              points.forEach((p, i) => {
+                 const val = data[i].expenses;
+                 if (val > 0) {
+                     svgContent += `
+                        <circle cx="${p.x}" cy="${p.expenseY}" r="4" fill="white" stroke="#ef4444" stroke-width="2" class="cursor-pointer hover:r-6 transition-all duration-200">
+                           <title>Gider: ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</title>
+                        </circle>
+                     `;
+                 }
+              });
+            }
+            
+
+
+          // Gelir alanı ve çizgisi
+          if (points.length > 1) {
+            const incomePath = points
+              .map((p) => `${p.x},${p.incomeY}`)
+              .join(" ");
+            const areaPath = `M${points[0].x},${
+              chartHeight - padding
+            } L${incomePath} L${points[points.length - 1].x},${
+              chartHeight - padding
+            } Z`;
+            svgContent += `
+              <path d="${areaPath}" fill="url(#gradient-income)" />
+              <path d="M${incomePath}" fill="none" stroke="#5bec13" 
+                    stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            `;
+
+            // Noktalar ve Tooltipler
+            points.forEach((p, i) => {
+              const val = data[i].income;
+              if (val > 0) {
+                  svgContent += `
+                    <circle cx="${p.x}" cy="${p.incomeY}" r="4" fill="white" 
+                            stroke="#5bec13" stroke-width="2" class="cursor-pointer hover:r-6 transition-all duration-200">
+                         <title>Gelir: ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</title>
+                    </circle>
+                  `;
+              }
+            });
+          }
+
+          // Tarih etiketleri
+          const dateLabels = [];
+          const labelCount = Math.min(5, data.length);
+          for (let i = 0; i < labelCount; i++) {
+            const idx = Math.floor(
+              (data.length - 1) * (i / (labelCount - 1 || 1))
+            );
+            const date = new Date(data[idx].date);
+            dateLabels.push({
+              x: points[idx].x,
+              label: `${date.getDate()} ${monthNames[date.getMonth()].substring(
+                0,
+                3
+              )}`,
+            });
+          }
+
+          svgContent += `
+            <g class="text-xs text-gray-400 font-medium">
+              ${dateLabels
+                .map(
+                  (d) =>
+                    `<text x="${d.x}" y="${
+                      chartHeight - 10
+                    }" text-anchor="middle">${d.label}</text>`
+                )
+                .join("")}
+            </g>
+          `;
+
+          document.getElementById("incomeExpenseChart").innerHTML = svgContent;
+        } catch (error) {
+          console.error("Load daily flow error:", error);
+          toast.error("Grafik yüklenirken hata oluştu");
+        }
+      }
+
+      // Gider dağılımı
+      async function loadExpenseBreakdown() {
+        try {
+          const response = await fetch(
+            `/api/reports/expense-breakdown?year=${currentYear}&month=${currentMonth}`
+          );
+          const data = await response.json();
+
+          const container = document.getElementById("expenseBreakdown");
+
+          if (data.length === 0) {
+            container.innerHTML = `
+              <div class="text-center text-text-secondary py-8">
+                Bu ay için gider kaydı bulunamadı
+              </div>
+            `;
+            return;
+          }
+
+          const colors = [
+            { bg: "bg-[#5bec13]", dot: "bg-[#5bec13]" },
+            { bg: "bg-[#8add55]", dot: "bg-[#8add55]" },
+            { bg: "bg-[#aed994]", dot: "bg-[#aed994]" },
+            { bg: "bg-[#d0e5c2]", dot: "bg-[#d0e5c2]" },
+            { bg: "bg-[#e8f5e3]", dot: "bg-[#e8f5e3]" },
+          ];
+
+          container.innerHTML = data
+            .map((item, index) => {
+              const color = colors[index % colors.length];
+              return `
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm font-medium">
+                  <span class="text-text-main dark:text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full ${color.dot}"></span>
+                    ${escapeHtml(item.type_name)}
+                  </span>
+                  <span class="text-text-main dark:text-white">₺${parseFloat(
+                    item.total
+                  ).toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}</span>
+                </div>
+                <div class="w-full bg-[#f0f4ee] dark:bg-gray-800 rounded-full h-2">
+                  <div class="${color.bg} h-2 rounded-full" style="width: ${
+                item.percentage
+              }%"></div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+        } catch (error) {
+          console.error("Load expense breakdown error:", error);
+          toast.error("Gider dağılımı yüklenirken hata oluştu");
+        }
+      }
+
+      // Detaylı gider listesi
+      async function loadExpenseDetails() {
+        try {
+          const response = await fetch(
+            `/api/reports/expense-details?year=${currentYear}&month=${currentMonth}&page=${currentPage}&limit=10&search=${encodeURIComponent(
+              currentSearch
+            )}`
+          );
+          const data = await response.json();
+
+          const tbody = document.getElementById("expenseTableBody");
+          const info = document.getElementById("expenseTableInfo");
+          const prevBtn = document.getElementById("prevPageBtn");
+          const nextBtn = document.getElementById("nextPageBtn");
+
+          if (data.expenses.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-text-secondary">
+                  Gider kaydı bulunamadı
+                </td>
+              </tr>
+            `;
+            info.textContent = "Toplam 0 işlem";
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
+          }
+
+          const getTypeIcon = (typeName) => {
+            const type = (typeName || "").toLowerCase();
+            if (type.includes("elektrik"))
+              return {
+                icon: "bolt",
+                bg: "bg-orange-50",
+                text: "text-orange-600",
+              };
+            if (type.includes("su"))
+              return {
+                icon: "water_drop",
+                bg: "bg-cyan-50",
+                text: "text-cyan-600",
+              };
+            if (type.includes("maaş"))
+              return {
+                icon: "group",
+                bg: "bg-purple-50",
+                text: "text-purple-600",
+              };
+            if (type.includes("temizlik"))
+              return {
+                icon: "cleaning_services",
+                bg: "bg-green-50",
+                text: "text-green-600",
+              };
+            if (type.includes("tamir"))
+              return { icon: "build", bg: "bg-blue-50", text: "text-blue-600" };
+            if (type.includes("kira"))
+              return {
+                icon: "storefront",
+                bg: "bg-blue-50",
+                text: "text-blue-600",
+              };
+            return {
+              icon: "receipt_long",
+              bg: "bg-gray-50",
+              text: "text-gray-600",
+            };
+          };
+
+          tbody.innerHTML = data.expenses
+            .map((expense) => {
+              const date = new Date(expense.date);
+              const dateStr = date.toLocaleDateString("tr-TR", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              });
+              const typeInfo = getTypeIcon(expense.type_name);
+
+              return `
+              <tr class="hover:bg-[#f9fcf8] dark:hover:bg-gray-800/50 transition-colors">
+                <td class="px-6 py-4 text-text-main dark:text-white font-medium flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full ${typeInfo.bg} ${
+                typeInfo.text
+              } flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-sm">${
+                      typeInfo.icon
+                    }</span>
+                  </div>
+                  ${escapeHtml(expense.name)}
+                </td>
+                <td class="px-6 py-4 text-gray-500">${escapeHtml(
+                  expense.type_name
+                )}</td>
+                <td class="px-6 py-4 text-gray-500">${dateStr}</td>
+                <td class="px-6 py-4 text-right font-bold text-text-main dark:text-white">
+                  -₺${parseFloat(expense.price).toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button 
+                    onclick="showDescModal('${escapeHtml(expense.description || 'Açıklama yok').replace(/'/g, "\\'")}')"
+                    class="p-2 text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    title="Detay Göster"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">info</span>
+                  </button>
+                </td>
+              </tr>
+            `;
+            })
+            .join("");
+
+          info.textContent = `Toplam ${data.total} işlem gösteriliyor`;
+          prevBtn.disabled = currentPage === 1;
+          nextBtn.disabled = currentPage >= data.totalPages;
+
+          prevBtn.onclick = () => {
+            if (currentPage > 1) {
+              currentPage--;
+              loadExpenseDetails();
+            }
+          };
+
+          nextBtn.onclick = () => {
+            if (currentPage < data.totalPages) {
+              currentPage++;
+              loadExpenseDetails();
+            }
+          };
+        } catch (error) {
+          console.error("Load expense details error:", error);
+          toast.error("Gider listesi yüklenirken hata oluştu");
+        }
+      }
+
+      // Arama
+      let searchTimeout;
+      document
+        .getElementById("expenseSearch")
+        .addEventListener("input", (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            currentSearch = e.target.value;
+            currentPage = 1;
+            loadExpenseDetails();
+          }, 500);
+        });
+
+      // Yazdır / PDF
+      document
+        .getElementById("pdfDownloadBtn")
+        .addEventListener("click", () => {
+          const element = document.querySelector(".layout-container");
+          const btnContainer = document.querySelector(".flex.flex-wrap.items-center.gap-4");
+          
+          // Butonları geçici olarak gizle
+          btnContainer.style.display = 'none';
+          
+          const opt = {
+            margin:       [10, 10, 10, 10], // top, left, bottom, right
+            filename:     `Aylik_Rapor_${currentMonth}-${currentYear}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          // PDF oluştur ve indir
+          html2pdf().set(opt).from(element).save().then(() => {
+            // İşlem bitince butonları geri getir
+            btnContainer.style.display = 'flex';
+          }).catch(err => {
+            console.error(err);
+            toast.error("PDF oluşturulurken bir hata oluştu");
+            btnContainer.style.display = 'flex';
+          });
+        });
+
+      // Excel İndir
+      document
+        .getElementById("excelDownloadBtn")
+        .addEventListener("click", () => {
+             window.location.href = `/api/reports/export-excel?year=${currentYear}&month=${currentMonth}`;
+        });
+
+      // Escape HTML
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Sayfa yüklendiğinde
+      async function init() {
+        await loadMonthSelector();
+        await loadAllData();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

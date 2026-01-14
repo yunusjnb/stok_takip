@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe - Giriş Seçimi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Theme Configuration -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#46ec13",
+              "background-light": "#f9fcf8",
+              "background-dark": "#142210",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-[#111b0d] font-display min-h-screen flex flex-col overflow-x-hidden"
+  >
+    <!-- Top Navigation -->
+    <header
+      class="w-full border-b border-solid border-[#eaf3e7] bg-background-light dark:bg-background-dark"
+    >
+      <div
+        class="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between mx-auto max-w-[1440px]"
+      >
+        <div class="flex items-center gap-4 text-[#111b0d]">
+          <div class="size-8 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-3xl">local_cafe</span>
+          </div>
+          <h2
+            class="text-[#111b0d] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]"
+          >
+            Keşiş Kafe
+          </h2>
+        </div>
+        <div class="flex items-center gap-8">
+          <a
+            class="text-[#111b0d] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors hidden sm:block"
+            href="#"
+            >Yardım</a
+          >
+          <a
+            class="text-[#111b0d] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+            href="#"
+            >İletişim</a
+          >
+        </div>
+      </div>
+    </header>
+    <!-- Main Layout Container -->
+    <div
+      class="flex-1 flex flex-col items-center justify-center px-4 py-10 md:px-40"
+    >
+      <div
+        class="layout-content-container flex flex-col max-w-[960px] w-full flex-1 justify-center"
+      >
+        <!-- Page Heading -->
+        <div
+          class="flex flex-col items-center text-center gap-6 mb-12 animate-fade-in-up"
+        >
+          <div class="flex flex-col gap-2">
+            <h1
+              class="text-[#111b0d] dark:text-white text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em]"
+            >
+              Hoşgeldiniz
+            </h1>
+            <p
+              class="text-[#5e9a4c] dark:text-[#a0cba0] text-lg font-normal leading-normal max-w-[600px]"
+            >
+              Keşiş Kafe Yönetim Sistemi. Lütfen devam etmek için bir giriş
+              yöntemi seçin.
+            </p>
+          </div>
+        </div>
+        <!-- Feature Selection Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <!-- Manager Login Card -->
+          <a
+            class="group relative flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1e2e1a] shadow-sm border border-[#eaf3e7] dark:border-[#2a3f25] hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            href="/login/admin"
+          >
+            <div
+              class="h-48 w-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
+              data-alt="Modern workspace desk with laptop and analytics charts on screen"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6GDj0WANEGTMo67kUqnYDh2VfTHi6cSO2G2wEeGWmAMIxou8xtmh6jqWcTyJbNs1GEGXHjpkDrow5lV-urcO__guPC5n0QWubxG5u54L_g7E1LmGaFIz9SbEf3nEcEXrgjjRat-CquWmr73yVkhuN9PZK1yqk-cUwxsh86lC47wwwjjh2XduDPNZ2aubwyGIn9_1MEkfeIheFRtODswMmiBo3q4qeGSy6107JoF6YpTHUtUqTo6DhzdmIsZhvjK6sldljHQQD0_cL');
+              "
+            >
+              <div
+                class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"
+              ></div>
+            </div>
+            <div class="p-6 md:p-8 flex flex-col flex-1 gap-4">
+              <div class="flex items-center justify-between">
+                <div
+                  class="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-black transition-colors"
+                >
+                  <span class="material-symbols-outlined text-2xl"
+                    >admin_panel_settings</span
+                  >
+                </div>
+                <span
+                  class="material-symbols-outlined text-[#5e9a4c] group-hover:translate-x-1 transition-transform"
+                  >arrow_forward</span
+                >
+              </div>
+              <div>
+                <h3
+                  class="text-[#111b0d] dark:text-white text-xl font-bold leading-tight mb-2"
+                >
+                  Yönetici Girişi
+                </h3>
+                <p
+                  class="text-[#5e9a4c] dark:text-[#a0cba0] text-sm md:text-base font-normal leading-normal"
+                >
+                  Stok takibi, personel yönetimi ve detaylı satış analizleri
+                  paneli.
+                </p>
+              </div>
+            </div>
+          </a>
+          <!-- POS Login Card -->
+          <a
+            class="group relative flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1e2e1a] shadow-sm border border-[#eaf3e7] dark:border-[#2a3f25] hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            href="/login/cashier"
+          >
+            <div
+              class="h-48 w-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
+              data-alt="Barista using a modern point of sale tablet system at a cafe counter"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDm9o6_YMcR3tZXJhvvf9-D1ly3vmkSKjKIehttTaaPfOoepdUFyWIi8-iqFi7mqJoFecj0i6thMM0itvfd9Wz1aEgYF3ty3UufZdY1iF-xKNTP8EZWDBSixVVRAxSOfpDrRhsrGDyulvLASXqbxYHcNmUbXkUyPItsiOCutr-NGRFSB3PH0PP2Z0KwuRKu_ToIEdFlcImt8KULCQEwrJtv6sulYtVcGhLLdMIO1YSJRyXr-0_HT7_V2eMiMAIEBJrWv9CsfycLwxgC');
+              "
+            >
+              <div
+                class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"
+              ></div>
+            </div>
+            <div class="p-6 md:p-8 flex flex-col flex-1 gap-4">
+              <div class="flex items-center justify-between">
+                <div
+                  class="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-black transition-colors"
+                >
+                  <span class="material-symbols-outlined text-2xl"
+                    >point_of_sale</span
+                  >
+                </div>
+                <span
+                  class="material-symbols-outlined text-[#5e9a4c] group-hover:translate-x-1 transition-transform"
+                  >arrow_forward</span
+                >
+              </div>
+              <div>
+                <h3
+                  class="text-[#111b0d] dark:text-white text-xl font-bold leading-tight mb-2"
+                >
+                  Yazar Kasa Girişi
+                </h3>
+                <p
+                  class="text-[#5e9a4c] dark:text-[#a0cba0] text-sm md:text-base font-normal leading-normal"
+                >
+                  Sipariş alma, hızlı ödeme işlemleri ve günlük kasa ekranı.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <footer
+      class="flex flex-col gap-6 px-5 py-10 text-center w-full border-t border-[#eaf3e7] dark:border-[#2a3f25] bg-background-light dark:bg-background-dark mt-auto"
+    >
+      <div class="layout-content-container max-w-[960px] mx-auto w-full">
+        <div class="flex flex-wrap items-center justify-center gap-6">
+          <a
+            class="text-[#5e9a4c] dark:text-[#a0cba0] text-sm font-normal leading-normal hover:text-primary transition-colors"
+            href="#"
+            >Gizlilik Politikası</a
+          >
+          <span class="text-[#eaf3e7] dark:text-[#2a3f25]">•</span>
+          <a
+            class="text-[#5e9a4c] dark:text-[#a0cba0] text-sm font-normal leading-normal hover:text-primary transition-colors"
+            href="#"
+            >Kullanım Şartları</a
+          >
+        </div>
+        <p
+          class="text-[#5e9a4c] dark:text-[#a0cba0] text-xs font-normal leading-normal mt-4 opacity-80"
+        >
+          © 2025 Keşiş Kafe Yönetim Sistemi v1.0
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

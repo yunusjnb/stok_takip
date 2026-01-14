@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe - Raporlar</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary:
+                "#4CAF50" /* Matcha Green - adjusted for readability against white */,
+              "primary-light": "#E8F5E9",
+              "primary-dark": "#2E7D32",
+              "background-light": "#F9F9F7" /* Light Beige/Off-white */,
+              "background-dark": "#1C1C1E",
+              "surface-light": "#FFFFFF",
+              "surface-dark": "#2C2C2E",
+              "text-main": "#2F3E2F" /* Dark mossy green for text */,
+              "text-secondary": "#5C6B5C",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+              body: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Work Sans", sans-serif;
+      }
+      /* Custom scrollbar for clean look */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #bdbdbd;
+      }
+
+      /* Embedded (iframe içi) görünümde dış layout'u gizle */
+      body.embedded-report {
+        background: transparent;
+        overflow: auto;
+        height: auto;
+      }
+      body.embedded-report > aside {
+        display: none;
+      }
+      body.embedded-report > main {
+        padding: 0;
+        border: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-200 antialiased overflow-hidden h-screen flex"
+  >
+    <!-- Sidebar -->
+    <aside
+      class="w-64 h-full bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 flex flex-col justify-between p-4 hidden md:flex shrink-0 z-20 shadow-sm"
+    >
+      <div class="flex flex-col gap-8">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 px-2">
+          <div class="bg-primary/10 p-2 rounded-xl">
+            <span
+              class="material-symbols-outlined text-primary"
+              style="font-size: 28px"
+              >local_cafe</span
+            >
+          </div>
+          <div class="flex flex-col">
+            <h1
+              class="text-text-main dark:text-white text-lg font-bold leading-tight"
+            >
+              Keşiş Kafe
+            </h1>
+            <p class="text-text-secondary text-xs font-medium">
+              Yönetim Paneli
+            </p>
+          </div>
+        </div>
+        <!-- Navigation -->
+        <nav class="flex flex-col gap-2">
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary-dark transition-colors group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined group-hover:text-primary-dark transition-colors"
+              >dashboard</span
+            >
+            <span class="text-sm font-medium">Genel Bakış</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary-dark transition-colors group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined group-hover:text-primary-dark transition-colors"
+              >point_of_sale</span
+            >
+            <span class="text-sm font-medium">Satışlar</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary-dark transition-colors group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined group-hover:text-primary-dark transition-colors"
+              >inventory_2</span
+            >
+            <span class="text-sm font-medium">Stok Durumu</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-light text-primary-dark font-semibold"
+            href="#"
+          >
+            <span class="material-symbols-outlined">bar_chart</span>
+            <span class="text-sm">Raporlar</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary-dark transition-colors group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined group-hover:text-primary-dark transition-colors"
+              >group</span
+            >
+            <span class="text-sm">Personel</span>
+          </a>
+        </nav>
+      </div>
+      <!-- User Profile -->
+      <div
+        class="flex items-center gap-3 px-3 py-3 border-t border-gray-100 dark:border-gray-800 mt-auto"
+      >
+        <div
+          class="size-9 rounded-full bg-cover bg-center border border-gray-200"
+          data-alt="User profile picture"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKXRqkwz9oEMMqm9PvQhTbZLGgq-qblL-XeiLOPwIfnO-unHXvLgb4b-eAWPnch7eH5in5W8p_hOmF-NM-oAcelT2MMbifx8fhH4S1RRt3d1t6zaKMGpBStvvVyAQroeqo1H5-mcjVu8kAk_j-nB-jwhbhxu4kqr6TopPZwJ__n1Tq7xse-IxNS4QwbVZq9SRyQtSwyYqV_jAJ3Vf-o5DzBTKos0UC5lfgTK-B5MjOoHnYi_IWiDmfc1xSDvEBJ5LQrZ_Q-4BdK-qP');
+          "
+        ></div>
+        <div class="flex flex-col overflow-hidden">
+          <span
+            class="text-sm font-medium text-text-main dark:text-white truncate"
+            >Ahmet Yılmaz</span
+          >
+          <span class="text-xs text-text-secondary truncate"
+            >Mağaza Müdürü</span
+          >
+        </div>
+        <button class="ml-auto text-text-secondary hover:text-text-main">
+          <span class="material-symbols-outlined text-lg">settings</span>
+        </button>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <!-- Top Header -->
+      <header
+        class="h-16 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 shrink-0 z-10"
+      >
+        <div class="flex items-center gap-4">
+          <button
+            class="md:hidden p-2 text-text-secondary hover:bg-gray-100 rounded-lg"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <h2 class="text-xl font-bold text-text-main dark:text-white">
+            Raporlar ve Analizler
+          </h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <div
+            class="hidden sm:flex items-center bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg px-3 h-10 w-64 shadow-sm"
+          >
+            <span class="material-symbols-outlined text-gray-400 text-xl"
+              >search</span
+            >
+            <input
+              class="flex-1 bg-transparent border-none text-sm focus:ring-0 placeholder:text-gray-400 text-text-main dark:text-white h-full ml-2"
+              placeholder="Raporlarda ara..."
+              type="text"
+            />
+          </div>
+          <button
+            class="size-10 flex items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors shadow-sm relative"
+          >
+            <span class="material-symbols-outlined">notifications</span>
+            <span
+              class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white"
+            ></span>
+          </button>
+        </div>
+      </header>
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+        <div class="max-w-7xl mx-auto flex flex-col gap-8">
+          <!-- Tarih filtresi ve aksiyonlar -->
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800"
+          >
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative group">
+                <div
+                  class="flex items-center gap-2 px-4 py-2 bg-primary-light/50 border border-primary/20 rounded-lg text-primary-dark cursor-pointer hover:bg-primary-light transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >calendar_today</span
+                  >
+                  <span class="text-sm font-medium">Bu Hafta (12-19 Haz)</span>
+                  <span class="material-symbols-outlined text-[18px]"
+                    >expand_more</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium bg-white dark:bg-surface-dark shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >download</span
+                >
+                Dışa Aktar
+              </button>
+              <button
+                class="flex items-center justify-center size-9 border border-gray-200 dark:border-gray-700 rounded-lg text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-surface-dark shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >filter_list</span
+                >
+              </button>
+            </div>
+          </div>
+          <!-- KPI Cards -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+          >
+            <!-- KPI 1: Toplam Ciro (aylık kapanıştan) -->
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-600 dark:text-blue-400"
+                >
+                  <span class="material-symbols-outlined">payments</span>
+                </div>
+                <span
+                  id="kpiRevenueChange"
+                  class="flex items-center gap-1 text-xs font-semibold text-text-secondary bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded-full"
+                >
+                  <span class="material-symbols-outlined text-[14px]"
+                    >remove</span
+                  >
+                  0%
+                </span>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">Toplam Ciro</p>
+              <h3
+                id="kpiRevenue"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                ₺0,00
+              </h3>
+            </div>
+            <!-- KPI 3: Kritik Stok (low_stock + out_of_stock) -->
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg text-orange-600 dark:text-orange-400"
+                >
+                  <span class="material-symbols-outlined">inventory</span>
+                </div>
+                <span
+                  class="flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full"
+                >
+                  <span class="material-symbols-outlined text-[14px]"
+                    >priority_high</span
+                  >
+                  Kritik
+                </span>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">Kritik Stok</p>
+              <h3
+                id="kpiCriticalStock"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                0 Ürün
+              </h3>
+            </div>
+            <!-- KPI 4: Personel Saati (bugün toplam saat) -->
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg text-purple-600 dark:text-purple-400"
+                >
+                  <span class="material-symbols-outlined">schedule</span>
+                </div>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">
+                Personel Saati
+              </p>
+              <h3
+                id="kpiEmployeeHours"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                0s
+              </h3>
+            </div>
+          </div>
+          <!-- Charts Section -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Large Chart -->
+            <div
+              class="lg:col-span-2 bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-text-main dark:text-white">
+                  Saatlik Satış Yoğunluğu
+                </h3>
+                <button
+                  class="text-sm text-primary font-medium hover:text-primary-dark"
+                >
+                  Detaylar
+                </button>
+              </div>
+              <div
+                class="flex items-end justify-between h-64 gap-2 w-full pt-4 border-b border-gray-100 dark:border-gray-800 relative"
+              >
+                <svg
+                  id="dailyIncomeChart"
+                  class="w-full h-full"
+                  preserveaspectratio="none"
+                  viewBox="0 0 400 200"
+                ></svg>
+              </div>
+            </div>
+            <!-- Küçük Grafik / Donut -->
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col"
+            >
+              <h3 class="text-lg font-bold text-text-main dark:text-white mb-6">
+              // Gıda Takip - Durum Etiketi Tasarımı
+              </h3>
+              <div class="flex-1 flex items-center justify-center relative">
+                <svg
+                  id="expenseDonut"
+                  class="w-48 h-48"
+                  viewBox="0 0 160 160"
+                ></svg>
+              </div>
+              <div
+                id="expenseLegend"
+                class="mt-6 flex flex-col gap-3 text-sm"
+              ></div>
+            </div>
+          </div>
+          <!-- Data Table Section -->
+          <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden mb-8"
+          >
+            <div
+              class="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            >
+              <div>
+                <h3 class="text-lg font-bold text-text-main dark:text-white">
+                  Stok Özeti
+                </h3>
+                <p class="text-sm text-text-secondary mt-1">
+                  Mevcut stok durumu (malzeme + al-sat ürünler)
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="relative">
+                  <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]"
+                    >search</span
+                  >
+                  <input
+                    class="pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:ring-1 focus:ring-primary focus:border-primary w-full sm:w-64"
+                    placeholder="Ürün ara..."
+                    type="text"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead
+                  class="bg-gray-50 dark:bg-gray-800/50 text-text-secondary font-medium border-b border-gray-100 dark:border-gray-800"
+                >
+                  <tr>
+                    <th class="px-6 py-4">Ürün / Malzeme</th>
+                    <th class="px-6 py-4">Tür</th>
+                    <th class="px-6 py-4">Mevcut Stok</th>
+                    <th class="px-6 py-4">Min. Stok</th>
+                    <th class="px-6 py-4">Durum</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="stockSummaryBody"
+                  class="divide-y divide-gray-100 dark:divide-gray-800"
+                >
+                  <tr>
+                    <td
+                      colspan="5"
+                      class="px-6 py-6 text-center text-sm text-text-secondary"
+                    >
+                      Yükleniyor...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              class="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between"
+            >
+              <span class="text-sm text-text-secondary"
+                >1-4 / 24 sonuç gösteriliyor</span
+              >
+              <div class="flex gap-2">
+                <button
+                  class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-700 rounded-md text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                  disabled=""
+                >
+                  Önceki
+                </button>
+                <button
+                  class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-700 rounded-md text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  Sonraki
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // Eğer bu sayfa iframe içinde açılıyorsa, sadece içerik kısmını göster
+      (function () {
+        if (window.self !== window.top) {
+          document.body.classList.add("embedded-report");
+        }
+      })();
+
+      const monthNames = [
+        "Ocak",
+        "Şubat",
+        "Mart",
+        "Nisan",
+        "Mayıs",
+        "Haziran",
+        "Temmuz",
+        "Ağustos",
+        "Eylül",
+        "Ekim",
+        "Kasım",
+        "Aralık",
+      ];
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+
+      function formatCurrency(value) {
+        return `₺${Number(value || 0).toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`;
+      }
+
+      async function loadKpis() {
+        try {
+          const res = await fetch(
+            `/api/reports/monthly-close?year=${currentYear}&month=${currentMonth}`
+          );
+          if (!res.ok) throw new Error("Aylık kapanış verisi alınamadı");
+          const data = await res.json();
+
+          const totalIncome = parseFloat(data.totalIncome || 0);
+          const incomeChange = Number(data.incomeChangePercent || 0);
+
+          const revenueEl = document.getElementById("kpiRevenue");
+          const revenueChangeEl = document.getElementById("kpiRevenueChange");
+
+          if (revenueEl) revenueEl.textContent = formatCurrency(totalIncome);
+          if (revenueChangeEl) {
+            const isUp = incomeChange > 0;
+            const isDown = incomeChange < 0;
+            revenueChangeEl.className =
+              "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full " +
+              (isUp
+                ? "text-[#07881f] bg-green-50 dark:bg-green-900/20"
+                : isDown
+                ? "text-[#e71f08] bg-red-50 dark:bg-red-900/20"
+                : "text-text-secondary bg-gray-50 dark:bg-gray-800");
+            revenueChangeEl.innerHTML = `
+              <span class="material-symbols-outlined text-[14px]">
+                ${isUp ? "arrow_upward" : isDown ? "arrow_downward" : "remove"}
+              </span>
+              ${Math.abs(incomeChange).toFixed(1)}%
+            `;
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        try {
+          const res = await fetch("/api/stock/stats");
+          if (!res.ok) throw new Error("Stok istatistikleri alınamadı");
+          const stats = await res.json();
+          const critical =
+            Number(stats.low_stock || 0) + Number(stats.out_of_stock || 0);
+          const el = document.getElementById("kpiCriticalStock");
+          if (el) el.textContent = `${critical} Ürün`;
+        } catch (err) {
+          console.error(err);
+        }
+
+        try {
+          const res = await fetch(
+            "/api/employees/salary/summary?startDate=" +
+              `${currentYear}-${String(currentMonth).padStart(
+                2,
+                "0"
+              )}-01&endDate=` +
+              `${currentYear}-${String(currentMonth).padStart(2, "0")}-31`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const hours = Number(data.totalHours || 0);
+            const el = document.getElementById("kpiEmployeeHours");
+            if (el) el.textContent = `${hours.toFixed(0)}s`;
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function loadDailyIncomeChart() {
+        try {
+          const res = await fetch(
+            `/api/reports/daily-flow?year=${currentYear}&month=${currentMonth}`
+          );
+          if (!res.ok) throw new Error("Günlük akış verisi alınamadı");
+          const data = await res.json();
+          const svg = document.getElementById("dailyIncomeChart");
+          if (!svg) return;
+
+          if (!data.length) {
+            svg.innerHTML =
+              '<text x="200" y="100" text-anchor="middle" fill="#9ca3af">Veri yok</text>';
+            return;
+          }
+
+          const width = 400;
+          const height = 200;
+          const padding = 30;
+          const plotW = width - padding * 2;
+          const plotH = height - padding * 2;
+
+          const maxIncome = Math.max(
+            ...data.map((d) => Number(d.income || 0)),
+            1
+          );
+
+          const points = data.map((d, i) => {
+            const x = (plotW / (data.length - 1 || 1)) * i + padding;
+            const y =
+              height - padding - (Number(d.income || 0) / maxIncome) * plotH;
+            return { x, y, date: d.date, income: d.income };
+          });
+
+          let content = "";
+          for (let i = 0; i <= 4; i++) {
+            const y = padding + (plotH / 4) * i;
+            content += `<line x1="${padding}" y1="${y}" x2="${
+              width - padding
+            }" y2="${y}" stroke="#e5e7eb" stroke-dasharray="4 4" />`;
+          }
+
+          const pathD = "M" + points.map((p) => `${p.x},${p.y}`).join(" L");
+
+          content += `
+            <path d="${pathD}"
+              fill="none"
+              stroke="#4CAF50"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          `;
+
+          points.forEach((p) => {
+            content += `
+              <circle cx="${p.x}" cy="${p.y}" r="3.5"
+                fill="white" stroke="#4CAF50" stroke-width="2">
+              </circle>
+            `;
+          });
+
+          svg.innerHTML = content;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function loadExpenseDonut() {
+        try {
+          const res = await fetch(
+            `/api/reports/expense-breakdown?year=${currentYear}&month=${currentMonth}`
+          );
+          if (!res.ok) throw new Error("Gider dağılımı alınamadı");
+          const data = await res.json();
+          const svg = document.getElementById("expenseDonut");
+          const legend = document.getElementById("expenseLegend");
+          if (!svg || !legend) return;
+
+          if (!data.length) {
+            svg.innerHTML =
+              '<text x="80" y="80" text-anchor="middle" fill="#9ca3af">Veri yok</text>';
+            legend.innerHTML = "";
+            return;
+          }
+
+          const colors = [
+            "#4CAF50",
+            "#81C784",
+            "#C8E6C9",
+            "#E8F5E9",
+            "#A5D6A7",
+          ];
+          let currentAngle = 0;
+          let donutParts = "";
+
+          data.forEach((item, index) => {
+            const value = Number(item.percentage || 0);
+            const angle = (value / 100) * Math.PI * 2;
+            const x1 = 80 + 60 * Math.cos(currentAngle);
+            const y1 = 80 + 60 * Math.sin(currentAngle);
+            const x2 = 80 + 60 * Math.cos(currentAngle + angle);
+            const y2 = 80 + 60 * Math.sin(currentAngle + angle);
+            const largeArc = angle > Math.PI ? 1 : 0;
+            const color = colors[index % colors.length];
+
+            donutParts += `
+              <path
+                d="M80,80 L${x1},${y1} A60,60 0 ${largeArc} 1 ${x2},${y2} Z"
+                fill="${color}"
+                fill-opacity="0.9"
+              />
+            `;
+            currentAngle += angle;
+          });
+
+          const innerCircle = `
+            <circle cx="80" cy="80" r="38" fill="white" />
+          `;
+
+          svg.innerHTML = donutParts + innerCircle;
+
+          legend.innerHTML = data
+            .map((item, index) => {
+              const color = colors[index % colors.length];
+              return `
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="size-3 rounded-full" style="background:${color}"></span>
+                    <span class="text-text-secondary">${item.type_name}</span>
+                  </div>
+                  <span class="font-semibold text-text-main dark:text-white">
+                    ${Number(item.percentage || 0).toFixed(1)}%
+                  </span>
+                </div>
+              `;
+            })
+            .join("");
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadKpis();
+        loadDailyIncomeChart();
+        loadExpenseDonut();
+        loadStockSummary();
+      });
+
+      async function loadStockSummary() {
+        const tbody = document.getElementById("stockSummaryBody");
+        if (!tbody) return;
+        try {
+          const res = await fetch("/api/stock/all");
+          if (!res.ok) throw new Error("Stok listesi alınamadı");
+          const items = await res.json();
+
+          if (!items.length) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="px-6 py-6 text-center text-sm text-text-secondary">
+                  Stok kaydı bulunamadı
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          // En kritik 10 kayıt (stok / min_stock oranına göre)
+          const scored = items.map((i) => {
+            const stock = Number(i.stock || 0);
+            const min = Number(i.min_stock || 0);
+            const ratio = min > 0 ? stock / min : 999;
+            return { ...i, stock, min_stock: min, ratio };
+          });
+
+          scored.sort((a, b) => a.ratio - b.ratio);
+          const top = scored.slice(0, 10);
+
+          const rows = top
+            .map((item) => {
+              const name = item.name || "-";
+              const typeLabel =
+                item.type_label || (item.type === "ürün" ? "Ürün" : "Malzeme");
+              const unit = item.unit || "";
+
+              let stockText;
+              if (unit === "adet") {
+                stockText = `${item.stock.toLocaleString("tr-TR", {
+                  maximumFractionDigits: 0,
+                })} ${unit}`;
+              } else {
+                stockText = `${item.stock.toLocaleString("tr-TR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} ${unit}`;
+              }
+
+              const minText =
+                item.min_stock > 0
+                  ? `${item.min_stock.toLocaleString("tr-TR", {
+                      maximumFractionDigits: unit === "adet" ? 0 : 2,
+                    })} ${unit}`
+                  : "-";
+
+              let statusLabel = "Normal";
+              let statusClasses =
+                "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+
+              if (item.stock <= 0) {
+                statusLabel = "Tükendi";
+                statusClasses =
+                  "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+              } else if (item.min_stock > 0 && item.stock <= item.min_stock) {
+                statusLabel = "Kritik";
+                statusClasses =
+                  "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300";
+              }
+
+              const initials =
+                (name[0] || "?").toUpperCase() +
+                (name.split(" ")[1]?.[0] || "").toUpperCase();
+
+              return `
+                <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors group">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold">
+                        ${initials}
+                      </div>
+                      <span class="font-medium text-text-main dark:text-white">
+                        ${name}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-text-secondary">
+                    ${typeLabel}
+                  </td>
+                  <td class="px-6 py-4 font-medium text-text-main dark:text-white">
+                    ${stockText}
+                  </td>
+                  <td class="px-6 py-4 text-text-secondary">
+                    ${minText}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses}">
+                      ${statusLabel}
+                    </span>
+                  </td>
+                </tr>
+              `;
+            })
+            .join("");
+
+          tbody.innerHTML = rows;
+        } catch (err) {
+          console.error(err);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="px-6 py-6 text-center text-sm text-red-600">
+                Stok verileri yüklenirken hata oluştu
+              </td>
+            </tr>
+          `;
+        }
+      }
+    </script>
+  </body>
+</html>

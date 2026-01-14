@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Satış Analizi</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              "background-dark": "#221114",
+              "matcha-light": "#A7C957",
+              "matcha-dark": "#386641",
+              "beige-light": "#FDFCFB",
+              "beige-medium": "#F2EFEA",
+              "beige-dark": "#EAE6DF",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              surface: "#FFFFFF",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+              "border-color": "#E5E7EB",
+            },
+            fontFamily: {
+              display: ["Work Sans", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light font-display">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap justify-between gap-4">
+              <div class="flex min-w-72 flex-col gap-3">
+                <p
+                  class="text-text-primary text-4xl font-black leading-tight tracking-[-0.033em]"
+                >
+                  Satış Analizi Paneli
+                </p>
+                <p
+                  class="text-text-secondary text-base font-normal leading-normal"
+                >
+                  Günlük, haftalık ve aylık satış raporlarını görüntüleyin.
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-3 py-3 overflow-x-auto">
+              <button
+                id="periodToday"
+                class="period-btn flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary pl-4 pr-2"
+                data-period="today"
+              >
+                <p class="text-white text-sm font-medium leading-normal">
+                  Bugün
+                </p>
+              </button>
+              <button
+                id="periodWeek"
+                class="period-btn flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-beige-medium pl-4 pr-2"
+                data-period="week"
+              >
+                <p class="text-text-primary text-sm font-medium leading-normal">
+                  Bu Hafta
+                </p>
+              </button>
+              <button
+                id="periodMonth"
+                class="period-btn flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-beige-medium pl-4 pr-2"
+                data-period="month"
+              >
+                <p class="text-text-primary text-sm font-medium leading-normal">
+                  Bu Ay
+                </p>
+              </button>
+              <button
+                id="customDateRangeBtn"
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-beige-medium pl-4 pr-2 hover:bg-beige-dark transition-colors"
+                onclick="openCustomDateModal()"
+              >
+                <p class="text-text-primary text-sm font-medium leading-normal">
+                  Özel Tarih Aralığı
+                </p>
+                <span
+                  class="material-symbols-outlined text-text-secondary text-[20px]"
+                  >calendar_today</span
+                >
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-4">
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white p-6 border border-beige-dark"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Toplam Gelir
+                </p>
+                <p
+                  id="totalRevenue"
+                  class="text-text-primary tracking-light text-2xl font-bold leading-tight"
+                >
+                  ₺0.00
+                </p>
+                <p
+                  id="revenueChange"
+                  class="text-[#386641] text-base font-medium leading-normal"
+                >
+                  --
+                </p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white p-6 border border-beige-dark"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Toplam Satış Adedi
+                </p>
+                <p
+                  id="totalQuantity"
+                  class="text-text-primary tracking-light text-2xl font-bold leading-tight"
+                >
+                  0
+                </p>
+                <p
+                  id="quantityChange"
+                  class="text-[#cf1736] text-base font-medium leading-normal"
+                >
+                  --
+                </p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white p-6 border border-beige-dark"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Ortalama Sepet Tutarı
+                </p>
+                <p
+                  id="avgOrderValue"
+                  class="text-text-primary tracking-light text-2xl font-bold leading-tight"
+                >
+                  ₺0.00
+                </p>
+                <p
+                  id="avgOrderChange"
+                  class="text-[#386641] text-base font-medium leading-normal"
+                >
+                  --
+                </p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white p-6 border border-beige-dark"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  En Çok Satan Ürün
+                </p>
+                <p
+                  id="topProduct"
+                  class="text-text-primary tracking-light text-2xl font-bold leading-tight"
+                >
+                  --
+                </p>
+              </div>
+            </div>
+            <!-- 3'lü Chart Row: Trend (2/4), SalesType (1/4), Category (1/4) -->
+            <!-- Flex with gap wrap yerine Grid kullanıyoruz ki tam otursun -->
+            <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 py-6">
+              <!-- Trend Chart: 2 birim genişlik (col-span-2 -> 50%) -->
+              <div
+                class="xl:col-span-2 flex flex-col gap-2 rounded-lg border border-beige-dark bg-white p-6"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Gelir Trendi
+                </p>
+                <p
+                  id="trendTotal"
+                  class="text-text-primary tracking-light text-[32px] font-bold leading-tight truncate"
+                >
+                  ₺0.00
+                </p>
+                <div class="flex gap-1">
+                  <p
+                    id="trendPeriod"
+                    class="text-text-secondary text-base font-normal leading-normal"
+                  >
+                    Bu Hafta
+                  </p>
+                  <p
+                    id="trendChange"
+                    class="text-[#386641] text-base font-medium leading-normal"
+                  >
+                    --
+                  </p>
+                </div>
+                <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                  <div
+                    id="trendChart"
+                    class="flex items-end justify-around gap-2 h-full"
+                  ></div>
+                  <div class="flex justify-around">
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Pzt
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Sal
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Çar
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Per
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Cum
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Cmt
+                    </p>
+                    <p
+                      class="text-text-secondary text-[13px] font-bold leading-normal tracking-[0.015em]"
+                    >
+                      Paz
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Satış Türü Dağılımı: 1 birim genişlik (col-span-1 -> 25%) -->
+              <div
+                class="xl:col-span-1 flex flex-col gap-2 rounded-lg border border-beige-dark bg-white p-6"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Satış Türü Dağılımı
+                </p>
+                <div class="flex min-h-[180px] flex-1 items-center justify-center py-4 relative">
+                   <svg id="salesTypePieChart" class="size-48 -rotate-90" viewBox="0 0 100 100">
+                      <!-- Dinamik -->
+                   </svg>
+                   <div class="absolute flex flex-col items-center pointer-events-none">
+                      <p class="text-text-secondary text-xs">Toplam</p>
+                      <p id="salesTypeTotal" class="text-text-primary text-xl font-bold">0</p>
+                   </div>
+                </div>
+                <div id="salesTypeList" class="flex flex-col gap-2 mt-2">
+                    <!-- Dinamik -->
+                </div>
+              </div>
+
+              <!-- Kategoriye Göre Gelir Dağılımı: 1 birim genişlik (col-span-1 -> 25%) -->
+              <div
+                class="xl:col-span-1 flex flex-col gap-2 rounded-lg border border-beige-dark bg-white p-6"
+              >
+                <p
+                  class="text-text-secondary text-base font-medium leading-normal"
+                >
+                  Kategoriye Göre Gelir Dağılımı
+                </p>
+                <div
+                  class="flex min-h-[180px] flex-1 items-center justify-center py-4"
+                >
+                  <div
+                    class="relative flex size-48 items-center justify-center"
+                  >
+                    <svg
+                      id="categoryPieChart"
+                      class="size-full origin-center -rotate-90"
+                      viewBox="0 0 120 120"
+                    >
+                      <circle
+                        cx="60"
+                        cy="60"
+                        fill="none"
+                        r="54"
+                        stroke="#EAE6DF"
+                        stroke-width="12"
+                      ></circle>
+                      <!-- Dinamik olarak eklenecek -->
+                    </svg>
+                    <div class="absolute flex flex-col items-center">
+                      <p class="text-text-secondary text-sm font-normal">
+                        Toplam
+                      </p>
+                      <p
+                        id="pieTotal"
+                        class="text-text-primary tracking-light text-2xl font-bold leading-tight"
+                      >
+                        ₺0
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div id="categoryList" class="flex flex-col gap-3">
+                  <!-- Dinamik olarak yüklenecek -->
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex flex-col gap-4 rounded-lg border border-beige-dark bg-white p-6"
+            >
+              <h3
+                class="text-text-primary text-base font-medium leading-normal"
+              >
+                En Çok Satan Ürünler
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead>
+                    <tr class="border-b border-b-beige-dark">
+                      <th
+                        class="py-3 pr-4 text-sm font-medium text-text-secondary"
+                      >
+                        Ürün Adı
+                      </th>
+                      <th
+                        class="px-4 py-3 text-sm font-medium text-text-secondary text-right"
+                      >
+                        Satış Adedi
+                      </th>
+                      <th
+                        class="px-4 py-3 text-sm font-medium text-text-secondary text-right"
+                      >
+                        Birim Fiyat
+                      </th>
+                      <th
+                        class="pl-4 py-3 text-sm font-medium text-text-secondary text-right"
+                      >
+                        Toplam Gelir
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="topProductsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Özel Tarih Aralığı Modal -->
+    <div
+      id="customDateModal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onclick="closeCustomDateModal(event)"
+    >
+      <div
+        class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl"
+        onclick="event.stopPropagation()"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-text-primary">
+            Özel Tarih Aralığı Seç
+          </h3>
+          <button
+            onclick="closeCustomDateModal()"
+            class="text-text-secondary hover:text-text-primary"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-text-primary mb-2">
+              Başlangıç Tarihi
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              class="w-full rounded-lg border border-beige-dark px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-primary mb-2">
+              Bitiş Tarihi
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              class="w-full rounded-lg border border-beige-dark px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button
+              onclick="closeCustomDateModal()"
+              class="flex-1 px-4 py-2 rounded-lg border border-beige-dark text-text-primary hover:bg-beige-medium transition-colors"
+            >
+              İptal
+            </button>
+            <button
+              onclick="applyCustomDateRange()"
+              class="flex-1 px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-darker transition-colors"
+            >
+              Uygula
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      let currentPeriod = "today";
+      let customDateRange = null; // { startDate: 'YYYY-MM-DD', endDate: 'YYYY-MM-DD' }
+
+      /**
+       * Özel tarih aralığı modalını açar
+       */
+      function openCustomDateModal() {
+        const modal = document.getElementById("customDateModal");
+        modal.classList.remove("hidden");
+
+        // Varsayılan tarihleri ayarla (son 7 gün)
+        const today = new Date();
+        const lastWeek = new Date(today);
+        lastWeek.setDate(today.getDate() - 7);
+
+        document.getElementById("startDate").value = lastWeek
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("endDate").value = today
+          .toISOString()
+          .split("T")[0];
+      }
+
+      /**
+       * Özel tarih aralığı modalını kapatır
+       */
+      function closeCustomDateModal(event) {
+        if (event) {
+          // Eğer modal içindeki beyaz div'e tıklandıysa kapatma
+          if (event.target.closest(".bg-white.rounded-xl")) {
+            return;
+          }
+          // Eğer modal dışına tıklandıysa kapat
+          if (event.target.id === "customDateModal") {
+            const modal = document.getElementById("customDateModal");
+            if (modal) {
+              modal.classList.add("hidden");
+            }
+            return;
+          }
+        }
+        // Direkt çağrıldığında kapat
+        const modal = document.getElementById("customDateModal");
+        if (modal) {
+          modal.classList.add("hidden");
+        }
+      }
+
+      /**
+       * Özel tarih aralığını uygular
+       */
+      function applyCustomDateRange() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (!startDate || !endDate) {
+          alert("Lütfen başlangıç ve bitiş tarihlerini seçin");
+          return;
+        }
+
+        if (new Date(startDate) > new Date(endDate)) {
+          alert("Başlangıç tarihi bitiş tarihinden sonra olamaz");
+          return;
+        }
+
+        customDateRange = { startDate, endDate };
+        currentPeriod = "custom";
+
+        // Tüm period butonlarını normal duruma getir
+        resetPeriodButtons();
+
+        // Özel tarih butonunu aktif yap
+        const customBtn = document.getElementById("customDateRangeBtn");
+        if (customBtn) {
+          if (customBtn.classList.contains("bg-beige-medium")) {
+            customBtn.classList.remove("bg-beige-medium");
+            customBtn.classList.add("bg-primary");
+          }
+          const customBtnText = customBtn.querySelector("p");
+          if (customBtnText) {
+            customBtnText.className =
+              "text-white text-sm font-medium leading-normal";
+          }
+        }
+
+        closeCustomDateModal();
+        loadSalesData();
+      }
+
+      /**
+       * Dönem butonlarını sıfırlar (tümünü normal duruma getirir)
+       */
+      function resetPeriodButtons() {
+        document.querySelectorAll(".period-btn").forEach((b) => {
+          // Class'ı tamamen değiştir (classList kullan)
+          if (b.classList.contains("bg-primary")) {
+            b.classList.remove("bg-primary");
+            b.classList.add("bg-beige-medium");
+          }
+          const p = b.querySelector("p");
+          if (p) {
+            p.className =
+              "text-text-primary text-sm font-medium leading-normal";
+          }
+        });
+
+        // Özel tarih butonunu da sıfırla
+        const customBtn = document.getElementById("customDateRangeBtn");
+        if (customBtn) {
+          if (customBtn.classList.contains("bg-primary")) {
+            customBtn.classList.remove("bg-primary");
+            customBtn.classList.add("bg-beige-medium");
+          }
+          const customBtnText = customBtn.querySelector("p");
+          if (customBtnText) {
+            customBtnText.className =
+              "text-text-primary text-sm font-medium leading-normal";
+          }
+        }
+      }
+
+      /**
+       * Belirli bir dönem butonunu aktif yapar
+       */
+      function activatePeriodButton(btn) {
+        if (btn && btn.classList.contains("bg-beige-medium")) {
+          btn.classList.remove("bg-beige-medium");
+          btn.classList.add("bg-primary");
+        }
+        const p = btn.querySelector("p");
+        if (p) {
+          p.className = "text-white text-sm font-medium leading-normal";
+        }
+      }
+
+      // Dönem değiştirme - event delegation kullan
+      document.addEventListener("click", (e) => {
+        const periodBtn = e.target.closest(".period-btn");
+        if (periodBtn) {
+          e.preventDefault();
+          currentPeriod = periodBtn.dataset.period;
+          customDateRange = null; // Özel tarih aralığını temizle
+
+          // Tüm butonları sıfırla
+          resetPeriodButtons();
+
+          // Tıklanan butonu aktif yap
+          activatePeriodButton(periodBtn);
+
+          loadSalesData();
+        }
+      });
+
+      // Satış verilerini yükle
+      async function loadSalesData() {
+        await Promise.all([
+          loadStats(),
+          loadTrendChart(),
+          loadTopProducts(),
+          loadCategoryChart(),
+          loadSalesTypeChart(),
+        ]);
+      }
+
+      // Satış Türü Grafiği
+      async function loadSalesTypeChart() {
+         try {
+           let url = `/api/sales/type-breakdown?period=${currentPeriod}`;
+           if (customDateRange) {
+             url += `&startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+           }
+           const res = await fetch(url);
+           const data = await res.json(); // { total_orders, total_revenue, types: [] }
+           
+           // Kullanıcı istegi: TL değil oran/adet bazlı dağılım.
+           // Grafiği 'Sipariş Adedi' (order_count) üzerinden kuralım.
+           const total = data.total_orders || 0; 
+           
+           const types = data.types || [];
+           const svg = document.getElementById("salesTypePieChart");
+           const list = document.getElementById("salesTypeList");
+           
+           if (!svg || !list) return;
+           
+           svg.innerHTML = "";
+           list.innerHTML = "";
+           // Ortadaki toplam sayı (Adet)
+           document.getElementById("salesTypeTotal").textContent = total;
+
+           let startAngle = 0;
+           // Renkler: Gel Al (yeşilimsi), Paket (turucumsu), Diğer (gri)
+           const typeColors = {
+              "Gel Al": "#84cc16", 
+              "Gel al": "#84cc16", // lime-500
+              "Paket Servis": "#f59e0b", 
+              "Kurye": "#f59e0b", // amber-500
+              "Masa": "#3b82f6", // blue-500
+              "Diğer": "#9ca3af"
+           };
+           
+           const r = 40;
+           const circumference = 2 * Math.PI * r;
+           let offset = 0;
+
+           // Arkaplan circle
+           svg.innerHTML += `<circle cx="50" cy="50" r="40" fill="none" stroke="#f3f4f6" stroke-width="12" />`;
+
+           types.forEach(t => {
+               // Dilim hesabı adet (count) üzerinden
+               const val = parseInt(t.order_count || 0);
+               const pct = total > 0 ? val / total : 0;
+               const dash = pct * circumference;
+               const color = typeColors[t.name] || "#ccc";
+               
+               if (pct > 0) {
+                   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                   circle.setAttribute("cx", "50");
+                   circle.setAttribute("cy", "50");
+                   circle.setAttribute("r", "40");
+                   circle.setAttribute("fill", "none");
+                   circle.setAttribute("stroke", color);
+                   circle.setAttribute("stroke-width", "12");
+                   // stroke-dasharray="dash space"
+                   circle.setAttribute("stroke-dasharray", `${dash} ${circumference}`);
+                   circle.setAttribute("stroke-dashoffset", -offset);
+                   svg.appendChild(circle);
+                   
+                   offset += dash;
+               }
+               
+               // List item
+               // TL yerine % ve Adet gösterelim
+               const percentStr = (pct * 100).toFixed(1) + "%";
+               
+               const item = document.createElement("div");
+               item.className = "flex items-center justify-between text-xs";
+               item.innerHTML = `
+                  <div class="flex items-center gap-1">
+                     <span class="w-2 h-2 rounded-full" style="background-color: ${color}"></span>
+                     <span class="text-text-secondary">${t.name}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                     <span class="text-text-secondary">${val} Adet</span>
+                     <span class="font-bold text-text-primary">${percentStr}</span>
+                  </div>
+               `;
+               list.appendChild(item);
+           });
+           
+         } catch(e) {
+            console.error("Load sales type chart error:", e);
+         }
+      }
+
+      // Kategori grafiği
+      async function loadCategoryChart() {
+        try {
+          let url = `/api/sales/by-category?period=${currentPeriod}`;
+          if (customDateRange) {
+            url += `&startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+          }
+          const response = await fetch(url);
+          const categories = await response.json();
+
+          if (categories.length === 0) {
+            return;
+          }
+
+          const total = categories.reduce(
+            (sum, cat) => sum + parseFloat(cat.revenue || 0),
+            0
+          );
+          document.getElementById("pieTotal").textContent = `₺${total.toFixed(
+            0
+          )}`;
+
+          // Kategori renkleri (önce kategori adına göre, yoksa genel palette döner)
+          const categoryColors = {
+            İçecek: "#22c55e", // yeşil
+            İçecekler: "#22c55e",
+            Yiyecek: "#f97316", // turuncu
+            Yiyecekler: "#f97316",
+            Tatlı: "#a855f7", // mor
+            Tatlılar: "#a855f7",
+            Kahve: "#8b5cf6",
+            Kahveler: "#8b5cf6",
+          };
+
+          const palette = [
+            "#22c55e", // yeşil
+            "#f97316", // turuncu
+            "#0ea5e9", // mavi
+            "#a855f7", // mor
+            "#f59e0b", // amber
+            "#ef4444", // kırmızı
+            "#6366f1", // indigo
+          ];
+          const circumference = 2 * Math.PI * 54;
+          let currentOffset = 0;
+
+          // SVG'yi güncelle
+          const svg = document.getElementById("categoryPieChart");
+          if (svg) {
+            // Mevcut dinamik circle'ları temizle (background hariç)
+            const existingCircles = svg.querySelectorAll(
+              'circle[stroke-width="12"]:not([stroke="#EAE6DF"])'
+            );
+            existingCircles.forEach((circle) => circle.remove());
+
+            // Her kategori için circle oluştur
+            categories.forEach((cat, index) => {
+              const color =
+                categoryColors[cat.category] ||
+                palette[index % palette.length];
+              const percentage =
+                total > 0 ? (parseFloat(cat.revenue || 0) / total) * 100 : 0;
+              const dashArray = (percentage / 100) * circumference;
+
+              const circle = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle"
+              );
+              circle.setAttribute("cx", "60");
+              circle.setAttribute("cy", "60");
+              circle.setAttribute("r", "54");
+              circle.setAttribute("fill", "none");
+              circle.setAttribute("stroke", color);
+              circle.setAttribute("stroke-width", "12");
+              circle.setAttribute(
+                "stroke-dasharray",
+                `${dashArray}, ${circumference}`
+              );
+              circle.setAttribute("stroke-dashoffset", `-${currentOffset}`);
+
+              svg.appendChild(circle);
+              currentOffset += dashArray;
+            });
+          }
+
+          // Kategori listesini güncelle
+          const categoryList = document.getElementById("categoryList");
+          if (categoryList) {
+            categoryList.innerHTML = "";
+            if (categories.length === 0) {
+              categoryList.innerHTML =
+                '<p class="text-text-secondary text-sm">Kategori verisi bulunamadı</p>';
+            } else {
+              categories.forEach((cat, index) => {
+                const percentage =
+                  total > 0
+                    ? ((parseFloat(cat.revenue || 0) / total) * 100).toFixed(0)
+                    : 0;
+                const color =
+                  categoryColors[cat.category] ||
+                  palette[index % palette.length];
+                const div = document.createElement("div");
+                div.className = "flex items-center gap-2";
+                div.innerHTML = `
+                  <div class="size-2 rounded-full" style="background-color: ${color}"></div>
+                  <p class="flex-1 text-sm font-medium text-text-primary">${
+                    cat.category
+                  }</p>
+                  <p class="text-sm font-bold text-text-primary">${percentage}%</p>
+                `;
+                categoryList.appendChild(div);
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Load category chart error:", error);
+        }
+      }
+
+      // İstatistikleri yükle
+      async function loadStats() {
+        try {
+          let statsUrl = `/api/sales/stats?period=${currentPeriod}`;
+          let topUrl = `/api/sales/top-products?period=${currentPeriod}&limit=1`;
+
+          // Özel tarih aralığı varsa ekle
+          if (customDateRange) {
+            statsUrl += `&startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+            topUrl += `&startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+          }
+
+          const [statsResponse, changeResponse, topResponse] =
+            await Promise.all([
+              fetch(statsUrl),
+              fetch(`/api/sales/change-percentages?period=${currentPeriod}`),
+              fetch(topUrl),
+            ]);
+
+          const stats = await statsResponse.json();
+          const changes = await changeResponse.json();
+          const topProducts = await topResponse.json();
+
+          // Toplam gelir
+          const revenue = parseFloat(stats.total_revenue || 0);
+          document.getElementById(
+            "totalRevenue"
+          ).textContent = `₺${revenue.toFixed(2)}`;
+
+          // Gelir değişimi
+          const revenueChange = parseFloat(changes.revenue_change || 0);
+          const revenueChangeEl = document.getElementById("revenueChange");
+          if (revenueChange > 0) {
+            revenueChangeEl.textContent = `+${revenueChange.toFixed(1)}%`;
+            revenueChangeEl.className =
+              "text-[#386641] text-base font-medium leading-normal";
+          } else if (revenueChange < 0) {
+            revenueChangeEl.textContent = `${revenueChange.toFixed(1)}%`;
+            revenueChangeEl.className =
+              "text-[#cf1736] text-base font-medium leading-normal";
+          } else {
+            revenueChangeEl.textContent = "0%";
+            revenueChangeEl.className =
+              "text-text-secondary text-base font-medium leading-normal";
+          }
+
+          // Toplam satış adedi
+          const quantity = parseInt(stats.total_quantity || 0);
+          document.getElementById("totalQuantity").textContent = quantity;
+
+          // Satış adedi değişimi
+          const quantityChange = parseFloat(changes.quantity_change || 0);
+          const quantityChangeEl = document.getElementById("quantityChange");
+          if (quantityChange > 0) {
+            quantityChangeEl.textContent = `+${quantityChange.toFixed(1)}%`;
+            quantityChangeEl.className =
+              "text-[#386641] text-base font-medium leading-normal";
+          } else if (quantityChange < 0) {
+            quantityChangeEl.textContent = `${quantityChange.toFixed(1)}%`;
+            quantityChangeEl.className =
+              "text-[#cf1736] text-base font-medium leading-normal";
+          } else {
+            quantityChangeEl.textContent = "0%";
+            quantityChangeEl.className =
+              "text-text-secondary text-base font-medium leading-normal";
+          }
+
+          // Ortalama sepet tutarı
+          const avgOrder = parseFloat(stats.avg_order_value || 0);
+          document.getElementById(
+            "avgOrderValue"
+          ).textContent = `₺${avgOrder.toFixed(2)}`;
+
+          // Ortalama sepet değişimi
+          const avgOrderChange = parseFloat(changes.avg_order_change || 0);
+          const avgOrderChangeEl = document.getElementById("avgOrderChange");
+          if (avgOrderChange > 0) {
+            avgOrderChangeEl.textContent = `+${avgOrderChange.toFixed(1)}%`;
+            avgOrderChangeEl.className =
+              "text-[#386641] text-base font-medium leading-normal";
+          } else if (avgOrderChange < 0) {
+            avgOrderChangeEl.textContent = `${avgOrderChange.toFixed(1)}%`;
+            avgOrderChangeEl.className =
+              "text-[#cf1736] text-base font-medium leading-normal";
+          } else {
+            avgOrderChangeEl.textContent = "0%";
+            avgOrderChangeEl.className =
+              "text-text-secondary text-base font-medium leading-normal";
+          }
+
+          // En çok satan ürün (zaten yukarıda fetch edilmiş)
+          if (topProducts && topProducts.length > 0) {
+            document.getElementById("topProduct").textContent =
+              topProducts[0].name;
+          } else {
+            document.getElementById("topProduct").textContent = "--";
+          }
+        } catch (error) {
+          console.error("Load stats error:", error);
+        }
+      }
+
+      // Trend grafiği
+      async function loadTrendChart() {
+        try {
+          let response;
+          let labels = []; // Sadece metinler
+          
+          let apiUrl = "";
+          
+          if (currentPeriod === "today") {
+            apiUrl = "/api/sales/daily";
+            // 24 saat etiketleri
+            labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+          } else if (currentPeriod === "week") {
+            apiUrl = "/api/sales/weekly";
+            labels = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+          } else if (currentPeriod === "month") {
+            apiUrl = "/api/sales/monthly";
+            // Aylık için son 30 gün
+            const daysInMonth = new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 1,
+              0
+            ).getDate();
+            labels = Array.from(
+              { length: Math.min(daysInMonth, 31) },
+              (_, i) => `${i + 1}`
+            );
+          } else if (currentPeriod === "custom" && customDateRange) {
+             // Özel Aralık: backend gün vs ay gruplamasına karar verir
+             apiUrl = `/api/sales/trend?startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+          }
+
+          if (!apiUrl) return; // Olmamalı
+
+          response = await fetch(apiUrl);
+          let data = await response.json();
+          
+          const chartContainer = document.getElementById("trendChart");
+          const labelsContainer = chartContainer.nextElementSibling;
+          
+          chartContainer.innerHTML = "";
+          labelsContainer.innerHTML = ""; // Mevcut etiketleri temizle
+
+          if (data.length === 0) {
+            chartContainer.innerHTML =
+              '<p class="text-text-secondary text-sm">Veri bulunamadı</p>';
+            return;
+          }
+
+          // Veri hazırlama ve Chart/Label oluşturma
+          let chartData = [];
+           
+          // *** ÖZEL MANTIK ***
+           if (currentPeriod === "custom") {
+              // Backend datası: sale_date (YYYY-MM-DD veya YYYY-MM-01) ve val
+             // grouping field'ı backendden dönebilir veya tahmin edebiliriz
+             // Buraya gelen data sıralı (ASC) olduğu için direkt kullanabiliriz
+             
+             // Ancak etiketler için datadan türetmemiz lazım
+             labels = data.map(d => {
+                const date = new Date(d.sale_date);
+                if (d.grouping === 'month') {
+                    // Ay ismi (Oca, Şub...)
+                    return date.toLocaleDateString('tr-TR', { month: 'short' });
+                } else {
+                    // Gün (1, 2, 3...) yada tam tarih
+                    return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'numeric' });
+                }
+             });
+             
+             chartData = data.map(d => parseFloat(d.daily_total || 0));
+
+          } else if (currentPeriod === "today") {
+            chartData = Array(24).fill(0);
+            data.forEach((item) => {
+              const hour = parseInt(item.hour || 0);
+              if (hour >= 0 && hour < 24) chartData[hour] = parseFloat(item.daily_total || 0);
+            });
+            chartData = chartData.slice(0, 24);
+          } else if (currentPeriod === "week") {
+            // Haftalık: Pzt=0...Paz=6
+            chartData = Array(7).fill(0);
+            data.forEach((item) => {
+              const date = new Date(item.sale_date);
+              let dayOfWeek = date.getDay(); // 0(Sun) - 6(Sat)
+              dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+              if (dayOfWeek >= 0 && dayOfWeek < 7) {
+                chartData[dayOfWeek] = parseFloat(item.daily_total || 0);
+              }
+            });
+          } else {
+             // Aylık (Standart 'month' dönemi)
+             const maxDays = labels.length;
+             chartData = Array(maxDays).fill(0);
+             data.forEach((item) => {
+               const date = new Date(item.sale_date);
+               const day = date.getDate() - 1;
+               if (day >= 0 && day < maxDays) {
+                 chartData[day] = parseFloat(item.daily_total || 0);
+               }
+             });
+          }
+
+          const maxValue = Math.max(...chartData, 1);
+          const total = chartData.reduce((sum, val) => sum + val, 0);
+
+          document.getElementById("trendTotal").textContent = `₺${total.toFixed(2)}`;
+          
+          let periodText = "Özel";
+          if(currentPeriod === "today") periodText = "Bugün";
+          else if(currentPeriod === "week") periodText = "Bu Hafta";
+          else if(currentPeriod === "month") periodText = "Bu Ay";
+          
+          document.getElementById("trendPeriod").textContent = periodText;
+
+          // Değişim yüzdesi (Custom için 0, diğerleri için fetch)
+          if (currentPeriod === 'custom') {
+              // Custom için değişim yok
+              const changeEl = document.getElementById("trendChange");
+              changeEl.textContent = "0%";
+              changeEl.className = "text-text-secondary text-base font-medium leading-normal";
+          } else {
+              const changeResponse = await fetch(
+                `/api/sales/change-percentages?period=${currentPeriod}`
+              );
+              const change = await changeResponse.json();
+              const changePercent = parseFloat(change.revenue_change || 0);
+              const changeEl = document.getElementById("trendChange");
+              if (changePercent > 0) {
+                changeEl.textContent = `+${changePercent.toFixed(1)}%`;
+                changeEl.className = "text-[#386641] text-base font-medium leading-normal";
+              } else if (changePercent < 0) {
+                changeEl.textContent = `${changePercent.toFixed(1)}%`;
+                changeEl.className = "text-[#cf1736] text-base font-medium leading-normal";
+              } else {
+                changeEl.textContent = "0%";
+                changeEl.className = "text-text-secondary text-base font-medium leading-normal";
+              }
+          }
+
+          // Grafik ve Etiketleri Oluşturma
+          chartData.forEach((value, index) => {
+            // Bar
+            const height = (value / maxValue) * 100;
+            const bar = document.createElement("div");
+            bar.className = "bg-primary/50 hover:bg-primary rounded-t flex-1 transition-all relative group";
+            bar.style.height = `${Math.max(height, 5)}%`;
+            bar.style.minHeight = "4px";
+            bar.title = `₺${value.toFixed(2)}`;
+            chartContainer.appendChild(bar);
+
+            // Label
+            const labelP = document.createElement("p");
+            labelP.className = "text-text-secondary text-[10px] font-bold leading-normal tracking-[0.015em] text-center flex-1 truncate";
+            
+            let labelText = labels[index] || "";
+            
+            // Görünürlük filtreleri
+            if (currentPeriod === "month") {
+               const dayNum = index + 1;
+               if (dayNum !== 1 && dayNum % 5 !== 0 && dayNum !== labels.length) labelText = ""; 
+            }
+            if (currentPeriod === "today") {
+                if (index % 4 !== 0) labelText = "";
+            }
+            // Özel mantık: çok fazla çubuk varsa, etiketleri atla
+            if (currentPeriod === "custom" && chartData.length > 15) {
+                 // Kabaca en fazla 5-7 etiket göster
+                 const step = Math.ceil(chartData.length / 7);
+                 if (index % step !== 0) labelText = "";
+            }
+
+            labelP.textContent = labelText;
+            labelP.title = labels[index] || ""; // Etikette ipucu (tooltip)
+            labelsContainer.appendChild(labelP);
+          });
+        } catch (error) {
+          console.error("Load trend chart error:", error);
+        }
+      }
+
+      // En çok satan ürünler
+      async function loadTopProducts() {
+        try {
+          let url = `/api/sales/top-products?period=${currentPeriod}&limit=10`;
+          if (customDateRange) {
+            url += `&startDate=${customDateRange.startDate}&endDate=${customDateRange.endDate}`;
+          }
+          const response = await fetch(url);
+          const products = await response.json();
+
+          const tbody = document.getElementById("topProductsTable");
+          tbody.innerHTML = "";
+
+          products.forEach((product, index) => {
+            const row = document.createElement("tr");
+            row.className =
+              index < products.length - 1 ? "border-b border-b-beige-dark" : "";
+            row.innerHTML = `
+              <td class="py-4 pr-4 text-sm font-medium text-text-primary">
+                ${product.name}
+              </td>
+              <td class="px-4 py-4 text-sm text-text-primary text-right">
+                ${product.total_sold || 0}
+              </td>
+              <td class="px-4 py-4 text-sm text-text-primary text-right">
+                ₺${parseFloat(product.price || 0).toFixed(2)}
+              </td>
+              <td class="pl-4 py-4 text-sm text-text-primary text-right">
+                ₺${parseFloat(product.total_revenue || 0).toFixed(2)}
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Load top products error:", error);
+        }
+      }
+
+      // Sayfa yüklendiğinde
+      loadSalesData();
+    </script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Keşiş Kafe - Raporlar</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4CAF50",
+              "primary-light": "#E8F5E9",
+              "primary-dark": "#2E7D32",
+              "background-light": "#F9F9F7",
+              "background-dark": "#1C1C1E",
+              "surface-light": "#FFFFFF",
+              "surface-dark": "#2C2C2E",
+              "text-main": "#2F3E2F",
+              "text-secondary": "#5C6B5C",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+              body: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Work Sans", sans-serif;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #bdbdbd;
+      }
+
+      /* Embedded (iframe içi) görünümde dış layout'u gizle */
+      body.embedded-report {
+        background: transparent;
+        overflow: auto;
+        height: auto;
+      }
+      body.embedded-report > aside {
+        display: none;
+      }
+      body.embedded-report > main {
+        padding: 0;
+        border: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-200 antialiased overflow-hidden h-screen flex"
+  >
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative h-screen">
+
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+        <div class="max-w-7xl mx-auto flex flex-col gap-8">
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800"
+          >
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative group">
+                <select
+                  id="dateFilterDetails"
+                  class="appearance-none flex items-center gap-2 pl-10 pr-8 py-2 bg-primary-light/50 border border-primary/20 rounded-lg text-primary-dark cursor-pointer hover:bg-primary-light transition-colors text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+                  onchange="handleDateFilterChange(this.value)"
+                >
+                   <option value="today">Bugün</option>
+                   <option value="week" selected>Bu Hafta</option>
+                   <option value="month">Bu Ay</option>
+                   <option value="last30">Son 30 Gün</option>
+                   <option value="all">Tüm Zamanlar</option>
+                </select>
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark text-[20px] pointer-events-none">calendar_today</span>
+                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-primary-dark text-[18px] pointer-events-none">expand_more</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                onclick="exportStockReport()"
+                class="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium bg-white dark:bg-surface-dark shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >download</span
+                >
+                Dışa Aktar
+              </button>
+
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+          >
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-600 dark:text-blue-400"
+                >
+                  <span class="material-symbols-outlined">payments</span>
+                </div>
+                <span
+                  id="kpiStockChange"
+                  class="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full"
+                >
+                  <span class="material-symbols-outlined text-[14px]"
+                    >trending_up</span
+                  >
+                  %0
+                </span>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">
+                Toplam Stok Değeri
+              </p>
+              <h3
+                id="kpiTotalStockValue"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                ₺0,00
+              </h3>
+            </div>
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-primary-light dark:bg-primary-dark/20 p-2 rounded-lg text-primary-dark dark:text-primary"
+                >
+                  <span class="material-symbols-outlined">local_dining</span>
+                </div>
+                <span
+                  id="kpiFastRunningChange"
+                  class="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full"
+                >
+                  <span class="material-symbols-outlined text-[14px]"
+                    >trending_up</span
+                  >
+                  %0
+                </span>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">
+                Hızlı Tükenenler
+              </p>
+              <h3
+                id="kpiFastRunning"
+                class="text-xl font-bold text-text-main dark:text-white truncate"
+              >
+                -
+              </h3>
+            </div>
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg text-orange-600 dark:text-orange-400"
+                >
+                  <span class="material-symbols-outlined">inventory</span>
+                </div>
+                <span
+                  id="kpiCriticalBadge"
+                  class="flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full"
+                >
+                  <span class="material-symbols-outlined text-[14px]"
+                    >priority_high</span
+                  >
+                  Kritik
+                </span>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">Kritik Stok</p>
+              <h3
+                id="kpiCriticalCount"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                0 Ürün
+              </h3>
+            </div>
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <div
+                  class="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg text-purple-600 dark:text-purple-400"
+                >
+                  <span class="material-symbols-outlined">schedule</span>
+                </div>
+              </div>
+              <p class="text-text-secondary text-sm font-medium">
+                Son Güncelleme
+              </p>
+              <h3
+                id="kpiLastUpdate"
+                class="text-2xl font-bold text-text-main dark:text-white"
+              >
+                -
+              </h3>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div
+              class="lg:col-span-2 bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-text-main dark:text-white">
+                  Stok Tüketim Analizi
+                </h3>
+
+              </div>
+              <div
+                class="flex items-end justify-between h-64 gap-2 w-full pt-4 border-b border-gray-100 dark:border-gray-800 relative"
+              >
+                <div
+                  class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8"
+                >
+                  <div
+                    class="w-full h-px bg-gray-100 dark:bg-gray-800 border-dashed"
+                  ></div>
+                  <div
+                    class="w-full h-px bg-gray-100 dark:bg-gray-800 border-dashed"
+                  ></div>
+                  <div
+                    class="w-full h-px bg-gray-100 dark:bg-gray-800 border-dashed"
+                  ></div>
+                  <div
+                    class="w-full h-px bg-gray-100 dark:bg-gray-800 border-dashed"
+                  ></div>
+                </div>
+
+                <!-- Dynamic stock consumption bars will be rendered into this container -->
+                <div class="w-full overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                  <div
+                    id="stockConsumption"
+                    class="flex items-stretch h-64 gap-2 w-full min-w-full"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col"
+            >
+              <h3 class="text-lg font-bold text-text-main dark:text-white mb-6">
+                Stok Kategorileri
+              </h3>
+              <div class="flex-1 flex items-center justify-center relative">
+                <div
+                  id="stockCategoryDonut"
+                  class="size-48 rounded-full"
+                  aria-hidden="true"
+                >
+                  <div
+                    id="stockCategoryCenter"
+                    class="w-full h-full rounded-full flex items-center justify-center scale-[0.65] bg-surface-light dark:bg-surface-dark"
+                  >
+                    <div class="text-center">
+                      <div class="text-xs text-text-secondary">Toplam Değer</div>
+                      <div
+                        id="stockCategoryTotal"
+                        class="text-xl font-bold text-text-main dark:text-white"
+                      >
+                        0
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                id="stockCategoryLegend"
+                class="mt-6 flex flex-col gap-3"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden mb-8"
+          >
+            <div
+              class="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-4"
+            >
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+              >
+                <div>
+                  <h3 class="text-lg font-bold text-text-main dark:text-white">
+                    Detaylı Stok Raporu
+                  </h3>
+                  <p class="text-sm text-text-secondary mt-1">
+                    Giriş/çıkış tarihleri ve kritik seviye uyarıları
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    class="flex items-center justify-center size-9 border border-gray-200 dark:border-gray-700 rounded-lg text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-surface-dark shadow-sm"
+                  >
+                    <span class="material-symbols-outlined text-[20px]"
+                      >refresh</span
+                    >
+                  </button>
+                  <div class="relative">
+                    <span
+                      class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]"
+                      >search</span
+                    >
+                    <input
+                      class="pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:ring-1 focus:ring-primary focus:border-primary w-full sm:w-64"
+                      placeholder="Ürün kodu veya ismi..."
+                      type="text"
+                      id="stockSearchInput"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-3 pt-2">
+                <select
+                  id="filterCategory"
+                  class="text-sm border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-text-secondary focus:ring-primary focus:border-primary py-1.5 px-3"
+                >
+                  <option>Tüm Kategoriler</option>
+                  <!-- Dynamic options -->
+                </select>
+                <select
+                  id="filterStatus"
+                  class="text-sm border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-text-secondary focus:ring-primary focus:border-primary py-1.5 px-3"
+                >
+                  <option>Tüm Durumlar</option>
+                  <option>Kritik Stok</option>
+                  <option>Normal</option>
+                  <option>Tükenmiş</option>
+                </select>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead
+                  class="bg-gray-50 dark:bg-gray-800/50 text-text-secondary font-medium border-b border-gray-100 dark:border-gray-800"
+                >
+                  <tr>
+                    <th class="px-6 py-4">Ürün</th>
+                    <th class="px-6 py-4">Kategori</th>
+                    <th class="px-6 py-4 w-48">Mevcut Stok</th>
+                    <th class="px-6 py-4">Min. Stok</th>
+                    <th class="px-6 py-4">Son İşlemler</th>
+                    <th class="px-6 py-4">Durum</th>
+                    <th class="px-6 py-4 text-right">Geçmiş</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="stockTableBody"
+                  class="divide-y divide-gray-100 dark:divide-gray-800"
+                >
+                  <tr id="tableLoader">
+                    <td colspan="7" class="px-6 py-4 text-center text-text-secondary">Yükleniyor...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              class="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between"
+            >
+              <span class="text-sm text-text-secondary"
+                >1-4 / 24 sonuç gösteriliyor</span
+              >
+              <div class="flex gap-2">
+                <button
+                  class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-700 rounded-md text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                  disabled=""
+                >
+                  Önceki
+                </button>
+                <button
+                  class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-700 rounded-md text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  Sonraki
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      
+      <!-- History Modal -->
+      <div id="historyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden backdrop-blur-sm">
+        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col m-4">
+          <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
+            <h3 id="historyModalTitle" class="text-lg font-bold text-text-main dark:text-white">Sevkiyat Geçmişi</h3>
+            <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-red-500 transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-0">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 dark:bg-gray-800/50 text-text-secondary font-medium text-xs sticky top-0">
+                <tr>
+                  <th class="px-6 py-3">Tarih</th>
+                  <th class="px-6 py-3">Tedarikçi</th>
+                  <th class="px-6 py-3">Miktar</th>
+                  <th class="px-6 py-3">Birim Fiyat</th>
+                  <th class="px-6 py-3">Durum</th>
+                </tr>
+              </thead>
+              <tbody id="historyModalBody" class="divide-y divide-gray-100 dark:divide-gray-800">
+                <!-- Dynamic Content -->
+              </tbody>
+            </table>
+          </div>
+          <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+             <button onclick="closeHistoryModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">Kapat</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // Iframe Embedded Check
+      (function () {
+        if (window.self !== window.top) {
+          document.body.classList.add("embedded-report");
+        }
+      })();
+    </script>
+    <script>
+      // DOM Elements
+      const els = {
+         kpiStockChange: document.getElementById("kpiStockChange"),
+         kpiTotalStockValue: document.getElementById("kpiTotalStockValue"),
+         kpiFastRunning: document.getElementById("kpiFastRunning"),
+         kpiCriticalCount: document.getElementById("kpiCriticalCount"),
+         kpiLastUpdate: document.getElementById("kpiLastUpdate"),
+         stockConsumption: document.getElementById("stockConsumption"),
+         stockCategoryDonut: document.getElementById("stockCategoryDonut"),
+         stockCategoryTotal: document.getElementById("stockCategoryTotal"),
+         stockCategoryLegend: document.getElementById("stockCategoryLegend"),
+         tableBody: document.getElementById("stockTableBody"),
+         searchInput: document.getElementById("stockSearchInput"),
+         selectCategory: document.getElementById("filterCategory"),
+         selectStatus: document.getElementById("filterStatus"),
+         dateFilter: document.getElementById("dateFilterDetails")
+      };
+
+      // Mevcut Tarih Aralığı Durumu
+      let currentDateRange = { start: null, end: null };
+
+      // Yardımcı: Tarihleri Getir
+      function getDates(period) {
+          const now = new Date();
+          let start = new Date();
+          let end = new Date(); // Bitiş genellikle bugün veya dönem sonudur
+
+          if (period === 'today') {
+              start.setHours(0,0,0,0);
+              end.setHours(23,59,59,999);
+          } else if (period === 'week') {
+              // Hafta başlangıcı (Pazartesi)
+              const day = now.getDay() || 7; 
+              if (day !== 1) start.setHours(-24 * (day - 1));
+              start.setHours(0,0,0,0);
+              end.setHours(23,59,59,999);
+          } else if (period === 'month') {
+              start.setDate(1);
+              start.setHours(0,0,0,0);
+              end.setHours(23,59,59,999);
+          } else if (period === 'last30') {
+               start.setDate(now.getDate() - 30);
+               start.setHours(0,0,0,0);
+          } else {
+              // Tüm zamanlar
+              return { start: null, end: null };
+          }
+          
+          const formatDate = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          return { start: formatDate(start), end: formatDate(end) };
+      }
+
+      // Tarih Değişimini İşle
+      window.handleDateFilterChange = function(val) {
+          currentDateRange = getDates(val);
+          // Tüm Verileri yeni tarihlerle yeniden yükle
+          loadStats();
+          loadConsumption();
+          loadCategories();
+          loadTable();
+      };
+
+      // Para Birimi Formatla
+      function formatCurrency(amount) {
+         return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount);
+      }
+
+      // İstatistikleri Yükle
+      async function loadStats() {
+         try {
+            let url = "/api/stock/stats";
+            if (currentDateRange.start) {
+                url += `?startDate=${currentDateRange.start}&endDate=${currentDateRange.end}`;
+            }
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            // KPI'ları Güncelle
+            els.kpiTotalStockValue.textContent = formatCurrency(data.total_value || 0);
+            document.getElementById("kpiCriticalBadge").textContent = "Kritik";
+            els.kpiCriticalCount.textContent = (data.low_stock || 0) + " Ürün";
+            
+            // Şimdilik trend verisini taklit ediyoruz (backend henüz değer için trend sağlamıyor, statik veya basitleştirilmiş kullanıyoruz)
+            els.kpiStockChange.innerHTML = `<span class="material-symbols-outlined text-[14px]">trending_up</span> %0`;
+            
+            // Fast running item (En Hızlı Tükenen / En Çok Satan)
+            if (data.fastest_selling) {
+                 els.kpiFastRunning.textContent = data.fastest_selling.name;
+                 els.kpiFastRunning.title = `${data.fastest_selling.total_sold} Satış`; // Tooltip
+            } else {
+                 els.kpiFastRunning.textContent = "-"; 
+            }
+            
+            // Son güncelleme
+            if (data.last_update) {
+                const updateDate = new Date(data.last_update);
+                // "Bugün HH:mm" veya tarih
+                const now = new Date();
+                const isToday = updateDate.toDateString() === now.toDateString();
+                
+                if (isToday) {
+                    els.kpiLastUpdate.textContent = "Bugün " + updateDate.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                } else {
+                    els.kpiLastUpdate.textContent = updateDate.toLocaleDateString('tr-TR', {day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'});
+                }
+            } else {
+                els.kpiLastUpdate.textContent = "-";
+            }
+
+         } catch (e) {
+            console.error("Stats load error:", e);
+         }
+      }
+
+      // Tüketim Grafiğini Yükle (Barlar)
+      async function loadConsumption() {
+         try {
+            let url = "/api/stock/consumption";
+            if (currentDateRange.start) {
+                url += `?startDate=${currentDateRange.start}&endDate=${currentDateRange.end}`;
+            }
+            const res = await fetch(url);
+            const data = await res.json(); // Array of { date, day, value }
+            
+            const container = els.stockConsumption;
+            container.innerHTML = "";
+            
+            // Boş veri durumunu işle
+            if (data.length === 0) {
+               container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-text-secondary text-sm">Bu tarih aralığında veri yok.</div>`;
+               return;
+            }
+
+            const maxVal = Math.max(...data.map(d => d.value), 1); // Sıfıra bölünmeyi önle
+            
+            // Dinamik Bar Boyutlandırma
+            // Eğer veri noktaları > 15 ise, genişliği sabitle ve kaydırmaya izin ver
+            // Eğer veri noktaları <= 15 ise, doldurmak için genişlet (flex-1)
+            const isManyPoints = data.length > 15;
+            const barClass = isManyPoints ? "w-12 shrink-0" : "flex-1";
+            
+            data.forEach(d => {
+               // Yükseklik yüzdesini hesapla (etiketlere yer bırakmak için max %80)
+               const heightPct = (d.value / maxVal) * 80;
+               // 0 Değer kontrolü ve görsel ayarı
+               // Eğer 0 ise, çok ince (örn 2px) ve şeffaf yap.
+               // Eğer >0 ise, en az 4px veya % hesaplaması.
+               
+               let barHeightStyle = "";
+               let barColorClass = "bg-primary/20 dark:bg-primary/10 group-hover:bg-primary/30";
+               let valueLabelClass = "opacity-0 group-hover:opacity-100"; // Varsayılan gizli (hover ile görünür)
+               
+               if (d.value === 0) {
+                   barHeightStyle = "height: 4px; opacity: 0.3;"; // 0 değeri için silik çizgi
+                   barColorClass = "bg-gray-300 dark:bg-gray-700";
+               } else {
+                   // Değer varsa, hesaplanan yükseklik (min 10% görsellik için)
+                   barHeightStyle = `height: ${Math.max(heightPct, 10)}%`;
+                   // Değerleri her zaman göster (dikey olarak sığdır)
+                   // Veya sadece hover: Kullanıcı "değerler görünmüyor" dedi, belki sürekli görmek istiyor?
+                   // Ama çok sıkışık olabilir. Tooltip yerine barın üstüne yazalım, space varsa.
+                   // Biz şimdilik hover efektini koruyalım ama 0 ile 300'ü ayırt edelim.
+                   // Kullanıcı "üstüne gelince yazıyor" demiş, demek ki hover çalışıyor.
+                   // Sorun: "0 tl olan zamanda 300 tl olan zamanda aynı görünüyor".
+                   // Çözüm: 0 için height: 2px, 300 için height: % hesap (en az 4px değil, direkt hesap + min visual).
+               }
+
+               const bar = document.createElement("div");
+               bar.className = `flex flex-col justify-end items-center gap-2 group ${barClass} transition-all relative h-full`;
+               bar.innerHTML = `
+                  <div class="relative w-full flex-1 flex items-end justify-center">
+                    <div
+                      class="w-full max-w-[40px] rounded-t-lg transition-all duration-500 relative flex justify-center ${barColorClass}"
+                      style="${barHeightStyle}"
+                    >
+                       <!-- Değer Etiketi -->
+                       <div class="opacity-0 group-hover:opacity-100 absolute -top-8 bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none shadow-lg transform -translate-y-1 transition-all">
+                          ${formatCurrency(d.value)}
+                          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                       </div>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-text-secondary font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full text-center pb-1">${d.day}</span>
+               `;
+               container.appendChild(bar);
+            });
+            
+         } catch(e) {
+            console.error("Consumption load error:", e);
+         }
+      }
+
+      // Kategori Donut Grafiğini Yükle
+      async function loadCategories() {
+         try {
+            const res = await fetch("/api/stock/categories");
+            const data = await res.json(); // { total, categories: [{name, value, percent}] }
+            
+            els.stockCategoryTotal.textContent = formatCurrency(data.total || 0);
+            
+            // Donut Çiz
+            const svg = els.stockCategoryDonut;
+            // Mevcut olanları temizle (merkez hariç)
+            // svg.innerHTML = ""; // Temizlemiyoruz çünkü defs varsa kalsın istiyoruz, ama aslında saf SVG daireleri kullanıyoruz
+            
+            // Daireleri oluştur
+            const r = 40;
+            const circumference = 2 * Math.PI * r;
+            let offset = 0;
+            const colors = ["#4CAF50", "#2196F3", "#FFC107", "#9C27B0", "#F44336", "#795548"];
+            
+            // Önceki daireleri temizle
+            const oldCircles = svg.querySelectorAll("circle");
+            oldCircles.forEach(c => c.remove());
+            
+            // Arka plan dairesi ekle
+            const bgCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            bgCircle.setAttribute("cx", "50");
+            bgCircle.setAttribute("cy", "50");
+            bgCircle.setAttribute("r", "40");
+            bgCircle.setAttribute("fill", "none");
+            bgCircle.setAttribute("stroke", "#e5e7eb");
+            bgCircle.setAttribute("stroke-width", "10");
+            svg.prepend(bgCircle);
+
+            data.categories.forEach((cat, idx) => {
+               const val = parseFloat(cat.value);
+               const pct = val / data.total;
+               const dash = pct * circumference;
+               const color = colors[idx % colors.length];
+               
+               if (pct > 0) {
+                   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                   circle.setAttribute("cx", "50");
+                   circle.setAttribute("cy", "50");
+                   circle.setAttribute("r", "40");
+                   circle.setAttribute("fill", "none");
+                   circle.setAttribute("stroke", color);
+                   circle.setAttribute("stroke-width", "10");
+                   circle.setAttribute("stroke-dasharray", `${dash} ${circumference}`);
+                   circle.setAttribute("stroke-dashoffset", -offset);
+                   svg.appendChild(circle);
+                   
+                   offset += dash;
+               }
+               
+               // İlk yüklemede, seçenek filtrelerini dinamik olarak doldur
+               if (els.selectCategory.options.length <= 1) { // Varsayım: ilki "Tüm"
+                   // Lejant döngüsünü aşağıda yapacağız, ama seçenekleri burada yapabilir miyiz?
+                   // Select kutusu için benzersiz kategorileri filtrelemek daha iyi.
+               }
+            });
+            
+            // Lejantı Render Et & Filtreyi Doldur
+            const legend = els.stockCategoryLegend;
+            legend.innerHTML = "";
+            
+            // Seçenekleri Temizle (ilki kalsın)
+            els.selectCategory.innerHTML = "<option>Tüm Kategoriler</option>";
+
+            data.categories.forEach((cat, idx) => {
+                const color = colors[idx % colors.length];
+                
+                // Lejant Öğesi
+                const item = document.createElement("div");
+                item.className = "flex items-center justify-between";
+                item.innerHTML = `
+                   <div class="flex items-center gap-2">
+                      <span class="size-3 rounded-full" style="background-color: ${color}"></span>
+                      <span class="text-sm text-text-secondary">${cat.name}</span>
+                   </div>
+                   <div class="text-sm font-semibold text-text-main dark:text-white">${cat.percent}%</div>
+                `;
+                legend.appendChild(item);
+                
+                // Seçenek
+                const opt = document.createElement("option");
+                opt.value = cat.name;
+                opt.textContent = cat.name;
+                els.selectCategory.appendChild(opt);
+            });
+            
+         } catch(e) {
+             console.error("Categories load error:", e);
+         }
+      }
+
+      // Stok Tablosunu Yükle (Detaylar)
+      async function loadTable() {
+         try {
+            els.tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center">Yükleniyor...</td></tr>`;
+            
+            const params = new URLSearchParams();
+            if (els.searchInput.value) params.append("search", els.searchInput.value);
+            if (els.selectCategory.value !== "Tüm Kategoriler") params.append("category", els.selectCategory.value);
+            if (els.selectStatus.value !== "Tüm Durumlar") params.append("status", els.selectStatus.value);
+            
+            const res = await fetch(`/api/stock/details?${params.toString()}`);
+            const data = await res.json();
+            
+            els.tableBody.innerHTML = "";
+            
+            if (data.length === 0) {
+               els.tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-text-secondary">Kayıt bulunamadı.</td></tr>`;
+               return;
+            }
+            
+            data.forEach(item => {
+               // Durum Rozeti
+               let statusHtml = "";
+               if (item.status_code === "danger") {
+                   statusHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"><span class="material-symbols-outlined text-[14px]">warning</span>Tükenmiş/Kritik</span>`;
+               } else if (item.status_code === "warning") {
+                   statusHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"><span class="size-1.5 rounded-full bg-yellow-500"></span>Azalıyor</span>`;
+               } else {
+                   statusHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"><span class="size-1.5 rounded-full bg-green-600"></span>Normal</span>`;
+               }
+               
+               // İlerleme Çubuğu Rengi
+               let barColor = "bg-green-500";
+               if (item.status_code === "danger") barColor = "bg-red-500";
+               else if (item.status_code === "warning") barColor = "bg-yellow-400";
+               
+               // Genişlik % hesapla
+               // Eğer min_stock limit ise, genellikle kapasite teoriktir. Kapasite ~ 2 * min_stock + tampon varsayalım veya görselleştirme için rastgele mantıksal bir maks kullanalım.
+               // UI "Kapasite" gösteriyor. Backend'de max_stock yok.
+               // Görsel hile: max = stock * 1.5 veya min_stock * 3
+               const maxStock = Math.max(item.stock * 1.2, item.min_stock * 3, 10); 
+               const widthPct = Math.min((item.stock / maxStock) * 100, 100);
+               
+               // Tarihleri Formatla
+               const formatDate = (dateStr) => {
+                  if (!dateStr) return "-";
+                  try {
+                    return new Date(dateStr).toLocaleDateString("tr-TR", { day: 'numeric', month: 'short' });
+                  } catch (e) { return "-"; }
+               };
+               
+               const tr = document.createElement("tr");
+               tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors group border-b border-gray-100 dark:border-gray-800";
+               
+               tr.innerHTML = `
+                  <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="size-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs uppercase">
+                           ${item.name.substring(0,2)}
+                        </div>
+                        <div>
+                          <div class="font-medium text-text-main dark:text-white">${item.name}</div>
+                          <div class="text-xs text-text-secondary">#${item.type === 'ingredient' ? 'M' : 'AS'}${item.id}</div>
+                        </div>
+                      </div>
+                  </td>
+                  <td class="px-6 py-4 text-text-secondary">${item.category}</td>
+                  <td class="px-6 py-4">
+                      <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                          <span class="font-bold text-text-main dark:text-white">${item.stock} ${item.unit}</span>
+                          <span class="text-xs text-text-secondary">Min: ${item.min_stock}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                          <div class="${barColor} h-1.5 rounded-full" style="width: ${widthPct}%"></div>
+                        </div>
+                      </div>
+                  </td>
+                  <td class="px-6 py-4 text-text-secondary font-medium">${item.min_stock} ${item.unit}</td>
+                  <td class="px-6 py-4">
+                      <div class="flex flex-col gap-1 text-xs">
+                        <div class="flex items-center gap-1.5 text-text-secondary">
+                           <span class="material-symbols-outlined text-[14px] text-green-600">arrow_downward</span>
+                           <span>Son Giriş: ${formatDate(item.last_entry_date)}</span>
+                        </div>
+                      </div>
+                  </td>
+                  <td class="px-6 py-4">${statusHtml}</td>
+                  <td class="px-6 py-4 text-right">
+                      <button 
+                        onclick="showHistory('${item.type}', '${item.id}', '${item.name}', '${item.unit}')"
+                        class="text-gray-400 hover:text-primary transition-colors bg-white border border-gray-200 rounded p-1.5 shadow-sm"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">history</span>
+                      </button>
+                  </td>
+               `;
+               els.tableBody.appendChild(tr);
+            });
+            
+         } catch(e) {
+            console.error("Table load error:", e);
+         }
+      }
+
+      // Show History Modal
+      window.showHistory = async (type, id, name, unit) => {
+         const modal = document.getElementById("historyModal");
+         const title = document.getElementById("historyModalTitle");
+         const tbody = document.getElementById("historyModalBody");
+         
+         if(title) title.textContent = `${name} - Sevkiyat Geçmişi`;
+         if(tbody) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">Yükleniyor...</td></tr>'; // colspan updated
+         if(modal) modal.classList.remove("hidden");
+         
+         const statusMap = {
+            0: { label: "Taslak", class: "bg-gray-100 text-gray-800" },
+            1: { label: "Sipariş Verildi", class: "bg-blue-100 text-blue-800" },
+            2: { label: "Sevkiyatta", class: "bg-yellow-100 text-yellow-800" },
+            3: { label: "Teslim Alındı", class: "bg-green-100 text-green-800" },
+            4: { label: "İptal", class: "bg-red-100 text-red-800" }
+         };
+         
+         try {
+             const res = await fetch(`/api/stock/history?type=${type}&id=${id}`);
+             const data = await res.json();
+             
+             if(tbody) {
+                 tbody.innerHTML = "";
+                 if(data.length === 0) {
+                     tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-text-secondary">Kayıt bulunamadı.</td></tr>';
+                 } else {
+                     data.forEach(row => {
+                         const date = new Date(row.order_date).toLocaleDateString("tr-TR");
+                         const statusInfo = statusMap[row.status] || { label: "Bilinmiyor", class: "bg-gray-100 text-gray-800" };
+                         
+                         const tr = document.createElement("tr");
+                         tr.className = "border-b border-gray-100 dark:border-gray-800";
+                         tr.innerHTML = `
+                             <td class="px-6 py-3 text-sm text-text-main dark:text-white">${date}</td>
+                             <td class="px-6 py-3 text-sm text-text-secondary">${row.wholesaler_name || "-"}</td>
+                             <td class="px-6 py-3 text-sm font-medium text-text-main dark:text-white">${row.quantity} ${unit}</td>
+                             <td class="px-6 py-3 text-sm text-text-secondary">${formatCurrency(row.unit_price)}</td>
+                             <td class="px-6 py-3 text-sm">
+                                <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${statusInfo.class}">
+                                   ${statusInfo.label}
+                                </span>
+                             </td>
+                         `;
+                         tbody.appendChild(tr);
+                     });
+                 }
+             }
+         } catch(e) {
+             console.error("History load error:", e);
+             if(tbody) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">Hata oluştu.</td></tr>';
+         }
+      };
+
+      // Close Modal
+      window.closeHistoryModal = () => {
+         const modal = document.getElementById("historyModal");
+         if(modal) modal.classList.add("hidden");
+      };
+
+       // Export Stock Report
+       window.exportStockReport = async () => {
+          try {
+             const params = new URLSearchParams();
+             if (els.searchInput.value) params.append("search", els.searchInput.value);
+             if (els.selectCategory.value !== "Tüm Kategoriler") params.append("category", els.selectCategory.value);
+             if (els.selectStatus.value !== "Tüm Durumlar") params.append("status", els.selectStatus.value);
+             
+             // Fetch all data for export
+             const res = await fetch(`/api/stock/details?${params.toString()}`);
+             const data = await res.json();
+             
+             if (!data || data.length === 0) {
+                 alert("Dışa aktarılacak veri bulunamadı.");
+                 return;
+             }
+
+             // CSV Header
+             let csvContent = "\uFEFF"; // BOM
+             csvContent += "Ürün Adı;Tip;Kategori;Stok;Birim;Min. Stok;Durum;Son İşlem Tarihi\n";
+             
+             data.forEach(item => {
+                 const statusLabels = {
+                     'danger': 'Tükenmiş/Kritik',
+                     'warning': 'Azalıyor',
+                     'success': 'Normal'
+                 };
+                 const status = statusLabels[item.status_code] || 'Bilinmiyor';
+                 const lastDate = item.last_entry_date ? new Date(item.last_entry_date).toLocaleDateString("tr-TR") : "-";
+                 
+                 const row = [
+                     `"${item.name.replace(/"/g, '""')}"`,
+                     item.type === 'ingredient' ? 'Malzeme' : 'Ürün',
+                     item.category,
+                     item.stock,
+                     item.unit,
+                     item.min_stock,
+                     status,
+                     lastDate
+                 ].join(";");
+                 
+                 csvContent += row + "\n";
+             });
+             
+             // Download
+             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+             const url = URL.createObjectURL(blob);
+             const link = document.createElement("a");
+             link.setAttribute("href", url);
+             link.setAttribute("download", `Stok_Raporu_${new Date().toLocaleDateString("tr-TR").replace(/\./g, '-')}.csv`);
+             document.body.appendChild(link);
+             link.click();
+             document.body.removeChild(link);
+
+          } catch (e) {
+             console.error("Export error:", e);
+             alert("Dışa aktarma sırasında bir hata oluştu.");
+          }
+       };
+
+      // Initialize
+      (function init() {
+         // Check initial date range (default week)
+         currentDateRange = getDates('week');
+         
+         loadStats();
+         loadConsumption();
+         loadCategories();
+         loadTable();
+         
+         // Bind events
+         if(els.searchInput) els.searchInput.addEventListener("input", debounce(loadTable, 500));
+         if(els.selectCategory) els.selectCategory.addEventListener("change", loadTable);
+         if(els.selectStatus) els.selectStatus.addEventListener("change", loadTable);
+      })();
+      
+      function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kontrol Paneli</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6A994E",
+              "background-light": "#F5F5F4",
+              surface: "#FFFFFF",
+              "primary-light": "#F7F9F5",
+              "primary-darker": "#386641",
+              "text-primary": "#1C1917",
+              "text-secondary": "#6B7280",
+              "border-color": "#E5E7EB",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+    </style>
+  </head>
+  <body class="font-display bg-background-light text-text-primary">
+    <div class="relative flex min-h-screen w-full">
+      <div id="sidebar-container"></div>
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-wrap justify-between gap-3 mb-6 items-center">
+            <p
+              class="text-text-primary text-4xl font-black leading-tight tracking-[-0.033em]"
+            >
+              Kontrol Paneli
+            </p>
+            <div class="flex items-center gap-2">
+              <div
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                data-alt="User avatar"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDi858E5BwkeDTi9kb25d00SZsDqlZADZHtGmXeqJYwf3l-gLUsS9utZUCpgH58iKCdS4l1amH0G1DiyYvszjU-ps0bN-pU2wwrxU3KTqkXIYRe0XcdZjT1k4E-mK067L0FLfc2ZIk3Czl2pwkx0caEfYWl4FVie_Yi-WET3EOoUiVCrajdZbML5c3Z4KxpY84C8o6DHyzYm0SXUt9pu1nvkzn0Zr0oFpspoIZFgtKmry59nXYPxJTXE-5d-TLh4KHLYo6KXfgcGVY-');
+                "
+              ></div>
+              <div class="flex flex-col text-text-primary">
+                <span id="userName" class="font-medium text-sm">--</span>
+                <span class="text-xs text-text-secondary">Admin</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8"
+          >
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-surface"
+            >
+                <span class="material-symbols-outlined text-[20px] text-primary">point_of_sale</span>
+                Bugünkü Satışlar
+              </p>
+              <p
+                id="todaySales"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                ₺0.00
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-surface"
+            >
+                <span class="material-symbols-outlined text-[20px] text-primary">shopping_cart</span>
+                Bugünkü Siparişler
+              </p>
+              <p
+                id="todayOrders"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-surface"
+            >
+                <span class="material-symbols-outlined text-[20px] text-red-500">production_quantity_limits</span>
+                Stokta Yok
+              </p>
+              <p
+                id="outOfStockCount"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-surface"
+            >
+                <span class="material-symbols-outlined text-[20px] text-yellow-600">warning</span>
+                Düşük Stoklu Ürünler
+              </p>
+              <p
+                id="lowStockCount"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-lg p-6 border border-border-color bg-surface"
+            >
+                <span class="material-symbols-outlined text-[20px] text-blue-500">group</span>
+                Aktif Çalışanlar
+              </p>
+              <p
+                id="activeStaff"
+                class="text-text-primary tracking-light text-3xl font-bold leading-tight"
+              >
+                0
+              </p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div class="flex flex-col lg:flex-row flex-wrap gap-6">
+                <div
+                  class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-border-color p-6 bg-surface"
+                >
+                    <span class="material-symbols-outlined text-primary">bar_chart</span>
+                    Satış Özeti
+                  </p>
+                  <p
+                    id="weeklyTotal"
+                    class="text-text-primary tracking-light text-[32px] font-bold leading-tight truncate"
+                  >
+                    ₺0.00
+                  </p>
+                  <div class="flex gap-1">
+                    <p
+                      class="text-text-secondary text-base font-normal leading-normal"
+                    >
+                      Son 7 Gün
+                    </p>
+                    <p
+                      id="weeklyChange"
+                      class="text-base font-medium leading-normal"
+                    >
+                      --
+                    </p>
+                  </div>
+                  <div
+                    id="weeklyChart"
+                    class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 pt-4"
+                  ></div>
+                </div>
+                <div
+                  class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-border-color p-6 bg-surface"
+                >
+                  <p
+                    class="text-text-secondary text-base font-medium leading-normal flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-primary">local_shipping</span>
+                    Sevkiyat Durumu (Son 7 Gün)
+                  </p>
+                  
+                  <div class="flex flex-col gap-3 mt-2 h-full justify-center">
+                      <!-- Beklenen -->
+                      <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100 hover:shadow-sm transition-shadow">
+                          <div class="flex items-center gap-3">
+                              <div class="p-2 bg-yellow-100 rounded-full text-yellow-600 flex items-center justify-center">
+                                  <span class="material-symbols-outlined text-[20px]">hourglass_top</span>
+                              </div>
+                              <span class="text-sm font-medium text-text-primary">Beklenen</span>
+                          </div>
+                          <span id="shipmentExpected" class="text-xl font-bold text-yellow-700">0</span>
+                      </div>
+
+                      <!-- Teslim Alınan -->
+                      <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100 hover:shadow-sm transition-shadow">
+                          <div class="flex items-center gap-3">
+                              <div class="p-2 bg-green-100 rounded-full text-green-600 flex items-center justify-center">
+                                  <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                              </div>
+                              <span class="text-sm font-medium text-text-primary">Teslim Alınan</span>
+                          </div>
+                          <span id="shipmentReceived" class="text-xl font-bold text-green-700">0</span>
+                      </div>
+
+                      <!-- İptal -->
+                      <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100 hover:shadow-sm transition-shadow">
+                          <div class="flex items-center gap-3">
+                              <div class="p-2 bg-red-100 rounded-full text-red-600 flex items-center justify-center">
+                                  <span class="material-symbols-outlined text-[20px]">cancel</span>
+                              </div>
+                              <span class="text-sm font-medium text-text-primary">İptal Edilen</span>
+                          </div>
+                          <span id="shipmentCancelled" class="text-xl font-bold text-red-700">0</span>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="lg:col-span-1 rounded-lg border border-border-color bg-surface p-6"
+            >
+                <span class="material-symbols-outlined text-primary">badge</span>
+                Aktif Çalışanlar
+              </p>
+              <div class="overflow-hidden">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-b-border-color">
+                      <th
+                        class="px-4 py-3 text-left text-text-primary text-sm font-medium leading-normal"
+                      >
+                        Çalışan Adı
+                      </th>
+                      <th
+                        class="px-4 py-3 text-left text-text-primary text-sm font-medium leading-normal"
+                      >
+                        Mesai Başlangıcı
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="activeStaffTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alt bölüm: geniş boşluk değerlendirme -->
+          <div class="mt-10 grid grid-cols-1 gap-6">
+            <div class="rounded-lg border border-border-color bg-surface p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <p class="text-text-secondary text-sm font-medium uppercase tracking-wide flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">inventory</span>
+                    Düşük Stok Listesi
+                  </p>
+                  <p class="text-text-primary text-lg font-bold">İlk 5 kritik kalem</p>
+                </div>
+                <a
+                  href="/stock"
+                  class="text-primary text-sm font-semibold hover:underline"
+                  >Stok sayfası</a
+                >
+              </div>
+              <div id="lowStockList" class="flex flex-col divide-y divide-border-color">
+                <div class="py-4 text-text-secondary text-sm">Yükleniyor...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      // Yetki kontrolü
+      (function guardAdmin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/";
+          return;
+        }
+        if (userType === "kasa") {
+          window.location.href = "/cashier";
+        }
+      })();
+
+      // Kullanıcı bilgilerini yükle
+      async function loadUserInfo() {
+        try {
+          const username = localStorage.getItem("username");
+          if (!username) {
+            // Eğer username yoksa login sayfasına yönlendir
+            window.location.href = "/";
+            return;
+          }
+
+          const response = await fetch(`/api/auth/user?username=${username}`);
+          if (response.ok) {
+            const user = await response.json();
+            document.getElementById("userName").textContent =
+              user.username || "Kullanıcı";
+          } else {
+            // Kullanıcı bulunamazsa login sayfasına yönlendir
+            localStorage.removeItem("username");
+            window.location.href = "/";
+          }
+        } catch (error) {
+          console.error("Load user info error:", error);
+          document.getElementById("userName").textContent = "Kullanıcı";
+        }
+      }
+
+      // Bugünkü satış istatistikleri
+      async function loadTodayStats() {
+        try {
+          const response = await fetch("/api/sales/stats?period=today");
+          const stats = await response.json();
+
+          document.getElementById("todaySales").textContent = `₺${parseFloat(
+            stats.total_revenue || 0
+          ).toFixed(2)}`;
+          document.getElementById("todayOrders").textContent =
+            stats.total_orders || 0;
+        } catch (error) {
+          console.error("Load today stats error:", error);
+        }
+      }
+
+
+      // Stok İstatistikleri (KPI Kartları için)
+      async function loadStockStats() {
+        try {
+          const response = await fetch("/api/stock/stats");
+          const stats = await response.json();
+          
+          // Düşük stok sayısı (0 > stock <= min)
+          document.getElementById("lowStockCount").textContent = stats.low_stock || 0;
+          
+          // Tükenen ürün sayısı (stock == 0)
+          document.getElementById("outOfStockCount").textContent = stats.out_of_stock || 0;
+          
+        } catch (error) {
+          console.error("Load stock stats error:", error);
+        }
+      }
+
+      // Düşük stok listesi (KPI sayısı artık loadStockStats'dan geliyor)
+      async function loadLowStock() {
+        try {
+          const response = await fetch("/api/stock/ingredients/low");
+          const lowStock = await response.json();
+
+          // document.getElementById("lowStockCount").textContent = lowStock.length || 0; // Artık stats'dan geliyor
+
+          const listContainer = document.getElementById("lowStockList");
+          if (!lowStock.length) {
+            listContainer.innerHTML =
+              '<div class="py-4 text-text-secondary text-sm">Kritik stok bulunmuyor</div>';
+            return;
+          }
+
+          const top5 = lowStock
+            .map((item) => ({
+              name: item.name,
+              stock: parseFloat(item.stock || 0),
+              min: parseFloat(item.min_stock || 0),
+              type: item.type === "ürün" ? "Ürün" : "Malzeme",
+            }))
+            .sort((a, b) => a.stock - b.stock)
+            .slice(0, 5);
+
+          listContainer.innerHTML = top5
+            .map(
+              (i) => `
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-text-primary font-semibold text-sm">${i.name}</span>
+                  <span class="text-text-secondary text-xs">${i.type}</span>
+                </div>
+                <div class="text-right">
+                  <p class="text-text-primary text-sm font-semibold">${i.stock} / ${i.min}</p>
+                  <p class="text-xs text-red-500">Kritik</p>
+                </div>
+              </div>
+            `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Load low stock error:", error);
+          document.getElementById("lowStockList").innerHTML =
+            '<div class="py-4 text-text-secondary text-sm">Yüklenirken hata oluştu</div>';
+        }
+      }
+
+      // Aktif çalışan sayısı ve listesi
+      async function loadActiveStaff() {
+        try {
+          const [countResponse, logsResponse] = await Promise.all([
+            fetch("/api/employees/stats/active"),
+            fetch("/api/employees/logs/today"),
+          ]);
+
+          const count = await countResponse.json();
+          const logs = await logsResponse.json();
+
+          document.getElementById("activeStaff").textContent =
+            count.active_count || 0;
+
+          // Aktif çalışan listesi
+          const tbody = document.getElementById("activeStaffTable");
+          tbody.innerHTML = "";
+
+          const activeEmployees = logs.filter(
+            (log) => log.status === "Çalışıyor"
+          );
+          activeEmployees.forEach((emp) => {
+            const row = document.createElement("tr");
+            row.className = "border-b border-b-border-color";
+            const time = emp.check_in
+              ? new Date(emp.check_in).toLocaleTimeString("tr-TR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "--";
+            row.innerHTML = `
+              <td class="h-[64px] px-4 py-2 text-text-primary text-sm font-normal leading-normal">
+                ${emp.name} ${emp.surname}
+              </td>
+              <td class="h-[64px] px-4 py-2 text-text-secondary text-sm font-normal leading-normal">
+                ${time}
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Load active staff error:", error);
+        }
+      }
+
+      // Haftalık satış grafiği ve değişim yüzdesi
+      async function loadWeeklyChart() {
+        try {
+          const [weeklyResponse, changeResponse] = await Promise.all([
+            fetch("/api/sales/weekly"),
+            fetch("/api/sales/weekly-change"),
+          ]);
+
+          const weekly = await weeklyResponse.json();
+          const change = await changeResponse.json();
+
+          // Değişim yüzdesini göster
+          const changeElement = document.getElementById("weeklyChange");
+          const changePercent = parseFloat(change.change_percent || 0);
+          if (changePercent > 0) {
+            changeElement.textContent = `+${changePercent.toFixed(1)}%`;
+            changeElement.className =
+              "text-[#0bda92] text-base font-medium leading-normal";
+          } else if (changePercent < 0) {
+            changeElement.textContent = `${changePercent.toFixed(1)}%`;
+            changeElement.className =
+              "text-[#fa7c38] text-base font-medium leading-normal";
+          } else {
+            changeElement.textContent = "0%";
+            changeElement.className =
+              "text-text-secondary text-base font-medium leading-normal";
+          }
+
+          const chartContainer = document.getElementById("weeklyChart");
+          chartContainer.innerHTML = "";
+
+          if (!weekly.length) {
+            chartContainer.innerHTML =
+              '<p class="text-text-secondary text-sm">Veri yok</p>';
+            document.getElementById("weeklyTotal").textContent = "₺0.00";
+            return;
+          }
+
+          const dayNames = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+          const maxValue = Math.max(
+            ...weekly.map((d) => parseFloat(d.daily_total || 0)),
+            1
+          );
+
+          // Son 7 gün; veri DESC geliyor, önce 7'yi alıp tarihi artan sıraya çevir
+          const last7Days = weekly.slice(0, 7).reverse();
+          const todayStr = new Date().toISOString().split("T")[0];
+
+          last7Days.forEach((day) => {
+            const value = parseFloat(day.daily_total || 0);
+            const height = (value / maxValue) * 100;
+            const dateObj = new Date(day.sale_date);
+            const isToday =
+              dateObj.toISOString().split("T")[0] === todayStr;
+
+            const bar = document.createElement("div");
+            bar.className = `w-full rounded-t transition-colors relative group ${
+              isToday ? "bg-primary" : "bg-primary/20 hover:bg-primary/50"
+            }`;
+            bar.style.height = `${Math.max(height, 5)}%`;
+
+            // Custom Tooltip (Özel İpucu)
+            const tooltip = document.createElement("div");
+            tooltip.className = "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10 whitespace-nowrap bg-gray-800 text-white text-xs font-bold py-1 px-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none";
+            tooltip.textContent = `₺${value.toFixed(2)}`;
+            
+            // Üçgen ok
+            const arrow = document.createElement("div");
+            arrow.className = "absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800";
+            tooltip.appendChild(arrow);
+
+            bar.appendChild(tooltip);
+
+            chartContainer.appendChild(bar);
+            
+            const label = document.createElement("p");
+            label.className = `text-${
+              isToday ? "text-primary" : "text-text-secondary"
+            } text-[13px] font-bold leading-normal tracking-[0.015em]`;
+            label.textContent = dayNames[dateObj.getDay()];
+
+            chartContainer.appendChild(label);
+          });
+
+          const total = weekly.reduce(
+            (sum, day) => sum + parseFloat(day.daily_total || 0),
+            0
+          );
+          document.getElementById(
+            "weeklyTotal"
+          ).textContent = `₺${total.toFixed(2)}`;
+        } catch (error) {
+          console.error("Load weekly chart error:", error);
+        }
+      }
+
+      // Sevkiyat Durumu (Son 7 Gün)
+      async function loadShipmentStats() {
+        try {
+          const response = await fetch("/api/stock/shipments-recent");
+          const data = await response.json();
+
+          document.getElementById("shipmentExpected").textContent = data.expected || 0;
+          document.getElementById("shipmentReceived").textContent = data.received || 0;
+          document.getElementById("shipmentCancelled").textContent = data.cancelled || 0;
+        } catch (error) {
+          console.error("Load shipment stats error:", error);
+        }
+      }
+
+      // Sayfa yüklendiğinde
+      loadUserInfo();
+      loadTodayStats();
+      loadStockStats(); // Yeni eklenen fonksiyon
+      loadLowStock();
+      loadActiveStaff();
+      loadWeeklyChart();
+      loadShipmentStats();
+    </script>
+    <script src="/components/sidebar.js"></script>
+  </body>
+</html>
